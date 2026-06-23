@@ -1,0 +1,560 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A123456789000001 /* AIGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000002 /* AIGuideApp.swift */; };
+		A123456789000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000004 /* ContentView.swift */; };
+		A123456789000005 /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000006 /* GuideView.swift */; };
+		A123456789000007 /* SheetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000008 /* SheetViews.swift */; };
+		A123456789000009 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000010 /* Models.swift */; };
+		A123456789000011 /* GuideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000012 /* GuideViewModel.swift */; };
+		A123456789000040 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000041 /* LaunchScreenView.swift */; };
+		A123456789000050 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000051 /* LocationService.swift */; };
+		A123456789000052 /* POIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000053 /* POIService.swift */; };
+		A123456789000054 /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000055 /* AudioService.swift */; };
+		A123456789000056 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000057 /* APIClient.swift */; };
+		A123456789000060 /* TTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000061 /* TTSService.swift */; };
+		A123456789000070 /* EdgeTTSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000071 /* EdgeTTSService.swift */; };
+		A123456789000072 /* VoicePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000073 /* VoicePickerView.swift */; };
+		A123456789000080 /* VisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000081 /* VisionService.swift */; };
+		A123456789000082 /* CameraRecognitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000083 /* CameraRecognitionView.swift */; };
+		A123456789000090 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000091 /* HistoryService.swift */; };
+		A123456789000092 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000093 /* HistoryView.swift */; };
+		A123456789000094 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000095 /* OnboardingView.swift */; };
+		A123456789000100 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000101 /* ThemeManager.swift */; };
+		A123456789000102 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000103 /* SearchService.swift */; };
+		A123456789000104 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000105 /* SearchView.swift */; };
+		A123456789000106 /* TourService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000107 /* TourService.swift */; };
+		A123456789000108 /* TourView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000109 /* TourView.swift */; };
+		A123456789000110 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000111 /* ToastView.swift */; };
+		A123456789000120 /* ARService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000121 /* ARService.swift */; };
+		A123456789000122 /* ARGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000123 /* ARGuideView.swift */; };
+		A123456789000130 /* NumberInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000131 /* NumberInputService.swift */; };
+		A123456789000132 /* NumberInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000133 /* NumberInputView.swift */; };
+		A123456789000140 /* IndoorLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000141 /* IndoorLocationService.swift */; };
+		A123456789000142 /* IndoorLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000143 /* IndoorLocationView.swift */; };
+		A123456789000150 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000151 /* SplashScreenView.swift */; };
+		A123456789000152 /* AnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000153 /* AnimationManager.swift */; };
+		A123456789000154 /* AccessibilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000155 /* AccessibilityManager.swift */; };
+		A123456789000160 /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000161 /* SettingsService.swift */; };
+		A123456789000162 /* ShareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000163 /* ShareService.swift */; };
+		A123456789000164 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000165 /* NotificationService.swift */; };
+		A123456789000170 /* ArtifactRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000171 /* ArtifactRecognitionService.swift */; };
+		A123456789000172 /* TripPlannerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000173 /* TripPlannerService.swift */; };
+		A123456789000174 /* SeeAndAskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000175 /* SeeAndAskService.swift */; };
+		A123456789000176 /* JourneyNarrativeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000177 /* JourneyNarrativeService.swift */; };
+		B210621000000001 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B210621000000002 /* LocalizationService.swift */; };
+		B210621000000003 /* PlaceResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B210621000000004 /* PlaceResolver.swift */; };
+		B210621000000005 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B210621000000006 /* Localizable.xcstrings */; };
+		B210621000000007 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B210621000000008 /* InfoPlist.xcstrings */; };
+		A123456789000180 /* ArtifactRecognitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000181 /* ArtifactRecognitionView.swift */; };
+		A123456789000182 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000183 /* TripPlannerView.swift */; };
+		A123456789000190 /* ARViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000191 /* ARViews.swift */; };
+		A123456789000192 /* JourneyNarrativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000193 /* JourneyNarrativeView.swift */; };
+		A123456789000200 /* SeeAndAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000201 /* SeeAndAskView.swift */; };
+		A123456789000210 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000211 /* ImagePicker.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A123456789000002 /* AIGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIGuideApp.swift; sourceTree = "<group>"; };
+		A123456789000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A123456789000006 /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
+		A123456789000008 /* SheetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViews.swift; sourceTree = "<group>"; };
+		A123456789000010 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A123456789000012 /* GuideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideViewModel.swift; sourceTree = "<group>"; };
+		A123456789000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A123456789000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A123456789000018 /* AIGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A123456789000041 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
+		A123456789000051 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		A123456789000053 /* POIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = POIService.swift; sourceTree = "<group>"; };
+		A123456789000055 /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
+		A123456789000057 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		A123456789000061 /* TTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSService.swift; sourceTree = "<group>"; };
+		A123456789000071 /* EdgeTTSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeTTSService.swift; sourceTree = "<group>"; };
+		A123456789000073 /* VoicePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePickerView.swift; sourceTree = "<group>"; };
+		A123456789000081 /* VisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionService.swift; sourceTree = "<group>"; };
+		A123456789000083 /* CameraRecognitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecognitionView.swift; sourceTree = "<group>"; };
+		A123456789000091 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
+		A123456789000093 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		A123456789000095 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A123456789000101 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		A123456789000103 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
+		A123456789000105 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		A123456789000107 /* TourService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourService.swift; sourceTree = "<group>"; };
+		A123456789000109 /* TourView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourView.swift; sourceTree = "<group>"; };
+		A123456789000111 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		A123456789000121 /* ARService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARService.swift; sourceTree = "<group>"; };
+		A123456789000123 /* ARGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGuideView.swift; sourceTree = "<group>"; };
+		A123456789000131 /* NumberInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberInputService.swift; sourceTree = "<group>"; };
+		A123456789000133 /* NumberInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberInputView.swift; sourceTree = "<group>"; };
+		A123456789000141 /* IndoorLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndoorLocationService.swift; sourceTree = "<group>"; };
+		A123456789000143 /* IndoorLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndoorLocationView.swift; sourceTree = "<group>"; };
+		A123456789000151 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		A123456789000153 /* AnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationManager.swift; sourceTree = "<group>"; };
+		A123456789000155 /* AccessibilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityManager.swift; sourceTree = "<group>"; };
+		A123456789000161 /* SettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsService.swift; sourceTree = "<group>"; };
+		A123456789000163 /* ShareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareService.swift; sourceTree = "<group>"; };
+		A123456789000165 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A123456789000171 /* ArtifactRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactRecognitionService.swift; sourceTree = "<group>"; };
+		A123456789000173 /* TripPlannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerService.swift; sourceTree = "<group>"; };
+		A123456789000175 /* SeeAndAskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeeAndAskService.swift; sourceTree = "<group>"; };
+		A123456789000177 /* JourneyNarrativeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyNarrativeService.swift; sourceTree = "<group>"; };
+		B210621000000002 /* LocalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationService.swift; sourceTree = "<group>"; };
+		B210621000000004 /* PlaceResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceResolver.swift; sourceTree = "<group>"; };
+		B210621000000006 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		B210621000000008 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		A123456789000181 /* ArtifactRecognitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactRecognitionView.swift; sourceTree = "<group>"; };
+		A123456789000183 /* TripPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerView.swift; sourceTree = "<group>"; };
+		A123456789000191 /* ARViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViews.swift; sourceTree = "<group>"; };
+		A123456789000193 /* JourneyNarrativeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyNarrativeView.swift; sourceTree = "<group>"; };
+		A123456789000201 /* SeeAndAskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeeAndAskView.swift; sourceTree = "<group>"; };
+		A123456789000211 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A123456789000019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A123456789000020 = {
+			isa = PBXGroup;
+			children = (
+				A123456789000021 /* AIGuide */,
+				A123456789000022 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A123456789000021 /* AIGuide */ = {
+			isa = PBXGroup;
+			children = (
+				A123456789000002 /* AIGuideApp.swift */,
+				A123456789000004 /* ContentView.swift */,
+				A123456789000023 /* Views */,
+				A123456789000024 /* Models */,
+				A123456789000025 /* Services */,
+				A123456789000014 /* Info.plist */,
+				A123456789000016 /* Assets.xcassets */,
+				B210621000000006 /* Localizable.xcstrings */,
+				B210621000000008 /* InfoPlist.xcstrings */,
+			);
+			path = AIGuide;
+			sourceTree = "<group>";
+		};
+		A123456789000022 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A123456789000018 /* AIGuide.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A123456789000023 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A123456789000006 /* GuideView.swift */,
+				A123456789000008 /* SheetViews.swift */,
+				A123456789000041 /* LaunchScreenView.swift */,
+				A123456789000073 /* VoicePickerView.swift */,
+				A123456789000083 /* CameraRecognitionView.swift */,
+				A123456789000093 /* HistoryView.swift */,
+				A123456789000095 /* OnboardingView.swift */,
+				A123456789000105 /* SearchView.swift */,
+				A123456789000109 /* TourView.swift */,
+				A123456789000111 /* ToastView.swift */,
+				A123456789000123 /* ARGuideView.swift */,
+				A123456789000133 /* NumberInputView.swift */,
+				A123456789000143 /* IndoorLocationView.swift */,
+				A123456789000151 /* SplashScreenView.swift */,
+				A123456789000181 /* ArtifactRecognitionView.swift */,
+				A123456789000183 /* TripPlannerView.swift */,
+				A123456789000191 /* ARViews.swift */,
+				A123456789000193 /* JourneyNarrativeView.swift */,
+				A123456789000201 /* SeeAndAskView.swift */,
+				A123456789000211 /* ImagePicker.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A123456789000024 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A123456789000010 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A123456789000025 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A123456789000012 /* GuideViewModel.swift */,
+				A123456789000051 /* LocationService.swift */,
+				A123456789000053 /* POIService.swift */,
+				A123456789000055 /* AudioService.swift */,
+				A123456789000057 /* APIClient.swift */,
+				A123456789000061 /* TTSService.swift */,
+				A123456789000071 /* EdgeTTSService.swift */,
+				A123456789000081 /* VisionService.swift */,
+				A123456789000091 /* HistoryService.swift */,
+				A123456789000101 /* ThemeManager.swift */,
+				A123456789000103 /* SearchService.swift */,
+				A123456789000107 /* TourService.swift */,
+				A123456789000121 /* ARService.swift */,
+				A123456789000131 /* NumberInputService.swift */,
+				A123456789000141 /* IndoorLocationService.swift */,
+				A123456789000153 /* AnimationManager.swift */,
+				A123456789000155 /* AccessibilityManager.swift */,
+				A123456789000161 /* SettingsService.swift */,
+				A123456789000163 /* ShareService.swift */,
+				A123456789000165 /* NotificationService.swift */,
+				A123456789000171 /* ArtifactRecognitionService.swift */,
+				A123456789000173 /* TripPlannerService.swift */,
+				A123456789000175 /* SeeAndAskService.swift */,
+				A123456789000177 /* JourneyNarrativeService.swift */,
+				B210621000000002 /* LocalizationService.swift */,
+				B210621000000004 /* PlaceResolver.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A123456789000026 /* AIGuide */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A123456789000027 /* Build configuration list for PBXNativeTarget "AIGuide" */;
+			buildPhases = (
+				A123456789000028 /* Sources */,
+				A123456789000019 /* Frameworks */,
+				A123456789000029 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AIGuide;
+			productName = AIGuide;
+			productReference = A123456789000018 /* AIGuide.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A123456789000030 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					A123456789000026 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A123456789000031 /* Build configuration list for PBXProject "AIGuide" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+				"zh-Hant",
+				en,
+				ja,
+				ko,
+			);
+			mainGroup = A123456789000020;
+			productRefGroup = A123456789000022 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A123456789000026 /* AIGuide */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A123456789000029 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B210621000000005 /* Localizable.xcstrings in Resources */,
+				B210621000000007 /* InfoPlist.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A123456789000028 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A123456789000001 /* AIGuideApp.swift in Sources */,
+				A123456789000003 /* ContentView.swift in Sources */,
+				A123456789000005 /* GuideView.swift in Sources */,
+				A123456789000007 /* SheetViews.swift in Sources */,
+				A123456789000009 /* Models.swift in Sources */,
+				A123456789000011 /* GuideViewModel.swift in Sources */,
+				A123456789000040 /* LaunchScreenView.swift in Sources */,
+				A123456789000050 /* LocationService.swift in Sources */,
+				A123456789000052 /* POIService.swift in Sources */,
+				A123456789000054 /* AudioService.swift in Sources */,
+				A123456789000056 /* APIClient.swift in Sources */,
+				A123456789000060 /* TTSService.swift in Sources */,
+				A123456789000070 /* EdgeTTSService.swift in Sources */,
+				A123456789000072 /* VoicePickerView.swift in Sources */,
+				A123456789000080 /* VisionService.swift in Sources */,
+				A123456789000082 /* CameraRecognitionView.swift in Sources */,
+				A123456789000090 /* HistoryService.swift in Sources */,
+				A123456789000092 /* HistoryView.swift in Sources */,
+				A123456789000094 /* OnboardingView.swift in Sources */,
+				A123456789000100 /* ThemeManager.swift in Sources */,
+				A123456789000102 /* SearchService.swift in Sources */,
+				A123456789000104 /* SearchView.swift in Sources */,
+				A123456789000106 /* TourService.swift in Sources */,
+				A123456789000108 /* TourView.swift in Sources */,
+				A123456789000110 /* ToastView.swift in Sources */,
+				A123456789000120 /* ARService.swift in Sources */,
+				A123456789000122 /* ARGuideView.swift in Sources */,
+				A123456789000130 /* NumberInputService.swift in Sources */,
+				A123456789000132 /* NumberInputView.swift in Sources */,
+				A123456789000140 /* IndoorLocationService.swift in Sources */,
+				A123456789000142 /* IndoorLocationView.swift in Sources */,
+				A123456789000150 /* SplashScreenView.swift in Sources */,
+				A123456789000152 /* AnimationManager.swift in Sources */,
+				A123456789000154 /* AccessibilityManager.swift in Sources */,
+				A123456789000160 /* SettingsService.swift in Sources */,
+				A123456789000162 /* ShareService.swift in Sources */,
+				A123456789000164 /* NotificationService.swift in Sources */,
+				A123456789000170 /* ArtifactRecognitionService.swift in Sources */,
+				A123456789000172 /* TripPlannerService.swift in Sources */,
+				A123456789000174 /* SeeAndAskService.swift in Sources */,
+				A123456789000176 /* JourneyNarrativeService.swift in Sources */,
+				B210621000000001 /* LocalizationService.swift in Sources */,
+				B210621000000003 /* PlaceResolver.swift in Sources */,
+				A123456789000180 /* ArtifactRecognitionView.swift in Sources */,
+				A123456789000182 /* TripPlannerView.swift in Sources */,
+				A123456789000190 /* ARViews.swift in Sources */,
+				A123456789000192 /* JourneyNarrativeView.swift in Sources */,
+				A123456789000200 /* SeeAndAskView.swift in Sources */,
+				A123456789000210 /* ImagePicker.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A123456789000032 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A123456789000033 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A123456789000034 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AIGuide/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ai-guide.app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A123456789000035 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AIGuide/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ai-guide.app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A123456789000027 /* Build configuration list for PBXNativeTarget "AIGuide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A123456789000034 /* Debug */,
+				A123456789000035 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A123456789000031 /* Build configuration list for PBXProject "AIGuide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A123456789000032 /* Debug */,
+				A123456789000033 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A123456789000030 /* Project object */;
+}
