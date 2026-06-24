@@ -42,7 +42,7 @@ struct TripPlannerView: View {
                     }
                 }
             }
-            .navigationTitle("trip.nav.title")
+            .navigationTitle(L10n.string("trip.nav.title"))
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showDestinationSearch) {
                 destinationSearchSheet
@@ -64,7 +64,11 @@ struct TripPlannerView: View {
                             forestColor: forestColor
                         )
                     } else {
-                        ContentUnavailableView("trip.daily.noReview", systemImage: "sparkles", description: Text("trip.daily.noReview.desc"))
+                        ContentUnavailableView(
+                            L10n.string("trip.daily.noReview"),
+                            systemImage: "sparkles",
+                            description: Text(L10n.string("trip.daily.noReview.desc"))
+                        )
                     }
                 }
                 .presentationDetents([.medium, .large])
@@ -107,29 +111,26 @@ struct TripPlannerView: View {
     // MARK: - Trip List View
     private var tripListView: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: 18) {
                 tripHomeHero
-                dailyMemoryCard
+                routeAssistantCard
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("trip.recommendedRoutes")
+                    Text(L10n.string("trip.recommendedRoutes"))
                         .font(.headline)
                         .foregroundStyle(.primary)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(service.tripTemplates) { template in
-                                TemplateCard(template: template, primaryColor: primaryColor) {
-                                    _ = service.createTripFromTemplate(template, startDate: Date())
-                                }
+                    LazyVStack(spacing: 10) {
+                        ForEach(service.tripTemplates.prefix(3)) { template in
+                            TemplateCard(template: template, primaryColor: primaryColor) {
+                                _ = service.createTripFromTemplate(template, startDate: Date())
                             }
                         }
-                        .padding(.trailing, 24)
                     }
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("trip.myTrips")
+                    Text(L10n.string("trip.myTrips"))
                         .font(.headline)
                         .foregroundStyle(.primary)
 
@@ -143,6 +144,8 @@ struct TripPlannerView: View {
                         }
                     }
                 }
+
+                dailyMemoryCard
             }
             .padding(.horizontal, 24)
             .padding(.top, 18)
@@ -153,17 +156,18 @@ struct TripPlannerView: View {
     private var tripHomeHero: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("trip.plan")
+                Text(L10n.string("trip.plan"))
                     .font(.title2.weight(.heavy))
                     .foregroundStyle(.primary)
-                Text("trip.home.subtitle")
+                Text(L10n.string("trip.home.subtitle"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(spacing: 10) {
                 Button(action: { showDestinationSearch = true }) {
-                    Label("trip.search.place", systemImage: "magnifyingglass")
+                    Label(L10n.string("trip.search.place"), systemImage: "magnifyingglass")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -174,7 +178,7 @@ struct TripPlannerView: View {
 
                 HStack(spacing: 10) {
                     Button(action: { showNewTrip = true }) {
-                        Label("trip.manualCreate", systemImage: "plus.circle")
+                        Label(L10n.string("trip.manualCreate"), systemImage: "plus.circle")
                             .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -184,7 +188,7 @@ struct TripPlannerView: View {
                     }
 
                     Button(action: { showTemplates = true }) {
-                        Label("trip.useTemplate", systemImage: "doc.text")
+                        Label(L10n.string("trip.useTemplate"), systemImage: "doc.text")
                             .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -204,6 +208,72 @@ struct TripPlannerView: View {
         .shadow(color: .black.opacity(0.06), radius: 18, y: 8)
     }
 
+    private var routeAssistantCard: some View {
+        Button {
+            showDestinationSearch = true
+        } label: {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "point.topleft.down.curvedto.point.bottomright.up")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(forestColor)
+                        .frame(width: 44, height: 44)
+                        .background(forestColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+                    Text(L10n.string("trip.routeAssistant.title"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.86)
+
+                    Spacer(minLength: 8)
+
+                    Text(L10n.string("trip.routeAssistant.badge"))
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(forestColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 6)
+                        .background(forestColor.opacity(0.10), in: Capsule())
+                }
+
+                Text(L10n.string("trip.routeAssistant.subtitle"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 8) {
+                    RouteAssistantStepPill(
+                        icon: "mappin.and.ellipse",
+                        title: L10n.string("trip.routeAssistant.stepPlan"),
+                        color: primaryColor
+                    )
+                    RouteAssistantStepPill(
+                        icon: "play.circle.fill",
+                        title: L10n.string("trip.routeAssistant.stepNarrate"),
+                        color: forestColor
+                    )
+                    RouteAssistantStepPill(
+                        icon: "sparkles.rectangle.stack.fill",
+                        title: L10n.string("trip.routeAssistant.stepRemember"),
+                        color: primaryColor
+                    )
+                }
+            }
+            .padding(16)
+            .background(cardBackground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(.black.opacity(0.05), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(L10n.string("trip.routeAssistant.title"))
+    }
+
     private var emptyTripCard: some View {
         HStack(spacing: 12) {
             Image(systemName: "map")
@@ -213,10 +283,10 @@ struct TripPlannerView: View {
                 .background(forestColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("trip.empty.title")
+                Text(L10n.string("trip.empty.title"))
                     .font(.headline)
                     .foregroundStyle(.primary)
-                Text("trip.empty.subtitle")
+                Text(L10n.string("trip.empty.subtitle"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -244,7 +314,7 @@ struct TripPlannerView: View {
                         .background(forestColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("trip.daily.cardTitle")
+                        Text(L10n.string("trip.daily.cardTitle"))
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
                         Text(dailyMemorySubtitle)
@@ -1128,6 +1198,31 @@ struct GuideScriptChip: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+struct RouteAssistantStepPill: View {
+    let icon: String
+    let title: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(color)
+
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.78)
+        }
+        .frame(maxWidth: .infinity, minHeight: 58)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 8)
+        .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
@@ -2368,34 +2463,29 @@ struct TemplateCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 8) {
-                // Image placeholder
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(primaryColor.opacity(0.10))
-                    .frame(height: 120)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "building.2.fill")
-                                .font(.title)
-                                .foregroundStyle(primaryColor)
-                            Text(template.name)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    )
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "map.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(primaryColor)
+                    .frame(width: 52, height: 52)
+                    .background(primaryColor.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(template.name)
-                        .font(.headline)
+                        .font(.headline.weight(.bold))
                         .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.86)
 
                     Text(template.description)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    HStack {
-                        Text(L10n.format("trip.template.durationDays.format", template.duration))
+                    HStack(spacing: 6) {
+                        Text(durationText)
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -2403,9 +2493,10 @@ struct TemplateCard: View {
                             .foregroundStyle(.white)
                             .clipShape(Capsule())
 
-                        ForEach(template.highlights.prefix(2), id: \.self) { highlight in
+                        if let highlight = template.highlights.first {
                             Text(highlight)
                                 .font(.caption2)
+                                .lineLimit(1)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Color(.secondarySystemGroupedBackground))
@@ -2414,9 +2505,16 @@ struct TemplateCard: View {
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "plus.circle.fill")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(primaryColor)
             }
-            .frame(width: 200)
-            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(14)
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
@@ -2425,6 +2523,13 @@ struct TemplateCard: View {
             )
             .shadow(color: .black.opacity(0.05), radius: 10, y: 4)
         }
+    }
+
+    private var durationText: String {
+        if template.duration == 1 {
+            return L10n.string("trip.template.durationOneDay")
+        }
+        return L10n.format("trip.template.durationDays.format", template.duration)
     }
 }
 

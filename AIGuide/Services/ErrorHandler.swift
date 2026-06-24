@@ -219,7 +219,7 @@ class ErrorHandler: ObservableObject {
                 return .network(.invalidResponse)
             case .httpError(let code, _):
                 return .network(.serverError(code))
-            case .decodingError:
+            case .encodingError, .decodingError:
                 return .network(.decodingError)
             case .networkError:
                 return .network(.noConnection)

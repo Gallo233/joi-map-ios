@@ -15,14 +15,13 @@ struct AIGuideApp: App {
                         .transition(.opacity)
                 } else {
                     ContentView()
-                        .environmentObject(appState)
-                        .environmentObject(themeManager)
-                        .environmentObject(settingsService)
-                        .environment(\.locale, settingsService.language.locale)
-                        .preferredColorScheme(themeManager.colorScheme)
                 }
             }
+            .environmentObject(appState)
+            .environmentObject(themeManager)
+            .environmentObject(settingsService)
             .environment(\.locale, settingsService.language.locale)
+            .preferredColorScheme(themeManager.colorScheme)
             .task {
                 await appState.initialize()
             }

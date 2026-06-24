@@ -68,6 +68,11 @@ docs/
 
 当前仓库不提交真实 API key。后端与模型服务应通过运行时配置、后端代理或本机环境变量注入。
 
+后端地址可通过两种方式配置：
+
+- `AIGUIDE_API_BASE_URL` / `AIGuideAPIBaseURL`：完整 API 根路径，例如 `https://example.com/api/v1`。
+- `AIGUIDE_SERVER_URL` / `AIGuideServerURL`：服务根路径，客户端会自动追加 `/api/v1`，健康检查使用 `/health`。
+
 主要接入点：
 
 - `AIGuide/Services/APIClient.swift`

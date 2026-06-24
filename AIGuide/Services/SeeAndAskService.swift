@@ -228,14 +228,9 @@ class SeeAndAskService: ObservableObject {
     private func recognizeImageWithBackend(imageData: Data?) async -> BackendVisionResponse? {
         guard let imageData else { return nil }
 
-        let language = AIGuideLocalization.current
         var body: [String: Any] = [
             "image_base64": imageData.base64EncodedString(),
-            "mime_type": "image/jpeg",
-            "language": language.backendLanguage,
-            "locale": language.identifier,
-            "region": language.userRegion,
-            "response_instruction": language.llmResponseInstruction
+            "mime_type": "image/jpeg"
         ]
 
         if let location = await currentLocationForRecognition() {
@@ -322,17 +317,12 @@ class SeeAndAskService: ObservableObject {
 
         if let poi = object.relatedPOI {
             do {
-                let language = AIGuideLocalization.current
                 let body: [String: Any] = [
                     "poi_id": poi.id,
                     "poi_name": poi.name,
                     "poi_description": poi.description,
                     "question": question,
-                    "history": historyPayload,
-                    "language": language.backendLanguage,
-                    "locale": language.identifier,
-                    "region": language.userRegion,
-                    "response_instruction": language.llmResponseInstruction
+                    "history": historyPayload
                 ]
 
                 let response: QAResponse = try await apiClient.post(

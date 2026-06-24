@@ -51,42 +51,20 @@ struct GuideView: View {
         GeometryReader { geometry in
             let sheetHeight = currentSheetHeight(in: geometry)
             let bottomClearance = bottomChromeClearance(in: geometry)
+            let mapHeight = mapAreaHeight(
+                in: geometry,
+                sheetHeight: sheetHeight,
+                bottomClearance: bottomClearance
+            )
 
             ZStack(alignment: .bottom) {
-                // Map background
-                MapViewContainer(
-                    currentPOI: guideVM.currentPOI,
-                    initialRegion: guideVM.region,
-                    route: guideVM.currentRoute,
-                    nearbyPOIs: guideVM.nearbyPOIs,
-                    onUserLocationUpdate: { location in
-                        guideVM.updateFromMapUserLocation(location)
-                    }
-                )
-                .ignoresSafeArea()
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
 
-                // Top bar overlay
-                VStack {
-                    topBar
+                VStack(spacing: 0) {
+                    mapPanel(height: mapHeight)
                     Spacer()
                 }
-
-                routeStatusOverlay
-                    .padding(.horizontal, 16)
-                    .padding(.top, 64)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .opacity(sheetPosition == .collapsed ? 1 : 0)
-                    .allowsHitTesting(sheetPosition == .collapsed)
-                    .animation(.easeInOut(duration: 0.16), value: sheetPosition)
-
-                // Map controls stay in the map area instead of covering sheet content.
-                floatingButtons
-                    .padding(.trailing, 16)
-                    .padding(.bottom, sheetHeight + bottomClearance + 14)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .opacity(sheetPosition == .collapsed ? 1 : 0)
-                    .allowsHitTesting(sheetPosition == .collapsed)
-                    .animation(.easeInOut(duration: 0.16), value: sheetPosition)
 
                 // Bottom sheet
                 bottomSheet
@@ -159,6 +137,46 @@ struct GuideView: View {
             guard let confirmation = appState.visualConfirmation else { return }
             guideVM.applyVisualConfirmation(confirmation)
         }
+    }
+
+    private func mapPanel(height: CGFloat) -> some View {
+        ZStack(alignment: .top) {
+            MapViewContainer(
+                currentPOI: guideVM.currentPOI,
+                initialRegion: guideVM.region,
+                route: guideVM.currentRoute,
+                nearbyPOIs: guideVM.nearbyPOIs,
+                onUserLocationUpdate: { location in
+                    guideVM.updateFromMapUserLocation(location)
+                }
+            )
+            .frame(height: height)
+            .clipped()
+            .overlay(alignment: .bottom) {
+                LinearGradient(
+                    colors: [
+                        Color.clear,
+                        Color(.systemGroupedBackground).opacity(0.82)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 34)
+                .allowsHitTesting(false)
+            }
+
+            topBar
+
+            floatingButtons
+                .padding(.trailing, 16)
+                .padding(.bottom, 20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .opacity(sheetPosition == .collapsed ? 1 : 0)
+                .allowsHitTesting(sheetPosition == .collapsed)
+                .animation(.easeInOut(duration: 0.16), value: sheetPosition)
+        }
+        .frame(height: height)
+        .clipped()
     }
 
     // MARK: - Top Bar
@@ -293,7 +311,7 @@ struct GuideView: View {
     // MARK: - Floating Buttons
     private var floatingButtons: some View {
         VStack(spacing: 10) {
-            ForEach(Array(floatingActions.enumerated()), id: \.offset) { _, item in
+            ForEach(Array(mapFloatingActions.enumerated()), id: \.offset) { _, item in
                 Button(action: item.action) {
                     Image(systemName: item.icon)
                         .font(.callout)
@@ -309,13 +327,19 @@ struct GuideView: View {
         }
     }
 
-    private var floatingActions: [(icon: String, label: String, action: () -> Void)] {
+    private var mapFloatingActions: [(icon: String, label: String, action: () -> Void)] {
         [
             ("magnifyingglass", L10n.string("guide.search"), onSearch),
-            ("map", L10n.string("guide.route"), onTours),
-            ("arkit", L10n.string("guide.arRecognition"), onAR),
-            ("number", L10n.string("guide.numberLookup"), onNumberInput),
-            ("building.2", L10n.string("guide.indoorLocation"), onIndoor)
+            ("map", L10n.string("guide.route"), { sheetType = .route })
+        ]
+    }
+
+    private var workbenchActions: [(icon: String, title: String, color: Color, action: () -> Void)] {
+        [
+            ("map", L10n.string("guide.workbench.route"), Color(red: 0.12, green: 0.40, blue: 0.24), onTours),
+            ("arkit", L10n.string("guide.workbench.arScan"), primaryColor, onAR),
+            ("number", L10n.string("guide.workbench.number"), .blue, onNumberInput),
+            ("building.2", L10n.string("guide.workbench.indoor"), .purple, onIndoor)
         ]
     }
 
@@ -330,7 +354,7 @@ struct GuideView: View {
 
         switch position {
         case .collapsed:
-            return min(max(112, availableHeight * 0.15), 138)
+            return min(max(228, availableHeight * 0.29), 252)
         case .half:
             return min(max(368, availableHeight * 0.48), maxSheetHeight(in: geometry))
         case .expanded:
@@ -352,12 +376,18 @@ struct GuideView: View {
         max(360, geometry.size.height - bottomChromeClearance(in: geometry))
     }
 
+    private func mapAreaHeight(in geometry: GeometryProxy, sheetHeight: CGFloat, bottomClearance: CGFloat) -> CGFloat {
+        let sheetTop = geometry.size.height - sheetHeight - bottomClearance
+        let minimumHeight = min(360, geometry.size.height * 0.54)
+        let maximumHeight = geometry.size.height * 0.68
+        return min(max(sheetTop + 10, minimumHeight), maximumHeight)
+    }
+
     private func bottomChromeClearance(in geometry: GeometryProxy) -> CGFloat {
+        guard sheetPosition != .collapsed else { return 8 }
+
         let bottomInset = geometry.safeAreaInsets.bottom
-        guard sheetPosition == .collapsed else {
-            return max(12, bottomInset + 8)
-        }
-        return max(96, bottomInset + 72)
+        return max(12, bottomInset + 8)
     }
 
     private func nearestSheetPosition(for projectedHeight: CGFloat, in geometry: GeometryProxy) -> SheetPosition {
@@ -430,73 +460,125 @@ struct GuideView: View {
     }
 
     private var miniDrawerContent: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(primaryColor.opacity(0.12))
-                Image(systemName: guideVM.isPlaying ? "waveform" : "map.fill")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(primaryColor)
-            }
-            .frame(width: 44, height: 44)
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(primaryColor.opacity(0.12))
+                    Image(systemName: guideVM.isPlaying ? "waveform" : "map.fill")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(primaryColor)
+                }
+                .frame(width: 48, height: 48)
 
-            VStack(alignment: .leading, spacing: 5) {
-                HStack(spacing: 6) {
-                    Text(miniStatusText)
-                        .font(.caption2.weight(.medium))
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 6) {
+                        Text(miniStatusText)
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+
+                        Text(routeProgressText)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(primaryColor)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(primaryColor.opacity(0.08), in: Capsule())
+                    }
+
+                    Text(guideVM.currentPOI?.name ?? L10n.string("guide.locating"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+
+                    Text("\(L10n.string("guide.nextStop")) \(nextStopTitle) · \(nextStopDistanceText)")
+                        .font(.caption2)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
-
-                    Text(routeProgressText)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(primaryColor)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(primaryColor.opacity(0.08), in: Capsule())
+                }
+                .layoutPriority(1)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    advanceSheet()
                 }
 
-                Text(guideVM.currentPOI?.name ?? L10n.string("guide.locating"))
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.78)
+                Spacer(minLength: 4)
 
-                Text("\(L10n.string("guide.nextStop")) \(nextStopTitle) · \(nextStopDistanceText)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            .layoutPriority(1)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                advanceSheet()
+                Button(action: { advanceSheet() }) {
+                    Image(systemName: "chevron.up")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(primaryColor)
+                        .frame(width: 38, height: 38)
+                        .background(primaryColor.opacity(0.08), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(L10n.string("guide.expandDetails"))
+
+                Button(action: { guideVM.togglePlayback() }) {
+                    Image(systemName: guideVM.isPlaying ? "pause.fill" : "play.fill")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 50, height: 50)
+                        .background(primaryColor, in: Circle())
+                        .shadow(color: primaryColor.opacity(0.22), radius: 8, y: 4)
+                }
+                .accessibilityLabel(guideVM.isPlaying ? L10n.string("guide.pauseNarration") : L10n.string("guide.playNarration"))
             }
 
-            Spacer(minLength: 4)
-
-            Button(action: { advanceSheet() }) {
-                Image(systemName: "chevron.up")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(primaryColor)
-                    .frame(width: 38, height: 38)
-                    .background(primaryColor.opacity(0.08), in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(L10n.string("guide.expandDetails"))
-
-            Button(action: { guideVM.togglePlayback() }) {
-                Image(systemName: guideVM.isPlaying ? "pause.fill" : "play.fill")
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background(primaryColor, in: Circle())
-                    .shadow(color: primaryColor.opacity(0.22), radius: 8, y: 4)
-            }
-            .accessibilityLabel(guideVM.isPlaying ? L10n.string("guide.pauseNarration") : L10n.string("guide.playNarration"))
+            miniRouteProgressRow
+            workbenchToolRow
         }
         .padding(.horizontal, 18)
         .padding(.top, 4)
         .padding(.bottom, 16)
+    }
+
+    private var miniRouteProgressRow: some View {
+        Button {
+            sheetType = .route
+        } label: {
+            HStack(spacing: 10) {
+                Text(routeProgressText)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(primaryColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(primaryColor.opacity(0.09), in: Capsule())
+
+                ProgressView(value: routeCompletionFraction)
+                    .tint(Color(red: 0.12, green: 0.40, blue: 0.24))
+                    .frame(maxWidth: .infinity)
+
+                Text(nextStopTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 9)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(L10n.format("guide.viewRoute.format", guideVM.currentRoute.name))
+    }
+
+    private var workbenchToolRow: some View {
+        HStack(spacing: 8) {
+            ForEach(Array(workbenchActions.enumerated()), id: \.offset) { _, item in
+                WorkbenchToolButton(
+                    title: item.title,
+                    icon: item.icon,
+                    color: item.color,
+                    action: item.action
+                )
+            }
+        }
     }
 
     private var detailDrawerContent: some View {
@@ -1646,6 +1728,34 @@ private struct DrawerActionButton: View {
             .frame(maxWidth: .infinity)
             .frame(height: 54)
             .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+    }
+}
+
+private struct WorkbenchToolButton: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.callout.weight(.semibold))
+                    .frame(height: 18)
+
+                Text(title)
+                    .font(.caption2.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+            .foregroundStyle(color)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(title)

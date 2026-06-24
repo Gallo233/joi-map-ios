@@ -20,6 +20,7 @@ struct SeeAndAskView: View {
     private let surface = Color(.systemBackground)
     private let softSurface = Color(.secondarySystemGroupedBackground)
     private let ink = Color.primary
+    private let bottomTabClearance: CGFloat = 140
 
     var body: some View {
         NavigationStack {
@@ -38,7 +39,7 @@ struct SeeAndAskView: View {
                 ImagePicker(image: $selectedImage, sourceType: .camera)
             }
             .alert(alertTitle, isPresented: $showAlert) {
-                Button("common.ok", role: .cancel) {}
+                Button(L10n.string("common.ok"), role: .cancel) {}
             } message: {
                 Text(alertMessage)
             }
@@ -69,124 +70,136 @@ struct SeeAndAskView: View {
 
             VStack(spacing: 0) {
                 topBar(title: L10n.string("see.title"), subtitle: L10n.string("see.subtitle.capture"))
-                    .padding(.horizontal, 24)
-                    .padding(.top, 38)
-
-                Spacer(minLength: 10)
-
-                VStack(spacing: 16) {
-                    captureScanner
-
-                    VStack(spacing: 10) {
-                        Text("see.hero.title")
-                            .font(.system(size: 28, weight: .heavy, design: .rounded))
-                            .foregroundStyle(ink)
-
-                        Text("see.hero.subtitle")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .lineSpacing(3)
-                            .frame(maxWidth: 300)
-                    }
-
-                    if service.isProcessing {
-                        processingPill(L10n.string("see.processing"))
-                    } else if let error = service.errorMessage {
-                        statusPill(icon: "exclamationmark.triangle.fill", text: error, color: accent)
-                    } else {
-                        statusPill(icon: "checkmark.circle.fill", text: L10n.string("see.status.available"), color: forest)
-                    }
-
-                    HStack(spacing: 14) {
-                        primaryActionButton(title: L10n.string("see.action.camera"), icon: "camera.fill", color: forest) {
-                            openCamera()
-                        }
-
-                        primaryActionButton(title: L10n.string("see.action.album"), icon: "photo.on.rectangle", color: accent) {
-                            showImagePicker = true
-                        }
-                    }
                     .padding(.horizontal, 22)
+                    .padding(.top, 34)
 
-                    HStack(spacing: 10) {
-                        SeeAskTipItem(icon: "viewfinder", text: L10n.string("see.tip.align"))
-                        SeeAskTipItem(icon: "lightbulb.fill", text: L10n.string("see.tip.light"))
-                        SeeAskTipItem(icon: "text.viewfinder", text: L10n.string("see.tip.label"))
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 15) {
+                        captureScanner
+
+                        VStack(spacing: 7) {
+                            Text(L10n.string("see.hero.title"))
+                                .font(.system(size: 25, weight: .heavy, design: .rounded))
+                                .foregroundStyle(ink)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.82)
+                                .frame(maxWidth: 330)
+
+                            Text(L10n.string("see.hero.subtitle"))
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.86)
+                                .lineSpacing(2)
+                                .frame(maxWidth: 318)
+                        }
+
+                        if service.isProcessing {
+                            processingPill(L10n.string("see.processing"))
+                        } else if let error = service.errorMessage {
+                            statusPill(icon: "exclamationmark.triangle.fill", text: error, color: accent, lineLimit: 2)
+                        } else {
+                            statusPill(icon: "checkmark.circle.fill", text: L10n.string("see.status.available.compact"), color: forest)
+                        }
+
+                        HStack(spacing: 12) {
+                            primaryActionButton(title: L10n.string("see.action.camera"), icon: "camera.fill", color: forest) {
+                                openCamera()
+                            }
+
+                            primaryActionButton(title: L10n.string("see.action.album"), icon: "photo.on.rectangle", color: accent) {
+                                showImagePicker = true
+                            }
+                        }
+                        .padding(.horizontal, 22)
+
+                        HStack(spacing: 8) {
+                            SeeAskTipItem(icon: "viewfinder", text: L10n.string("see.tip.align"))
+                            SeeAskTipItem(icon: "lightbulb.fill", text: L10n.string("see.tip.light"))
+                            SeeAskTipItem(icon: "text.viewfinder", text: L10n.string("see.tip.label"))
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 4)
                     }
-                    .padding(.top, 6)
+                    .padding(.top, 10)
+                    .padding(.bottom, bottomTabClearance)
                 }
-                .padding(.bottom, 22)
-
-                Spacer(minLength: 10)
-
-                Text("see.footer")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.bottom, 112)
             }
         }
     }
 
     private var captureScanner: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 34, style: .continuous)
-                .fill(surface)
-                .frame(width: 276, height: 302)
-                .overlay(
-                    LinearGradient(
-                        colors: [forest.opacity(0.08), .clear, mint.opacity(0.18)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+        GeometryReader { proxy in
+            let scannerWidth = min(max(proxy.size.width - 64, 236), 266)
+            let scannerHeight = scannerWidth * 1.01
+            let frameSize = scannerWidth * 0.66
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 32, style: .continuous)
+                    .fill(surface)
+                    .frame(width: scannerWidth, height: scannerHeight)
+                    .overlay(
+                        LinearGradient(
+                            colors: [forest.opacity(0.08), .clear, mint.opacity(0.18)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 34, style: .continuous)
-                        .stroke(.black.opacity(0.06), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.08), radius: 24, x: 0, y: 14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            .stroke(.black.opacity(0.06), lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(0.08), radius: 22, x: 0, y: 12)
 
-            VStack(spacing: 18) {
-                HStack {
-                    statusPill(icon: "checkmark.circle.fill", text: L10n.string("see.mode.museum"), color: mint)
-                    Spacer()
-                    Image(systemName: "info.circle")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 22)
-                .padding(.top, 22)
-
-                Spacer()
-
-                ZStack {
-                    ScannerFrame(cornerColor: mint, lineWidth: 5)
-                        .frame(width: 194, height: 194)
-
-                    Image(systemName: "camera.viewfinder")
-                        .font(.system(size: 58, weight: .medium))
-                        .foregroundStyle(forest.opacity(0.62))
-
-                    if service.isProcessing {
-                        ProgressView()
-                            .tint(forest)
-                            .scaleEffect(1.2)
-                            .offset(y: 64)
+                VStack(spacing: 12) {
+                    HStack {
+                        compactStatusPill(icon: "checkmark.circle.fill", text: L10n.string("see.mode.museum"), color: mint)
+                        Spacer()
+                        Image(systemName: "info.circle")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 18)
+
+                    Spacer()
+
+                    ZStack {
+                        ScannerFrame(cornerColor: mint, lineWidth: 5)
+                            .frame(width: frameSize, height: frameSize)
+
+                        Image(systemName: "camera.viewfinder")
+                            .font(.system(size: 54, weight: .medium))
+                            .foregroundStyle(forest.opacity(0.62))
+
+                        if service.isProcessing {
+                            ProgressView()
+                                .tint(forest)
+                                .scaleEffect(1.15)
+                                .offset(y: frameSize * 0.33)
+                        }
+                    }
+
+                    Text(L10n.string("see.viewfinder.hint"))
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.76)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .foregroundStyle(forest)
+                        .frame(maxWidth: scannerWidth - 22)
+                        .background(forest.opacity(0.10), in: Capsule())
+
+                    Spacer(minLength: 8)
                 }
-
-                Text("see.viewfinder.hint")
-                    .font(.footnote.weight(.semibold))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .foregroundStyle(forest)
-                    .background(forest.opacity(0.10), in: Capsule())
-
-                Spacer()
+                .frame(width: scannerWidth, height: scannerHeight)
             }
-            .frame(width: 276, height: 302)
+            .frame(maxWidth: .infinity)
         }
+        .frame(height: 278)
     }
 
     // MARK: - Recognition
@@ -263,7 +276,7 @@ struct SeeAndAskView: View {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(alignment: .top, spacing: 12) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("see.result.prefix")
+                        Text(L10n.string("see.result.prefix"))
                             .font(.title2.weight(.bold))
                         Text(object.name)
                             .font(.system(size: 31, weight: .heavy, design: .rounded))
@@ -294,7 +307,7 @@ struct SeeAndAskView: View {
                 HStack(spacing: 10) {
                     sourceBadge(object)
                     Spacer(minLength: 8)
-                    Label("see.ai.generated", systemImage: "checkmark.circle")
+                    Label(L10n.string("see.ai.generated"), systemImage: "checkmark.circle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -380,10 +393,10 @@ struct SeeAndAskView: View {
     private var candidateCard: some View {
         VStack(alignment: .leading, spacing: 13) {
             HStack {
-                Text("see.candidates.title")
+                Text(L10n.string("see.candidates.title"))
                     .font(.headline)
                 Spacer()
-                Text("see.candidates.confidence")
+                Text(L10n.string("see.candidates.confidence"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -409,7 +422,7 @@ struct SeeAndAskView: View {
                                 .font(.subheadline.weight(candidate.rank == 1 ? .bold : .regular))
                                 .foregroundStyle(ink)
                             if candidate.poi != nil {
-                                Text("see.candidates.calibrate")
+                                Text(L10n.string("see.candidates.calibrate"))
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
@@ -449,7 +462,7 @@ struct SeeAndAskView: View {
                 Rectangle()
                     .fill(Color.secondary.opacity(0.18))
                     .frame(height: 1)
-                Text("see.followup.title")
+                Text(L10n.string("see.followup.title"))
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
                     .fixedSize()
@@ -465,7 +478,7 @@ struct SeeAndAskView: View {
                     .frame(width: 42, height: 42)
                     .background(softSurface, in: Circle())
 
-                TextField("see.followup.placeholder", text: $service.currentQuestion)
+                TextField(L10n.string("see.followup.placeholder"), text: $service.currentQuestion)
                     .textInputAutocapitalization(.never)
                     .submitLabel(.send)
                     .onSubmit { submitQuestion() }
@@ -513,7 +526,7 @@ struct SeeAndAskView: View {
             }
 
             if let error = service.errorMessage {
-                statusPill(icon: "wifi.slash", text: error, color: accent)
+                statusPill(icon: "wifi.slash", text: error, color: accent, lineLimit: 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -523,32 +536,29 @@ struct SeeAndAskView: View {
 
     private func topBar(title: String, subtitle: String, onDark: Bool = false) -> some View {
         HStack(spacing: 12) {
-                Image(systemName: "camera.viewfinder")
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(onDark ? .white : forest)
-                    .frame(width: 42, height: 42)
-                    .background((onDark ? Color.black.opacity(0.35) : surface.opacity(0.82)), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            Image(systemName: "camera.viewfinder")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(onDark ? .white : forest)
+                .frame(width: 42, height: 42)
+                .background((onDark ? Color.black.opacity(0.35) : surface.opacity(0.82)), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 27, weight: .heavy, design: .rounded))
                     .foregroundStyle(onDark ? .white : ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
                 Text(subtitle)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(onDark ? .white.opacity(0.72) : .secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            .layoutPriority(1)
 
             Spacer()
 
-            HStack(spacing: 6) {
-                Image(systemName: "checkmark.circle")
-                Text("common.offlineReady")
-            }
-            .font(.footnote.weight(.semibold))
-            .foregroundStyle(onDark ? mint : forest)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 9)
-            .background((onDark ? Color.black.opacity(0.32) : surface.opacity(0.82)), in: Capsule())
+            statusIconBadge(icon: "checkmark.circle", color: onDark ? mint : forest, onDark: onDark)
         }
     }
 
@@ -558,9 +568,9 @@ struct SeeAndAskView: View {
                 .font(.headline.weight(.bold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.72)
                 .frame(maxWidth: .infinity)
-                .frame(height: 60)
+                .frame(height: 58)
                 .background(color, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .shadow(color: color.opacity(0.25), radius: 12, x: 0, y: 7)
         }
@@ -568,15 +578,37 @@ struct SeeAndAskView: View {
         .opacity(service.isProcessing ? 0.65 : 1)
     }
 
-    private func statusPill(icon: String, text: String, color: Color) -> some View {
+    private func statusPill(icon: String, text: String, color: Color, lineLimit: Int = 1) -> some View {
         Label(text, systemImage: icon)
             .font(.footnote.weight(.semibold))
-            .lineLimit(2)
-            .minimumScaleFactor(0.78)
+            .lineLimit(lineLimit)
+            .minimumScaleFactor(lineLimit == 1 ? 0.72 : 0.86)
+            .multilineTextAlignment(.center)
             .foregroundStyle(color)
             .padding(.horizontal, 13)
             .padding(.vertical, 9)
+            .frame(maxWidth: 340)
             .background(surface.opacity(0.82), in: Capsule())
+    }
+
+    private func compactStatusPill(icon: String, text: String, color: Color, onDark: Bool = false) -> some View {
+        Label(text, systemImage: icon)
+            .font(.caption.weight(.semibold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .foregroundStyle(color)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 8)
+            .background((onDark ? Color.black.opacity(0.32) : surface.opacity(0.82)), in: Capsule())
+    }
+
+    private func statusIconBadge(icon: String, color: Color, onDark: Bool = false) -> some View {
+        Image(systemName: icon)
+            .font(.headline.weight(.semibold))
+            .foregroundStyle(color)
+            .frame(width: 46, height: 46)
+            .background((onDark ? Color.black.opacity(0.32) : surface.opacity(0.82)), in: Circle())
+            .accessibilityLabel(Text(L10n.string("common.offlineReady")))
     }
 
     private func processingPill(_ text: String) -> some View {
@@ -778,7 +810,11 @@ struct SeeAskTipItem: View {
             Text(text)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.74)
+                .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity)
     }
 }
 

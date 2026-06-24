@@ -60,9 +60,12 @@ struct AIGuideLanguageContext {
 }
 
 enum AIGuideLocalization {
+    private static let selectedLanguageLock = NSLock()
+    private static var selectedLanguageOverride: SettingsService.AppLanguage?
+
     @MainActor
     static var current: AIGuideLanguageContext {
-        context(for: SettingsService.shared.language.locale)
+        context(for: locale(for: SettingsService.shared.language))
     }
 
     static var systemPreferredLocale: Locale {
@@ -92,25 +95,61 @@ enum AIGuideLocalization {
         return Locale(identifier: "en_US")
     }
 
-    static var storedLocale: Locale {
-        let rawValue = UserDefaults.standard.string(forKey: "com.aiguide.settings.language")
+    static func setSelectedLanguage(_ language: SettingsService.AppLanguage) {
+        selectedLanguageLock.lock()
+        selectedLanguageOverride = language
+        selectedLanguageLock.unlock()
+    }
 
-        switch rawValue {
-        case SettingsService.AppLanguage.system.rawValue:
+    static func locale(for language: SettingsService.AppLanguage) -> Locale {
+        switch language {
+        case .system:
             return systemPreferredLocale
-        case SettingsService.AppLanguage.chinese.rawValue, "中文":
+        case .chinese:
             return Locale(identifier: "zh-Hans_CN")
-        case SettingsService.AppLanguage.traditionalChinese.rawValue:
+        case .traditionalChinese:
             return Locale(identifier: "zh-Hant_TW")
-        case SettingsService.AppLanguage.english.rawValue:
+        case .english:
             return Locale(identifier: "en_US")
-        case SettingsService.AppLanguage.japanese.rawValue:
+        case .japanese:
             return Locale(identifier: "ja_JP")
-        case SettingsService.AppLanguage.korean.rawValue:
+        case .korean:
             return Locale(identifier: "ko_KR")
-        default:
-            return systemPreferredLocale
         }
+    }
+
+    static var storedLocale: Locale {
+        locale(for: selectedLanguage)
+    }
+
+    private static var selectedLanguage: SettingsService.AppLanguage {
+        if let qaLanguage = qaAppLanguageOverride {
+            return qaLanguage
+        }
+
+        if let override = selectedLanguageOverrideValue {
+            return override
+        }
+
+        return persistedLanguage
+    }
+
+    private static var selectedLanguageOverrideValue: SettingsService.AppLanguage? {
+        selectedLanguageLock.lock()
+        defer { selectedLanguageLock.unlock() }
+        return selectedLanguageOverride
+    }
+
+    private static var persistedLanguage: SettingsService.AppLanguage {
+        guard let rawValue = UserDefaults.standard.string(forKey: "com.aiguide.settings.language") else {
+            return .system
+        }
+
+        if rawValue == "中文" {
+            return .chinese
+        }
+
+        return SettingsService.AppLanguage(rawValue: rawValue) ?? .system
     }
 
     static var activeBundle: Bundle {
@@ -124,19 +163,41 @@ enum AIGuideLocalization {
     }
 
     private static var activeLprojName: String? {
-        let rawValue = UserDefaults.standard.string(forKey: "com.aiguide.settings.language")
-
-        switch rawValue {
-        case SettingsService.AppLanguage.chinese.rawValue, "中文":
+        switch selectedLanguage {
+        case .system:
+            return nil
+        case .chinese:
             return "zh-Hans"
-        case SettingsService.AppLanguage.traditionalChinese.rawValue:
+        case .traditionalChinese:
             return "zh-Hant"
-        case SettingsService.AppLanguage.english.rawValue:
+        case .english:
             return "en"
-        case SettingsService.AppLanguage.japanese.rawValue:
+        case .japanese:
             return "ja"
-        case SettingsService.AppLanguage.korean.rawValue:
+        case .korean:
             return "ko"
+        }
+    }
+
+    private static var qaLanguageOverride: String? {
+        let prefix = "AIGUIDE_QA_LANGUAGE="
+        return ProcessInfo.processInfo.arguments
+            .first(where: { $0.hasPrefix(prefix) })
+            .map { String($0.dropFirst(prefix.count)) }
+    }
+
+    private static var qaAppLanguageOverride: SettingsService.AppLanguage? {
+        switch qaLanguageOverride {
+        case "zh-Hans":
+            return .chinese
+        case "zh-Hant":
+            return .traditionalChinese
+        case "en":
+            return .english
+        case "ja":
+            return .japanese
+        case "ko":
+            return .korean
         default:
             return nil
         }

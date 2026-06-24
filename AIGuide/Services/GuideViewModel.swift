@@ -372,17 +372,11 @@ class GuideViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let language = AIGuideLocalization.current
             let body: [String: Any] = [
                 "poi_id": poi.id,
                 "style": selectedStyle.rawValue,
                 "duration": selectedDuration.rawValue,
-                "language": language.backendLanguage,
-                "locale": language.identifier,
-                "region": language.userRegion,
-                "context": [
-                    "response_instruction": language.llmResponseInstruction
-                ]
+                "context": [String: Any]()
             ]
 
             let response: NarrateResponse = try await apiClient.post(
@@ -422,16 +416,11 @@ class GuideViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let language = AIGuideLocalization.current
             let body: [String: Any] = [
                 "poi_id": poi.id,
                 "poi_name": poi.name,
                 "poi_description": poi.description,
-                "question": question,
-                "language": language.backendLanguage,
-                "locale": language.identifier,
-                "region": language.userRegion,
-                "response_instruction": language.llmResponseInstruction
+                "question": question
             ]
 
             let response: QAResponse = try await apiClient.post(

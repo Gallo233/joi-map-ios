@@ -10,7 +10,11 @@ class SettingsService: ObservableObject {
     @Published var wifiOnlyDownload: Bool = false
     @Published var preferredVoice: EdgeVoice = .default
     @Published var guideStyle: GuideStyle = .history
-    @Published var language: AppLanguage = .system
+    @Published var language: AppLanguage = .system {
+        didSet {
+            AIGuideLocalization.setSelectedLanguage(language)
+        }
+    }
     @Published var mapStyle: MapStyle = .standard
     @Published var notificationEnabled: Bool = true
     @Published var hapticFeedback: Bool = true
@@ -26,24 +30,17 @@ class SettingsService: ObservableObject {
         case korean = "한국어"
         
         var locale: Locale {
-            switch self {
-            case .system: return AIGuideLocalization.systemPreferredLocale
-            case .chinese: return Locale(identifier: "zh-Hans_CN")
-            case .traditionalChinese: return Locale(identifier: "zh-Hant_TW")
-            case .english: return Locale(identifier: "en_US")
-            case .japanese: return Locale(identifier: "ja_JP")
-            case .korean: return Locale(identifier: "ko_KR")
-            }
+            AIGuideLocalization.locale(for: self)
         }
 
-        var localizedTitleKey: LocalizedStringKey {
+        var localizedTitle: String {
             switch self {
-            case .system: return "language.system"
-            case .chinese: return "language.simplifiedChinese"
-            case .traditionalChinese: return "language.traditionalChinese"
-            case .english: return "language.english"
-            case .japanese: return "language.japanese"
-            case .korean: return "language.korean"
+            case .system: return L10n.string("language.system")
+            case .chinese: return L10n.string("language.simplifiedChinese")
+            case .traditionalChinese: return L10n.string("language.traditionalChinese")
+            case .english: return L10n.string("language.english")
+            case .japanese: return L10n.string("language.japanese")
+            case .korean: return L10n.string("language.korean")
             }
         }
     }
@@ -96,6 +93,7 @@ class SettingsService: ObservableObject {
     
     /// Save all settings
     func saveSettings() {
+        AIGuideLocalization.setSelectedLanguage(language)
         defaults.set(autoPlayGuide, forKey: autoPlayKey)
         defaults.set(wifiOnlyDownload, forKey: wifiOnlyKey)
         defaults.set(guideStyle.rawValue, forKey: styleKey)
@@ -145,18 +143,20 @@ class SettingsService: ObservableObject {
     // MARK: - Private Methods
     
     private func loadSettings() {
-        autoPlayGuide = defaults.bool(forKey: autoPlayKey)
+        autoPlayGuide = boolValue(forKey: autoPlayKey, defaultValue: true)
         wifiOnlyDownload = defaults.bool(forKey: wifiOnlyKey)
-        hapticFeedback = defaults.bool(forKey: hapticKey)
-        notificationEnabled = defaults.bool(forKey: notificationKey)
+        hapticFeedback = boolValue(forKey: hapticKey, defaultValue: true)
+        notificationEnabled = boolValue(forKey: notificationKey, defaultValue: true)
         offlineMode = defaults.bool(forKey: offlineKey)
         
         if let styleRaw = defaults.string(forKey: styleKey),
            let style = GuideStyle(rawValue: styleRaw) {
             guideStyle = style
         }
-        
-        if let langRaw = defaults.string(forKey: languageKey),
+
+        if let qaLanguage = Self.qaLanguageOverride {
+            language = qaLanguage
+        } else if let langRaw = defaults.string(forKey: languageKey),
            let lang = AppLanguage(rawValue: langRaw) {
             language = lang
         } else if defaults.string(forKey: languageKey) == "中文" {
@@ -166,6 +166,34 @@ class SettingsService: ObservableObject {
         if let mapRaw = defaults.string(forKey: mapStyleKey),
            let map = MapStyle(rawValue: mapRaw) {
             mapStyle = map
+        }
+
+        AIGuideLocalization.setSelectedLanguage(language)
+    }
+
+    private func boolValue(forKey key: String, defaultValue: Bool) -> Bool {
+        defaults.object(forKey: key) == nil ? defaultValue : defaults.bool(forKey: key)
+    }
+
+    private static var qaLanguageOverride: AppLanguage? {
+        let prefix = "AIGUIDE_QA_LANGUAGE="
+        guard let argument = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix(prefix) }) else {
+            return nil
+        }
+
+        switch String(argument.dropFirst(prefix.count)) {
+        case "zh-Hans":
+            return .chinese
+        case "zh-Hant":
+            return .traditionalChinese
+        case "en":
+            return .english
+        case "ja":
+            return .japanese
+        case "ko":
+            return .korean
+        default:
+            return nil
         }
     }
 }

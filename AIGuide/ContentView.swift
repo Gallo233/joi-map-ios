@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var settingsService = SettingsService.shared
-    @State private var selectedTab = 0
+    @State private var selectedTab = Self.initialSelectedTab()
     @State private var showOnboarding = false
     @State private var showSearch = false
     @State private var showTours = false
@@ -33,20 +33,6 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            VStack {
-                Spacer()
-                AppFloatingTabBar(selectedTab: $selectedTab)
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, 8)
-                    .opacity(appState.isBottomNavigationHidden ? 0 : 1)
-                    .offset(y: appState.isBottomNavigationHidden ? 96 : 0)
-                    .scaleEffect(appState.isBottomNavigationHidden ? 0.96 : 1, anchor: .bottom)
-                    .allowsHitTesting(!appState.isBottomNavigationHidden)
-                    .animation(.spring(response: 0.32, dampingFraction: 0.86), value: appState.isBottomNavigationHidden)
-            }
-            .ignoresSafeArea(.keyboard)
-            .zIndex(0.5)
-
             // Onboarding overlay
             if showOnboarding {
                 OnboardingView(isPresented: $showOnboarding)
@@ -54,6 +40,16 @@ struct ContentView: View {
                     .zIndex(1)
             }
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !appState.isBottomNavigationHidden && !showOnboarding {
+                AppFloatingTabBar(selectedTab: $selectedTab)
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.32, dampingFraction: 0.86), value: appState.isBottomNavigationHidden)
+        .animation(.spring(response: 0.32, dampingFraction: 0.86), value: showOnboarding)
         .sheet(isPresented: $showSearch) {
             SearchView()
         }
@@ -71,12 +67,41 @@ struct ContentView: View {
         }
         .environment(\.locale, settingsService.language.locale)
         .onAppear {
+            if let qaTab = Self.qaInitialSelectedTab {
+                showOnboarding = false
+                selectedTab = qaTab
+                return
+            }
+
             let hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
             if !hasSeenOnboarding {
                 showOnboarding = true
                 UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
             }
         }
+    }
+
+    private static var opensScanForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SCAN")
+    }
+
+    private static var opensSettingsForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SETTINGS")
+    }
+
+    private static var opensTripsForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIPS")
+    }
+
+    private static var qaInitialSelectedTab: Int? {
+        if opensSettingsForQA { return 3 }
+        if opensTripsForQA { return 2 }
+        if opensScanForQA { return 1 }
+        return nil
+    }
+
+    private static func initialSelectedTab() -> Int {
+        qaInitialSelectedTab ?? 0
     }
 }
 
@@ -105,7 +130,7 @@ private struct AppFloatingTabBar: View {
                         Image(systemName: item.icon)
                             .font(.system(size: 22, weight: .semibold))
                             .symbolRenderingMode(.monochrome)
-                        Text(item.titleKey)
+                        Text(L10n.string(item.titleKey))
                             .font(.caption2.weight(.semibold))
                             .lineLimit(1)
                             .minimumScaleFactor(0.78)
@@ -122,7 +147,7 @@ private struct AppFloatingTabBar: View {
                     }
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(Text(item.titleKey))
+                .accessibilityLabel(Text(L10n.string(item.titleKey)))
                 .accessibilityAddTraits(selectedTab == item.index ? .isSelected : [])
             }
         }
@@ -140,7 +165,7 @@ private struct AppFloatingTabBar: View {
 
 private struct AppTabItem: Identifiable {
     let index: Int
-    let titleKey: LocalizedStringKey
+    let titleKey: String
     let icon: String
 
     var id: Int { index }
@@ -176,265 +201,293 @@ struct SettingsView: View {
     @State private var showResetAlert = false
     @State private var cacheSize = ""
 
+    private let bottomNavigationClearance: CGFloat = 128
+    private let resetSectionID = "settings-reset-section"
+    private let bottomSpacerID = "settings-bottom-spacer"
+
     var body: some View {
         NavigationStack {
-            List {
-                // User profile section
-                Section {
-                    HStack(spacing: 16) {
-                        // Avatar
-                        ZStack {
-                            Circle()
-                                .fill(.blue.gradient)
-                                .frame(width: 60, height: 60)
+            ScrollViewReader { scrollProxy in
+                List {
+                    // User profile section
+                    Section {
+                        HStack(spacing: 16) {
+                            // Avatar
+                            ZStack {
+                                Circle()
+                                    .fill(.blue.gradient)
+                                    .frame(width: 60, height: 60)
 
-                            Image(systemName: "person.fill")
-                                .font(.title)
-                                .foregroundStyle(.white)
-                        }
+                                Image(systemName: "person.fill")
+                                    .font(.title)
+                                    .foregroundStyle(.white)
+                            }
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("settings.profile.name")
-                                .font(.title3)
-                                .fontWeight(.bold)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(L10n.string("settings.profile.name"))
+                                    .font(.title3)
+                                    .fontWeight(.bold)
 
-                            Text("settings.profile.subtitle")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                                Text(L10n.string("settings.profile.subtitle"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
 
-                        Spacer()
-
-                        Button(action: { showShareSheet = true }) {
-                            Image(systemName: "square.and.arrow.up")
-                                .foregroundStyle(.blue)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
-
-                // Stats section
-                Section {
-                    HStack {
-                        StatItem(value: "\(historyService.totalVisits)", labelKey: "settings.stat.visits", icon: "map.fill")
-                        StatItem(value: "\(historyService.uniquePOIsVisited)", labelKey: "settings.stat.places", icon: "building.2.fill")
-                        StatItem(value: "\(historyService.favoritePOIs.count)", labelKey: "settings.stat.favorites", icon: "heart.fill")
-                    }
-                    .padding(.vertical, 8)
-                }
-
-                // Guide settings
-                Section("settings.narration") {
-                    Toggle(isOn: $settingsService.autoPlayGuide) {
-                        Label("settings.autoPlayGuide", systemImage: "play.circle")
-                    }
-                    .onChange(of: settingsService.autoPlayGuide) { _, _ in
-                        settingsService.saveSettings()
-                    }
-
-                    NavigationLink {
-                        VoicePickerView(selectedVoice: $settingsService.preferredVoice)
-                    } label: {
-                        HStack {
-                            Label("settings.voiceSettings", systemImage: "person.wave.2")
                             Spacer()
-                            Text(settingsService.preferredVoice.displayName)
-                                .foregroundStyle(.secondary)
+
+                            Button(action: { showShareSheet = true }) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+
+                    // Stats section
+                    Section {
+                        HStack {
+                            StatItem(value: "\(historyService.totalVisits)", labelKey: "settings.stat.visits", icon: "map.fill")
+                            StatItem(value: "\(historyService.uniquePOIsVisited)", labelKey: "settings.stat.places", icon: "building.2.fill")
+                            StatItem(value: "\(historyService.favoritePOIs.count)", labelKey: "settings.stat.favorites", icon: "heart.fill")
+                        }
+                        .padding(.vertical, 8)
+                    }
+
+                    // Guide settings
+                    Section(L10n.string("settings.narration")) {
+                        Toggle(isOn: $settingsService.autoPlayGuide) {
+                            Label(L10n.string("settings.autoPlayGuide"), systemImage: "play.circle")
+                        }
+                        .onChange(of: settingsService.autoPlayGuide) { _, _ in
+                            settingsService.saveSettings()
+                        }
+
+                        NavigationLink {
+                            VoicePickerView(selectedVoice: $settingsService.preferredVoice)
+                        } label: {
+                            HStack {
+                                Label(L10n.string("settings.voiceSettings"), systemImage: "person.wave.2")
+                                Spacer()
+                                Text(settingsService.preferredVoice.displayName)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        Picker(selection: $settingsService.guideStyle) {
+                            ForEach(GuideStyle.allCases, id: \.self) { style in
+                                Text(style.displayName).tag(style)
+                            }
+                        } label: {
+                            Label(L10n.string("settings.defaultStyle"), systemImage: "text.quote")
+                        }
+                        .onChange(of: settingsService.guideStyle) { _, _ in
+                            settingsService.saveSettings()
                         }
                     }
 
-                    Picker(selection: $settingsService.guideStyle) {
-                        ForEach(GuideStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
+                    // Map settings
+                    Section(L10n.string("settings.map")) {
+                        Picker(selection: $settingsService.mapStyle) {
+                            ForEach(SettingsService.MapStyle.allCases, id: \.self) { style in
+                                Text(style.localizedTitle).tag(style)
+                            }
+                        } label: {
+                            Label(L10n.string("settings.mapStyle"), systemImage: "map")
                         }
-                    } label: {
-                        Label("settings.defaultStyle", systemImage: "text.quote")
-                    }
-                    .onChange(of: settingsService.guideStyle) { _, _ in
-                        settingsService.saveSettings()
-                    }
-                }
-
-                // Map settings
-                Section("settings.map") {
-                    Picker(selection: $settingsService.mapStyle) {
-                        ForEach(SettingsService.MapStyle.allCases, id: \.self) { style in
-                            Text(style.localizedTitle).tag(style)
+                        .onChange(of: settingsService.mapStyle) { _, _ in
+                            settingsService.saveSettings()
                         }
-                    } label: {
-                        Label("settings.mapStyle", systemImage: "map")
                     }
-                    .onChange(of: settingsService.mapStyle) { _, _ in
-                        settingsService.saveSettings()
-                    }
-                }
 
-                Section("settings.appearance") {
-                    Picker(selection: Binding(
-                        get: { themeManager.appearanceMode },
-                        set: { themeManager.setAppearanceMode($0) }
-                    )) {
-                        ForEach(ThemeManager.AppearanceMode.allCases) { mode in
-                            Label(mode.title, systemImage: mode.icon).tag(mode)
+                    Section(L10n.string("settings.appearance")) {
+                        Picker(selection: Binding(
+                            get: { themeManager.appearanceMode },
+                            set: { themeManager.setAppearanceMode($0) }
+                        )) {
+                            ForEach(ThemeManager.AppearanceMode.allCases) { mode in
+                                Label(mode.title, systemImage: mode.icon).tag(mode)
+                            }
+                        } label: {
+                            Label(L10n.string("settings.interfaceMode"), systemImage: "circle.lefthalf.filled")
                         }
-                    } label: {
-                        Label("settings.interfaceMode", systemImage: "circle.lefthalf.filled")
-                    }
-                    .pickerStyle(.menu)
-                }
-
-                // Download settings
-                Section("settings.download") {
-                    Toggle(isOn: $settingsService.wifiOnlyDownload) {
-                        Label("settings.wifiOnly", systemImage: "wifi")
-                    }
-                    .onChange(of: settingsService.wifiOnlyDownload) { _, _ in
-                        settingsService.saveSettings()
+                        .pickerStyle(.menu)
                     }
 
-                    NavigationLink {
-                        Text("settings.offlineContent.placeholder")
-                    } label: {
-                        Label("settings.offlineContent", systemImage: "arrow.down.circle")
-                    }
-                }
+                    // Download settings
+                    Section(L10n.string("settings.download")) {
+                        Toggle(isOn: $settingsService.wifiOnlyDownload) {
+                            Label(L10n.string("settings.wifiOnly"), systemImage: "wifi")
+                        }
+                        .onChange(of: settingsService.wifiOnlyDownload) { _, _ in
+                            settingsService.saveSettings()
+                        }
 
-                // Notification settings
-                Section("settings.notifications") {
-                    Toggle(isOn: $settingsService.notificationEnabled) {
-                        Label("settings.enableNotifications", systemImage: "bell")
+                        NavigationLink {
+                            Text(L10n.string("settings.offlineContent.placeholder"))
+                        } label: {
+                            Label(L10n.string("settings.offlineContent"), systemImage: "arrow.down.circle")
+                        }
                     }
-                    .onChange(of: settingsService.notificationEnabled) { _, newValue in
-                        settingsService.saveSettings()
-                        if newValue {
-                            Task {
-                                _ = await notificationService.requestPermission()
+
+                    // Notification settings
+                    Section(L10n.string("settings.notifications")) {
+                        Toggle(isOn: $settingsService.notificationEnabled) {
+                            Label(L10n.string("settings.enableNotifications"), systemImage: "bell")
+                        }
+                        .onChange(of: settingsService.notificationEnabled) { _, newValue in
+                            settingsService.saveSettings()
+                            if newValue {
+                                Task {
+                                    _ = await notificationService.requestPermission()
+                                }
+                            }
+                        }
+
+                        if settingsService.notificationEnabled {
+                            Button(action: {
+                                notificationService.scheduleDailyTip()
+                            }) {
+                                Label(L10n.string("settings.enableDailyTips"), systemImage: "lightbulb")
                             }
                         }
                     }
 
-                    if settingsService.notificationEnabled {
+                    // Feedback settings
+                    Section(L10n.string("settings.feedback")) {
+                        Toggle(isOn: $settingsService.hapticFeedback) {
+                            Label(L10n.string("settings.hapticFeedback"), systemImage: "iphone.radiowaves.left.and.right")
+                        }
+                        .onChange(of: settingsService.hapticFeedback) { _, _ in
+                            settingsService.saveSettings()
+                        }
+                    }
+
+                    // Language settings
+                    Section(L10n.string("settings.language")) {
+                        Picker(selection: $settingsService.language) {
+                            ForEach(SettingsService.AppLanguage.allCases, id: \.self) { lang in
+                                Text(lang.localizedTitle).tag(lang)
+                            }
+                        } label: {
+                            Label(L10n.string("settings.language"), systemImage: "globe")
+                        }
+                        .onChange(of: settingsService.language) { _, _ in
+                            settingsService.saveSettings()
+                        }
+                    }
+
+                    // Cache section
+                    Section(L10n.string("settings.storage")) {
+                        HStack {
+                            Label(L10n.string("settings.cacheSize"), systemImage: "internaldrive")
+                            Spacer()
+                            Text(cacheSize)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Button(action: { showClearCacheAlert = true }) {
+                            Label(L10n.string("settings.clearCache"), systemImage: "trash")
+                                .foregroundStyle(.red)
+                        }
+                    }
+
+                    // About section
+                    Section(L10n.string("settings.about")) {
+                        NavigationLink {
+                            Text(L10n.string("settings.version.value"))
+                        } label: {
+                            Label(L10n.string("settings.version"), systemImage: "info.circle")
+                        }
+
+                        NavigationLink {
+                            Text(L10n.string("settings.privacy.placeholder"))
+                        } label: {
+                            Label(L10n.string("settings.privacyPolicy"), systemImage: "hand.raised")
+                        }
+
+                        NavigationLink {
+                            Text(L10n.string("settings.terms.placeholder"))
+                        } label: {
+                            Label(L10n.string("settings.terms"), systemImage: "doc.text")
+                        }
+
                         Button(action: {
-                            notificationService.scheduleDailyTip()
+                            if let url = URL(string: "mailto:support@aiguide.app") {
+                                UIApplication.shared.open(url)
+                            }
                         }) {
-                            Label("settings.enableDailyTips", systemImage: "lightbulb")
+                            Label(L10n.string("settings.feedback"), systemImage: "envelope")
+                        }
+
+                        Button(action: { showShareSheet = true }) {
+                            Label(L10n.string("settings.recommend"), systemImage: "square.and.arrow.up")
                         }
                     }
-                }
 
-                // Feedback settings
-                Section("settings.feedback") {
-                    Toggle(isOn: $settingsService.hapticFeedback) {
-                        Label("settings.hapticFeedback", systemImage: "iphone.radiowaves.left.and.right")
-                    }
-                    .onChange(of: settingsService.hapticFeedback) { _, _ in
-                        settingsService.saveSettings()
-                    }
-                }
-
-                // Language settings
-                Section("settings.language") {
-                    Picker(selection: $settingsService.language) {
-                        ForEach(SettingsService.AppLanguage.allCases, id: \.self) { lang in
-                            Text(lang.localizedTitleKey).tag(lang)
+                    // Reset section
+                    Section {
+                        Button(action: { showResetAlert = true }) {
+                            Label(L10n.string("settings.resetAll"), systemImage: "arrow.counterclockwise")
+                                .foregroundStyle(.red)
                         }
-                    } label: {
-                        Label("settings.language", systemImage: "globe")
-                    }
-                    .onChange(of: settingsService.language) { _, _ in
-                        settingsService.saveSettings()
-                    }
-                }
 
-                // Cache section
-                Section("settings.storage") {
-                    HStack {
-                        Label("settings.cacheSize", systemImage: "internaldrive")
-                        Spacer()
-                        Text(cacheSize)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Button(action: { showClearCacheAlert = true }) {
-                        Label("settings.clearCache", systemImage: "trash")
-                            .foregroundStyle(.red)
-                    }
-                }
-
-                // About section
-                Section("settings.about") {
-                    NavigationLink {
-                        Text("settings.version.value")
-                    } label: {
-                        Label("settings.version", systemImage: "info.circle")
-                    }
-
-                    NavigationLink {
-                        Text("settings.privacy.placeholder")
-                    } label: {
-                        Label("settings.privacyPolicy", systemImage: "hand.raised")
-                    }
-
-                    NavigationLink {
-                        Text("settings.terms.placeholder")
-                    } label: {
-                        Label("settings.terms", systemImage: "doc.text")
-                    }
-
-                    Button(action: {
-                        if let url = URL(string: "mailto:support@aiguide.app") {
-                            UIApplication.shared.open(url)
+                        Button(action: {
+                            UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+                        }) {
+                            Label(L10n.string("settings.showOnboarding"), systemImage: "questionmark.circle")
                         }
-                    }) {
-                        Label("settings.feedback", systemImage: "envelope")
                     }
+                    .id(resetSectionID)
 
-                    Button(action: { showShareSheet = true }) {
-                        Label("settings.recommend", systemImage: "square.and.arrow.up")
-                    }
+                    Color.clear
+                        .frame(height: bottomNavigationClearance)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .accessibilityHidden(true)
+                        .id(bottomSpacerID)
                 }
+                .navigationTitle(L10n.string("settings.title"))
+                .onAppear {
+                    cacheSize = settingsService.getCacheSize()
+                    scrollToBottomIfNeeded(using: scrollProxy)
+                }
+                .alert(L10n.string("settings.clearCache"), isPresented: $showClearCacheAlert) {
+                    Button(L10n.string("common.cancel"), role: .cancel) {}
+                    Button(L10n.string("settings.clear"), role: .destructive) {
+                        settingsService.clearCache()
+                        cacheSize = "0 MB"
+                    }
+                } message: {
+                    Text(L10n.string("settings.alert.clearCache.message"))
+                }
+                .alert(L10n.string("settings.resetAll"), isPresented: $showResetAlert) {
+                    Button(L10n.string("common.cancel"), role: .cancel) {}
+                    Button(L10n.string("settings.reset"), role: .destructive) {
+                        settingsService.resetSettings()
+                    }
+                } message: {
+                    Text(L10n.string("settings.alert.reset.message"))
+                }
+                .sheet(isPresented: $showShareSheet) {
+                    ShareSheet(items: [
+                        L10n.string("settings.share.message"),
+                        URL(string: "https://apps.apple.com/app/aiguide")!
+                    ])
+                }
+            }
+        }
+    }
 
-                // Reset section
-                Section {
-                    Button(action: { showResetAlert = true }) {
-                        Label("settings.resetAll", systemImage: "arrow.counterclockwise")
-                            .foregroundStyle(.red)
-                    }
+    private static var scrollsToBottomForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_SCROLL_SETTINGS_BOTTOM")
+    }
 
-                    Button(action: {
-                        UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
-                    }) {
-                        Label("settings.showOnboarding", systemImage: "questionmark.circle")
-                    }
-                }
-            }
-            .navigationTitle("settings.title")
-            .onAppear {
-                cacheSize = settingsService.getCacheSize()
-            }
-            .alert("settings.clearCache", isPresented: $showClearCacheAlert) {
-                Button("common.cancel", role: .cancel) {}
-                Button("settings.clear", role: .destructive) {
-                    settingsService.clearCache()
-                    cacheSize = "0 MB"
-                }
-            } message: {
-                Text("settings.alert.clearCache.message")
-            }
-            .alert("settings.resetAll", isPresented: $showResetAlert) {
-                Button("common.cancel", role: .cancel) {}
-                Button("settings.reset", role: .destructive) {
-                    settingsService.resetSettings()
-                }
-            } message: {
-                Text("settings.alert.reset.message")
-            }
-            .sheet(isPresented: $showShareSheet) {
-                ShareSheet(items: [
-                    L10n.string("settings.share.message"),
-                    URL(string: "https://apps.apple.com/app/aiguide")!
-                ])
-            }
+    private func scrollToBottomIfNeeded(using proxy: ScrollViewProxy) {
+        guard Self.scrollsToBottomForQA else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            proxy.scrollTo(bottomSpacerID, anchor: .bottom)
         }
     }
 }
@@ -453,7 +506,7 @@ struct ShareSheet: UIViewControllerRepresentable {
 // MARK: - Stat Item
 struct StatItem: View {
     let value: String
-    let labelKey: LocalizedStringKey
+    let labelKey: String
     let icon: String
 
     var body: some View {
@@ -463,7 +516,7 @@ struct StatItem: View {
                 .foregroundStyle(.blue)
             Text(value)
                 .font(.headline)
-            Text(labelKey)
+            Text(L10n.string(labelKey))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

@@ -609,16 +609,11 @@ class TripPlannerService: ObservableObject {
         nearbyItems: [MKMapItem]
     ) async throws -> LLMTripPlanResponse {
         let candidates = nearbyItems.prefix(8).compactMap(placePayload(from:))
-        let language = AIGuideLocalization.current
         let body: [String: Any] = [
             "destination": placePayload(from: destination),
             "candidates": candidates,
             "duration_hours": 4,
-            "audience": L10n.string("trip.llm.audience.general"),
-            "language": language.backendLanguage,
-            "locale": language.identifier,
-            "region": language.userRegion,
-            "response_instruction": language.llmResponseInstruction
+            "audience": L10n.string("trip.llm.audience.general")
         ]
 
         return try await apiClient.post(endpoint: APIConfig.Endpoints.tripPlan, body: body)
