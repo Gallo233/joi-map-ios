@@ -12,6 +12,9 @@ struct GuideView: View {
     @State private var sheetType: SheetType?
     @State private var sheetPosition: SheetPosition = .collapsed
     @State private var showPOIIntro = false
+    @State private var showMapModeSheet = false
+    @State private var isMap3D = true
+    @State private var mapMode: GuideMapMode = .explore
     @GestureState private var sheetDragTranslation: CGFloat = 0
 
     var onSearch: () -> Void = {}
@@ -104,6 +107,11 @@ struct GuideView: View {
                 VoicePickerView(selectedVoice: $guideVM.selectedVoice)
             }
         }
+        .sheet(isPresented: $showMapModeSheet) {
+            GuideMapModeSheet(selectedMode: $mapMode)
+                .presentationDetents([.height(318)])
+                .presentationDragIndicator(.visible)
+        }
         .fullScreenCover(
             isPresented: $showPOIIntro,
             onDismiss: {
@@ -146,6 +154,8 @@ struct GuideView: View {
                 initialRegion: guideVM.region,
                 route: guideVM.currentRoute,
                 nearbyPOIs: guideVM.nearbyPOIs,
+                mapType: mapMode.mapType,
+                isMap3D: isMap3D,
                 onUserLocationUpdate: { location in
                     guideVM.updateFromMapUserLocation(location)
                 }
@@ -167,7 +177,7 @@ struct GuideView: View {
 
             topBar
 
-            floatingButtons
+            mapControlStack
                 .padding(.trailing, 16)
                 .padding(.bottom, 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
@@ -181,57 +191,94 @@ struct GuideView: View {
 
     // MARK: - Top Bar
     private var topBar: some View {
-        HStack {
-            // Brand
-            HStack(spacing: 6) {
-                Image(systemName: "mic.fill")
-                    .font(.caption)
-                Text("guide.brand")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(primaryColor)
-            .foregroundStyle(.white)
-            .clipShape(Capsule())
+        HStack(spacing: 8) {
+            mapWeatherBadge
 
-            Spacer()
-
-            // Location + Status
-            HStack(spacing: 8) {
-                // Location badge
-                HStack(spacing: 4) {
-                    Image(systemName: contextPhaseIcon)
-                        .font(.caption2)
-                        .foregroundStyle(contextPhaseColor)
-                    Text(guideVM.currentPOI?.name ?? contextPhaseTitle)
-                        .font(.caption)
+            Button(action: onSearch) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.callout.weight(.semibold))
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
 
-                // Connection status
-                HStack(spacing: 4) {
-                    Image(systemName: guideVM.isConnectedToBackend ? "checkmark.circle.fill" : "arrow.down.circle.fill")
-                        .font(.caption2)
-                    Text(guideVM.isConnectedToBackend ? L10n.string("guide.connected") : L10n.string("guide.localMode"))
-                        .font(.caption2)
-                        .fontWeight(.medium)
+                    Text(L10n.string("guide.search.placeholder"))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+
+                    Spacer(minLength: 4)
+
+                    Image(systemName: "mic.fill")
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(.primary.opacity(0.72))
                 }
-                .foregroundStyle(guideVM.isConnectedToBackend ? .green : Color(red: 0.12, green: 0.40, blue: 0.24))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
+                .padding(.horizontal, 12)
+                .frame(height: 46)
+                .background(.regularMaterial, in: Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(.white.opacity(0.42), lineWidth: 1)
+                )
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(L10n.string("guide.search.placeholder"))
+
+            connectionStatusPill
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
+    }
+
+    private var mapWeatherBadge: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 3) {
+                Image(systemName: "cloud.sun.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.yellow)
+                Text(L10n.string("guide.weather.temperature.placeholder"))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .monospacedDigit()
+            }
+
+            HStack(spacing: 4) {
+                Text(L10n.string("guide.weather.aqi.placeholder"))
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Circle()
+                    .fill(.green)
+                    .frame(width: 6, height: 6)
+            }
+        }
+        .padding(.horizontal, 9)
+        .frame(width: 74, height: 52, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(.white.opacity(0.42), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+    }
+
+    private var connectionStatusPill: some View {
+        HStack(spacing: 4) {
+            Image(systemName: guideVM.isConnectedToBackend ? "checkmark.circle.fill" : "arrow.down.circle.fill")
+                .font(.caption2.weight(.semibold))
+            Text(guideVM.isConnectedToBackend ? L10n.string("guide.connected") : L10n.string("guide.localMode"))
+                .font(.caption2.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+        }
+        .foregroundStyle(guideVM.isConnectedToBackend ? .green : Color(red: 0.12, green: 0.40, blue: 0.24))
+        .padding(.horizontal, 9)
+        .frame(height: 36)
+        .background(.regularMaterial, in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(.white.opacity(0.42), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Route Status Overlay
@@ -308,30 +355,37 @@ struct GuideView: View {
         .accessibilityLabel(L10n.format("guide.viewRoute.format", guideVM.currentRoute.name))
     }
 
-    // MARK: - Floating Buttons
-    private var floatingButtons: some View {
+    // MARK: - Map Controls
+    private var mapControlStack: some View {
         VStack(spacing: 10) {
-            ForEach(Array(mapFloatingActions.enumerated()), id: \.offset) { _, item in
-                Button(action: item.action) {
-                    Image(systemName: item.icon)
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color(red: 0.12, green: 0.40, blue: 0.24))
-                        .frame(width: 44, height: 44)
-                        .background(.regularMaterial)
-                        .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
+            Button {
+                withAnimation(.easeInOut(duration: 0.18)) {
+                    isMap3D.toggle()
                 }
-                .accessibilityLabel(item.label)
+            } label: {
+                Text(isMap3D ? "2D" : "3D")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .frame(width: 48, height: 48)
+                    .background(.regularMaterial, in: Circle())
+                    .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
             }
-        }
-    }
+            .buttonStyle(.plain)
+            .accessibilityLabel(L10n.string("guide.mapMode.toggle3D"))
 
-    private var mapFloatingActions: [(icon: String, label: String, action: () -> Void)] {
-        [
-            ("magnifyingglass", L10n.string("guide.search"), onSearch),
-            ("map", L10n.string("guide.route"), { sheetType = .route })
-        ]
+            Button {
+                showMapModeSheet = true
+            } label: {
+                Image(systemName: "map.fill")
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(Color(red: 0.12, green: 0.40, blue: 0.24))
+                    .frame(width: 48, height: 48)
+                    .background(.regularMaterial, in: Circle())
+                    .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(L10n.string("guide.mapMode.open"))
+        }
     }
 
     private var workbenchActions: [(icon: String, title: String, color: Color, action: () -> Void)] {
@@ -1815,16 +1869,172 @@ struct WaveformView: View {
     }
 }
 
+private enum GuideMapMode: String, CaseIterable, Identifiable {
+    case explore
+    case quiet
+    case satellite
+    case hybrid
+
+    var id: String { rawValue }
+
+    var titleKey: String {
+        switch self {
+        case .explore:
+            return "guide.mapMode.explore"
+        case .quiet:
+            return "guide.mapMode.quiet"
+        case .satellite:
+            return "guide.mapMode.satellite"
+        case .hybrid:
+            return "guide.mapMode.hybrid"
+        }
+    }
+
+    var subtitleKey: String {
+        switch self {
+        case .explore:
+            return "guide.mapMode.explore.subtitle"
+        case .quiet:
+            return "guide.mapMode.quiet.subtitle"
+        case .satellite:
+            return "guide.mapMode.satellite.subtitle"
+        case .hybrid:
+            return "guide.mapMode.hybrid.subtitle"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .explore:
+            return "map.fill"
+        case .quiet:
+            return "line.3.horizontal.decrease.circle.fill"
+        case .satellite:
+            return "globe.americas.fill"
+        case .hybrid:
+            return "square.3.layers.3d"
+        }
+    }
+
+    var mapType: MKMapType {
+        switch self {
+        case .explore:
+            return .standard
+        case .quiet:
+            return .mutedStandard
+        case .satellite:
+            return .satellite
+        case .hybrid:
+            return .hybrid
+        }
+    }
+}
+
+private struct GuideMapModeSheet: View {
+    @Binding var selectedMode: GuideMapMode
+    @Environment(\.dismiss) private var dismiss
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack {
+                Text(L10n.string("guide.mapMode.title"))
+                    .font(.title3.weight(.bold))
+
+                Spacer()
+
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 34, height: 34)
+                        .background(Color(.secondarySystemGroupedBackground), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(L10n.string("common.close"))
+            }
+
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(GuideMapMode.allCases) { mode in
+                    Button {
+                        selectedMode = mode
+                        dismiss()
+                    } label: {
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Image(systemName: mode.icon)
+                                    .font(.title3.weight(.semibold))
+                                    .foregroundStyle(mode == selectedMode ? .white : Color(red: 0.12, green: 0.40, blue: 0.24))
+
+                                Spacer()
+
+                                if mode == selectedMode {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.callout.weight(.bold))
+                                        .foregroundStyle(.white)
+                                }
+                            }
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(L10n.string(mode.titleKey))
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(mode == selectedMode ? .white : .primary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+
+                                Text(L10n.string(mode.subtitleKey))
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(mode == selectedMode ? .white.opacity(0.78) : .secondary)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.76)
+                            }
+                        }
+                        .padding(14)
+                        .frame(maxWidth: .infinity, minHeight: 96, alignment: .topLeading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .fill(mode == selectedMode ? Color(red: 0.12, green: 0.40, blue: 0.24) : Color(.secondarySystemGroupedBackground))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .stroke(mode == selectedMode ? Color.clear : Color(.separator).opacity(0.12), lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            Text(L10n.string("guide.mapMode.note"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+        .padding(.bottom, 8)
+        .background(Color(.systemGroupedBackground))
+    }
+}
+
 // MARK: - Map View Container
 struct MapViewContainer: UIViewRepresentable {
     let currentPOI: POI?
     let initialRegion: MKCoordinateRegion
     let route: Route
     let nearbyPOIs: [POI]
+    let mapType: MKMapType
+    let isMap3D: Bool
     let onUserLocationUpdate: (CLLocation) -> Void
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
+        mapView.mapType = mapType
         mapView.showsUserLocation = true
         mapView.isZoomEnabled = true
         mapView.isScrollEnabled = true
@@ -1838,7 +2048,12 @@ struct MapViewContainer: UIViewRepresentable {
 
     func updateUIView(_ mapView: MKMapView, context: Context) {
         context.coordinator.currentPOIID = currentPOI?.id
+        if mapView.mapType != mapType {
+            mapView.mapType = mapType
+        }
+
         let targetRegion = displayRegion
+        let targetPitch: CGFloat = isMap3D ? 45 : 0
 
         let currentCenter = CLLocation(
             latitude: mapView.region.center.latitude,
@@ -1849,14 +2064,16 @@ struct MapViewContainer: UIViewRepresentable {
             longitude: targetRegion.center.longitude
         )
 
-        if currentCenter.distance(from: targetCenter) > 12 {
+        let pitchChanged = abs(mapView.camera.pitch - targetPitch) > 1
+
+        if currentCenter.distance(from: targetCenter) > 12 || pitchChanged {
             let spanMeters = targetRegion.span.latitudeDelta * 111_000
             let fromDistance = max(350, min(1500, spanMeters * 1.2))
 
             let camera = MKMapCamera(
                 lookingAtCenter: targetRegion.center,
                 fromDistance: fromDistance,
-                pitch: 45,
+                pitch: targetPitch,
                 heading: mapView.camera.heading
             )
             mapView.setCamera(camera, animated: true)
