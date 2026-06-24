@@ -10,7 +10,7 @@ struct TripPlannerView: View {
     @StateObject private var settingsService = SettingsService.shared
     @State private var showNewTrip = false
     @State private var showTemplates = false
-    @State private var showDestinationSearch = false
+    @State private var showDestinationSearch = ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIP_SEARCH")
     @State private var destinationQuery = ""
     @State private var generatingDestinationID: String?
     @State private var tripName = ""
@@ -46,7 +46,7 @@ struct TripPlannerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showDestinationSearch) {
                 destinationSearchSheet
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showNewTrip) {
@@ -824,73 +824,7 @@ struct TripPlannerView: View {
     private var destinationSearchSheet: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                HStack(spacing: 10) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundStyle(.secondary)
-
-                    TextField("trip.search.placeholder", text: $destinationQuery)
-                        .textInputAutocapitalization(.never)
-                        .submitLabel(.search)
-                        .onSubmit {
-                            runDestinationSearch()
-                        }
-
-                    if !destinationQuery.isEmpty {
-                        Button {
-                            destinationQuery = ""
-                            service.searchResults = []
-                            service.searchError = nil
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    Button {
-                        runDestinationSearch()
-                    } label: {
-                        Image(systemName: "arrow.right")
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 34, height: 34)
-                            .background(canSearchDestination ? primaryColor : Color.gray.opacity(0.4), in: Circle())
-                    }
-                    .disabled(!canSearchDestination)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .background(.background, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-                if service.searchResults.isEmpty && !service.isSearching {
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("trip.search.tryThese")
-                            .font(.headline)
-
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 138), spacing: 10)], spacing: 10) {
-                            ForEach(destinationSearchSuggestions, id: \.self) { keyword in
-                                Button {
-                                    destinationQuery = keyword
-                                    runDestinationSearch()
-                                } label: {
-                                    HStack {
-                                        Image(systemName: "mappin.and.ellipse")
-                                        Text(keyword)
-                                            .lineLimit(1)
-                                    }
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.primary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 10)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                destinationSearchField
 
                 if service.isSearching {
                     VStack(spacing: 10) {
@@ -922,6 +856,11 @@ struct TripPlannerView: View {
                         .disabled(!canGenerateFromKeyword)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if service.searchResults.isEmpty {
+                    ScrollView(showsIndicators: false) {
+                        destinationRecommendationContent
+                            .padding(.bottom, 18)
+                    }
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 10) {
@@ -947,6 +886,131 @@ struct TripPlannerView: View {
                     Button("common.close") { showDestinationSearch = false }
                 }
             }
+        }
+    }
+
+    private var destinationSearchField: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(.primary.opacity(0.72))
+
+            TextField("trip.search.placeholder", text: $destinationQuery)
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
+                .onSubmit {
+                    runDestinationSearch()
+                }
+
+            if !destinationQuery.isEmpty {
+                Button {
+                    destinationQuery = ""
+                    service.searchResults = []
+                    service.searchError = nil
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Button {
+                runDestinationSearch()
+            } label: {
+                Image(systemName: "arrow.right")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(canSearchDestination ? primaryColor : Color.gray.opacity(0.4), in: Circle())
+            }
+            .disabled(!canSearchDestination)
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 56)
+        .background(.regularMaterial, in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(.white.opacity(0.55), lineWidth: 1)
+        )
+    }
+
+    private var destinationRecommendationContent: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(tripSearchEntryPills) { pill in
+                        TripSearchPill(pill: pill, primaryColor: primaryColor)
+                    }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                sectionHeader(
+                    title: L10n.string("trip.search.featured.title"),
+                    subtitle: L10n.string("trip.search.featured.subtitle")
+                )
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(featuredTripRecommendations) { item in
+                            TripVisualRecommendationCard(
+                                item: item,
+                                isGenerating: generatingDestinationID == item.id,
+                                primaryColor: primaryColor
+                            ) {
+                                generateTrip(from: item)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                sectionHeader(
+                    title: L10n.string("trip.search.routes.title"),
+                    subtitle: L10n.string("trip.search.routes.subtitle")
+                )
+
+                LazyVStack(spacing: 10) {
+                    ForEach(routeMapRecommendations) { item in
+                        TripRouteMapCard(
+                            item: item,
+                            isGenerating: generatingDestinationID == item.id,
+                            primaryColor: primaryColor,
+                            forestColor: forestColor
+                        ) {
+                            generateTrip(from: item)
+                        }
+                    }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                sectionHeader(
+                    title: L10n.string("trip.search.more.title"),
+                    subtitle: L10n.string("trip.search.more.subtitle")
+                )
+
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 138), spacing: 10)], spacing: 10) {
+                    ForEach(placeholderGuidePills) { pill in
+                        TripPlaceholderGuidePill(pill: pill)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func sectionHeader(title: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.primary)
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
         }
     }
 
@@ -1008,12 +1072,88 @@ struct TripPlannerView: View {
         !destinationQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !service.isSearching
     }
 
-    private var destinationSearchSuggestions: [String] {
+    private var tripSearchEntryPills: [TripSearchEntryPillModel] {
         [
-            L10n.string("trip.search.suggestion.forbiddenCity"),
-            L10n.string("trip.search.suggestion.louvre"),
-            L10n.string("trip.search.suggestion.met"),
-            L10n.string("trip.search.suggestion.cjm")
+            TripSearchEntryPillModel(id: "cities", titleKey: "trip.search.pill.cities", icon: "building.2.fill", isPrimary: true),
+            TripSearchEntryPillModel(id: "landmarks", titleKey: "trip.search.pill.landmarks", icon: "camera.aperture", isPrimary: true),
+            TripSearchEntryPillModel(id: "routes", titleKey: "trip.search.pill.routes", icon: "map.fill", isPrimary: true),
+            TripSearchEntryPillModel(id: "food", titleKey: "trip.search.pill.food", icon: "fork.knife", isPrimary: false),
+            TripSearchEntryPillModel(id: "hotels", titleKey: "trip.search.pill.hotels", icon: "bed.double.fill", isPrimary: false)
+        ]
+    }
+
+    private var featuredTripRecommendations: [TripSearchRecommendation] {
+        [
+            TripSearchRecommendation(
+                id: "beijing-forbidden-city",
+                imageName: "TripBeijingForbiddenCity",
+                titleKey: "trip.search.featured.beijing.title",
+                subtitleKey: "trip.search.featured.beijing.subtitle",
+                badgeKey: "trip.search.badge.cityGuide",
+                query: "北京故宫"
+            ),
+            TripSearchRecommendation(
+                id: "paris-louvre",
+                imageName: "TripParisLouvre",
+                titleKey: "trip.search.featured.paris.title",
+                subtitleKey: "trip.search.featured.paris.subtitle",
+                badgeKey: "trip.search.badge.artRoute",
+                query: "Louvre Museum Paris"
+            ),
+            TripSearchRecommendation(
+                id: "new-york-met",
+                imageName: "TripNewYorkMet",
+                titleKey: "trip.search.featured.newYork.title",
+                subtitleKey: "trip.search.featured.newYork.subtitle",
+                badgeKey: "trip.search.badge.museumRoute",
+                query: "The Metropolitan Museum of Art New York"
+            ),
+            TripSearchRecommendation(
+                id: "san-francisco-weekend",
+                imageName: "TripSanFranciscoWeekend",
+                titleKey: "trip.search.featured.sanFrancisco.title",
+                subtitleKey: "trip.search.featured.sanFrancisco.subtitle",
+                badgeKey: "trip.search.badge.weekend",
+                query: "Contemporary Jewish Museum San Francisco"
+            )
+        ]
+    }
+
+    private var routeMapRecommendations: [TripSearchRecommendation] {
+        [
+            TripSearchRecommendation(
+                id: "beijing-route-map",
+                imageName: "TripBeijingForbiddenCity",
+                titleKey: "trip.search.route.beijing.title",
+                subtitleKey: "trip.search.route.beijing.subtitle",
+                badgeKey: "trip.search.badge.routeMap",
+                query: "北京故宫"
+            ),
+            TripSearchRecommendation(
+                id: "paris-route-map",
+                imageName: "TripParisLouvre",
+                titleKey: "trip.search.route.paris.title",
+                subtitleKey: "trip.search.route.paris.subtitle",
+                badgeKey: "trip.search.badge.routeMap",
+                query: "Louvre Museum Paris"
+            ),
+            TripSearchRecommendation(
+                id: "sf-route-map",
+                imageName: "TripSanFranciscoWeekend",
+                titleKey: "trip.search.route.sanFrancisco.title",
+                subtitleKey: "trip.search.route.sanFrancisco.subtitle",
+                badgeKey: "trip.search.badge.routeMap",
+                query: "Contemporary Jewish Museum San Francisco"
+            )
+        ]
+    }
+
+    private var placeholderGuidePills: [TripPlaceholderGuidePillModel] {
+        [
+            TripPlaceholderGuidePillModel(id: "food", titleKey: "trip.search.placeholder.food", icon: "fork.knife"),
+            TripPlaceholderGuidePillModel(id: "hotels", titleKey: "trip.search.placeholder.hotels", icon: "bed.double.fill"),
+            TripPlaceholderGuidePillModel(id: "family", titleKey: "trip.search.placeholder.family", icon: "figure.2.and.child.holdinghands"),
+            TripPlaceholderGuidePillModel(id: "shopping", titleKey: "trip.search.placeholder.shopping", icon: "bag.fill")
         ]
     }
 
@@ -1060,10 +1200,15 @@ struct TripPlannerView: View {
         }
     }
 
-    private func generateTripFromKeyword() {
-        let keyword = destinationQuery
+    private func generateTrip(from item: TripSearchRecommendation) {
+        destinationQuery = item.query
+        generateTripFromKeyword(id: item.id, keyword: item.query)
+    }
+
+    private func generateTripFromKeyword(id: String = "keyword", keyword: String? = nil) {
+        let keyword = keyword ?? destinationQuery
         ttsService.stop()
-        generatingDestinationID = "keyword"
+        generatingDestinationID = id
         Task {
             await service.generateRecommendedTrip(forKeyword: keyword)
             generatingDestinationID = nil
@@ -2397,6 +2542,212 @@ private extension TripPlannerService.TripSpot.SpotCategory {
         case .transport: return "tram.fill"
         case .shopping: return "bag.fill"
         }
+    }
+}
+
+private struct TripSearchEntryPillModel: Identifiable {
+    let id: String
+    let titleKey: String
+    let icon: String
+    let isPrimary: Bool
+}
+
+private struct TripSearchRecommendation: Identifiable {
+    let id: String
+    let imageName: String
+    let titleKey: String
+    let subtitleKey: String
+    let badgeKey: String
+    let query: String
+}
+
+private struct TripPlaceholderGuidePillModel: Identifiable {
+    let id: String
+    let titleKey: String
+    let icon: String
+}
+
+private struct TripSearchPill: View {
+    let pill: TripSearchEntryPillModel
+    let primaryColor: Color
+
+    var body: some View {
+        HStack(spacing: 7) {
+            Image(systemName: pill.icon)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(pill.isPrimary ? primaryColor : .secondary)
+
+            Text(L10n.string(pill.titleKey))
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(pill.isPrimary ? .primary : .secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+
+            if !pill.isPrimary {
+                Text(L10n.string("trip.search.soon"))
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color(.tertiarySystemFill), in: Capsule())
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 44)
+        .background(pill.isPrimary ? Color(.secondarySystemGroupedBackground) : Color(.tertiarySystemGroupedBackground), in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(.black.opacity(pill.isPrimary ? 0.05 : 0.02), lineWidth: 1)
+        )
+    }
+}
+
+private struct TripVisualRecommendationCard: View {
+    let item: TripSearchRecommendation
+    let isGenerating: Bool
+    let primaryColor: Color
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            ZStack(alignment: .bottomLeading) {
+                Image(item.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 218, height: 164)
+                    .clipped()
+
+                LinearGradient(
+                    colors: [
+                        .black.opacity(0.02),
+                        .black.opacity(0.14),
+                        .black.opacity(0.72)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(L10n.string(item.badgeKey))
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(primaryColor.opacity(0.92), in: Capsule())
+
+                    Text(L10n.string(item.titleKey))
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.78)
+
+                    Text(L10n.string(item.subtitleKey))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.88))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+                }
+                .padding(13)
+
+                if isGenerating {
+                    ZStack {
+                        Color.black.opacity(0.24)
+                        ProgressView()
+                            .tint(.white)
+                    }
+                }
+            }
+            .frame(width: 218, height: 164)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
+        }
+        .buttonStyle(.plain)
+        .disabled(isGenerating)
+        .accessibilityLabel(L10n.string(item.titleKey))
+    }
+}
+
+private struct TripRouteMapCard: View {
+    let item: TripSearchRecommendation
+    let isGenerating: Bool
+    let primaryColor: Color
+    let forestColor: Color
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Image(item.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 64, height: 64)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(L10n.string(item.badgeKey))
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(primaryColor)
+                        .lineLimit(1)
+
+                    Text(L10n.string(item.titleKey))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+
+                    Text(L10n.string(item.subtitleKey))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 8)
+
+                if isGenerating {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: "arrow.right.circle.fill")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(forestColor)
+                }
+            }
+            .padding(10)
+            .background(.background, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(.black.opacity(0.06), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(isGenerating)
+        .accessibilityLabel(L10n.string(item.titleKey))
+    }
+}
+
+private struct TripPlaceholderGuidePill: View {
+    let pill: TripPlaceholderGuidePillModel
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: pill.icon)
+                .font(.caption.weight(.bold))
+            Text(L10n.string(pill.titleKey))
+                .font(.caption.weight(.bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.76)
+            Spacer(minLength: 4)
+            Text(L10n.string("trip.search.soon"))
+                .font(.caption2.weight(.bold))
+        }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 12)
+        .frame(height: 42)
+        .background(.thinMaterial, in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(.white.opacity(0.5), lineWidth: 1)
+        )
     }
 }
 

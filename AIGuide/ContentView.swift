@@ -91,6 +91,7 @@ struct ContentView: View {
 
     private static var opensTripsForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIPS")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIP_SEARCH")
     }
 
     private static var qaInitialSelectedTab: Int? {

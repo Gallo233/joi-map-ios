@@ -58,6 +58,7 @@
 		A123456789000192 /* JourneyNarrativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000193 /* JourneyNarrativeView.swift */; };
 		A123456789000200 /* SeeAndAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000201 /* SeeAndAskView.swift */; };
 		A123456789000210 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000211 /* ImagePicker.swift */; };
+		B240624000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A123456789000016 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -291,6 +292,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B240624000000001 /* Assets.xcassets in Resources */,
 				B210621000000005 /* Localizable.xcstrings in Resources */,
 				B210621000000007 /* InfoPlist.xcstrings in Resources */,
 			);

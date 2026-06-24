@@ -13396,6 +13396,321 @@
         }
       }
     },
+    "trip.search.badge.artRoute": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Art route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "アートルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "예술 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "艺术路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "藝術路線" } }
+      }
+    },
+    "trip.search.badge.cityGuide": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "City guide" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "都市ガイド" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "도시 가이드" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "城市攻略" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "城市攻略" } }
+      }
+    },
+    "trip.search.badge.museumRoute": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Museum route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "美術館ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "뮤지엄 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "博物馆路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "博物館路線" } }
+      }
+    },
+    "trip.search.badge.routeMap": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Route map" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルート図" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "경로 지도" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "路线图" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "路線圖" } }
+      }
+    },
+    "trip.search.badge.weekend": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Weekend" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "週末" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "주말" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "周末" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "週末" } }
+      }
+    },
+    "trip.search.featured.beijing.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Forbidden City, temples, old city rhythm" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "故宮、寺院、旧市街のリズム" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "자금성, 사원, 옛 도시의 흐름" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "故宫、坛庙与老城节奏" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "故宮、壇廟與老城節奏" } }
+      }
+    },
+    "trip.search.featured.beijing.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Beijing culture in a day" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "北京文化を一日で" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "베이징 문화 하루 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "北京文化一日游" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "北京文化一日遊" } }
+      }
+    },
+    "trip.search.featured.newYork.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Fifth Avenue art and culture route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "5番街のアート文化ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "5번가 예술 문화 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "第五大道艺术文化路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "第五大道藝術文化路線" } }
+      }
+    },
+    "trip.search.featured.newYork.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Met museum day" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "メット美術館の一日" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "메트 뮤지엄 데이" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "纽约大都会博物馆" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "紐約大都會博物館" } }
+      }
+    },
+    "trip.search.featured.paris.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Art highlights around the Louvre" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルーヴル周辺のアート要点" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "루브르 주변 예술 하이라이트" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "卢浮宫周边艺术重点" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "羅浮宮周邊藝術重點" } }
+      }
+    },
+    "trip.search.featured.paris.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Louvre and classic Paris" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルーヴルと定番パリ" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "루브르와 클래식 파리" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "卢浮宫与经典巴黎" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "羅浮宮與經典巴黎" } }
+      }
+    },
+    "trip.search.featured.sanFrancisco.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Museums, streets, and city views" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "美術館、街歩き、都市景観" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "뮤지엄, 거리, 도시 전망" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "博物馆、街区与城市风景" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "博物館、街區與城市風景" } }
+      }
+    },
+    "trip.search.featured.sanFrancisco.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "San Francisco culture weekend" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "サンフランシスコ文化週末" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "샌프란시스코 문화 주말" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "旧金山文化周末" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "舊金山文化週末" } }
+      }
+    },
+    "trip.search.featured.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tap a card to generate a ready-to-follow route." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "カードをタップするとルートを生成します。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "카드를 누르면 바로 따라갈 경로를 만듭니다." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "点开即可生成可跟随路线。" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "點開即可生成可跟隨路線。" } }
+      }
+    },
+    "trip.search.featured.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Popular guides" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "人気ガイド" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "인기 가이드" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "热门攻略" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "熱門攻略" } }
+      }
+    },
+    "trip.search.more.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Food and lifestyle guides get reserved entry points." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "食や暮らしのガイド入口を準備中。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "음식과 라이프스타일 가이드 입구를 준비 중입니다." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "美食等指南先留好入口。" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "美食等指南先留好入口。" } }
+      }
+    },
+    "trip.search.more.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "More guide types" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "その他のガイド" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "더 많은 가이드" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "更多指南" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "更多指南" } }
+      }
+    },
+    "trip.search.pill.cities": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Cities" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "都市" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "도시" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "城市" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "城市" } }
+      }
+    },
+    "trip.search.pill.food": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Food" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "グルメ" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "맛집" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "美食" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "美食" } }
+      }
+    },
+    "trip.search.pill.hotels": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Hotels" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ホテル" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "호텔" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "酒店" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "飯店" } }
+      }
+    },
+    "trip.search.pill.landmarks": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Landmarks" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "名所" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "명소" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "景点" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "景點" } }
+      }
+    },
+    "trip.search.pill.routes": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Routes" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "경로" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "路線" } }
+      }
+    },
+    "trip.search.placeholder.family": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Family trips" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "家族旅行" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "가족 여행" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "亲子旅行" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "親子旅行" } }
+      }
+    },
+    "trip.search.placeholder.food": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Food guides" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "グルメガイド" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "맛집 가이드" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "美食指南" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "美食指南" } }
+      }
+    },
+    "trip.search.placeholder.hotels": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Hotel ideas" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ホテル案" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "호텔 아이디어" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "酒店灵感" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "飯店靈感" } }
+      }
+    },
+    "trip.search.placeholder.shopping": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Shopping routes" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "買い物ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "쇼핑 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "购物路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "購物路線" } }
+      }
+    },
+    "trip.search.route.beijing.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Imperial axis and nearby highlights" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "皇城軸と周辺の見どころ" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "황실 축과 주변 하이라이트" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "中轴线与周边亮点" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "中軸線與周邊亮點" } }
+      }
+    },
+    "trip.search.route.beijing.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Forbidden City route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "故宮ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "자금성 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "北京故宫路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "北京故宮路線" } }
+      }
+    },
+    "trip.search.route.paris.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Museum core and riverside walk" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "美術館中心と川沿い散歩" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "뮤지엄 중심과 강변 산책" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "博物馆核心与塞纳河漫步" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "博物館核心與塞納河漫步" } }
+      }
+    },
+    "trip.search.route.paris.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Louvre route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルーヴルルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "루브르 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "卢浮宫路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "羅浮宮路線" } }
+      }
+    },
+    "trip.search.route.sanFrancisco.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Museums, gardens, downtown stops" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "美術館、公園、中心街の停留点" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "뮤지엄, 공원, 도심 정거장" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "博物馆、公园与市中心停靠" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "博物館、公園與市中心停靠" } }
+      }
+    },
+    "trip.search.route.sanFrancisco.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "SOMA culture route" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "SOMA文化ルート" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "SOMA 문화 코스" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "SOMA 文化路线" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "SOMA 文化路線" } }
+      }
+    },
+    "trip.search.routes.subtitle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Fast one-day plans for first visits." } },
+        "ja": { "stringUnit": { "state": "translated", "value": "初訪問向けの一日プラン。" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "첫 방문에 맞춘 빠른 하루 일정." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "新手友好的一日路线。" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "新手友好的一日路線。" } }
+      }
+    },
+    "trip.search.routes.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Route maps" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "ルート図" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "경로 지도" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "路线图" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "路線圖" } }
+      }
+    },
+    "trip.search.soon": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Soon" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "近日" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "예정" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "即将推出" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "即將推出" } }
+      }
+    },
     "trip.search.suggestion.cjm": {
       "extractionState": "stale",
       "localizations": {
