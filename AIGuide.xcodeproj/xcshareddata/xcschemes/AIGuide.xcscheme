@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A123456789000026"
-               BuildableName = "AIGuide.app"
+               BuildableName = "Joi Map.app"
                BlueprintName = "AIGuide"
                ReferencedContainer = "container:AIGuide.xcodeproj">
             </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A123456789000026"
-            BuildableName = "AIGuide.app"
+            BuildableName = "Joi Map.app"
             BlueprintName = "AIGuide"
             ReferencedContainer = "container:AIGuide.xcodeproj">
          </BuildableReference>
@@ -61,7 +61,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A123456789000026"
-            BuildableName = "AIGuide.app"
+            BuildableName = "Joi Map.app"
             BlueprintName = "AIGuide"
             ReferencedContainer = "container:AIGuide.xcodeproj">
          </BuildableReference>

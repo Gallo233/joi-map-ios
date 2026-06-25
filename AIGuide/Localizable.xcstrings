@@ -1238,31 +1238,31 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Guide"
+            "value": "Joi Map"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ガイド"
+            "value": "Joi Map"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "가이드"
+            "value": "Joi Map"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "随身讲解"
+            "value": "Joi Map"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "隨身講解"
+            "value": "Joi Map"
           }
         }
       }
@@ -4732,7 +4732,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI Guide"
+            "value": "Joi Map"
           }
         },
         "ja": {
@@ -9488,31 +9488,31 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "#TripPlan #AIGuide"
+            "value": "#TripPlan #JoiMap"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "#旅行計画 #AIガイド"
+            "value": "#旅行計画 #JoiMap"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "#여행계획 #AI가이드"
+            "value": "#여행계획 #JoiMap"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "#旅行计划 #AI导览"
+            "value": "#旅行计划 #JoiMap"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "#旅行計畫 #AI導覽"
+            "value": "#旅行計畫 #JoiMap"
           }
         }
       }
@@ -19175,31 +19175,31 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "随身讲解"
+            "value": "Joi Map"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "隨身講解"
+            "value": "Joi Map"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pocket Guide"
+            "value": "Joi Map"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ポケットガイド"
+            "value": "Joi Map"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "휴대 가이드"
+            "value": "Joi Map"
           }
         }
       }
@@ -19617,31 +19617,31 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "AIGuide - AI 实时景点讲解"
+            "value": "Joi Map - AI 实时景点讲解"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "AIGuide - AI 即時景點講解"
+            "value": "Joi Map - AI 即時景點講解"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AIGuide - AI live guide for places"
+            "value": "Joi Map - AI live guide for places"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "AIGuide - AIライブガイド"
+            "value": "Joi Map - AIライブガイド"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "AIGuide - AI 실시간 장소 가이드"
+            "value": "Joi Map - AI 실시간 장소 가이드"
           }
         }
       }
@@ -28593,31 +28593,31 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "随身讲解"
+            "value": "Joi Map"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "隨身講解"
+            "value": "Joi Map"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pocket Guide"
+            "value": "Joi Map"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ポケットガイド"
+            "value": "Joi Map"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "휴대 가이드"
+            "value": "Joi Map"
           }
         }
       }
