@@ -382,19 +382,23 @@ struct TripPlannerView: View {
                 VStack(spacing: 0) {
                     tripHeader(trip)
 
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            guideScriptCard(for: trip)
-                            narrationPlayerCard(for: trip)
-                            journeyMemoryCard(for: trip)
-                            timelineContent(for: trip)
+                    GeometryReader { proxy in
+                        ScrollView(.vertical) {
+                            VStack(spacing: 16) {
+                                guideScriptCard(for: trip)
+                                narrationPlayerCard(for: trip)
+                                journeyMemoryCard(for: trip)
+                                timelineContent(for: trip)
+                            }
+                            .padding(.horizontal, 18)
+                            .padding(.top, 6)
+                            .padding(.bottom, 128)
+                            .frame(width: proxy.size.width, alignment: .top)
                         }
-                        .padding(.horizontal, 18)
-                        .padding(.top, 8)
-                        .padding(.bottom, 128)
+                        .background(pageBackground)
+                        .scrollBounceBehavior(.basedOnSize)
+                        .clipped()
                     }
-                    .background(pageBackground)
-                    .scrollBounceBehavior(.basedOnSize)
                 }
             } else {
                 tripListView
@@ -628,6 +632,7 @@ struct TripPlannerView: View {
                 primaryColor: primaryColor
             )
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Trip Header
@@ -635,88 +640,78 @@ struct TripPlannerView: View {
         let spots = trip.days.flatMap { $0.spots }
         let visitedCount = spots.filter(\.isVisited).count
 
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack {
+        return VStack(alignment: .leading, spacing: 9) {
+            HStack(alignment: .center, spacing: 10) {
                 Button {
                     showTripHome()
                 } label: {
-                    Label("common.home", systemImage: "chevron.left")
-                        .font(.subheadline.weight(.bold))
-                        .labelStyle(.titleAndIcon)
+                    Image(systemName: "chevron.left")
+                        .font(.headline.weight(.bold))
                         .foregroundStyle(primaryColor)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+                        .frame(width: 34, height: 34)
                         .background(primaryColor.opacity(0.10), in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(L10n.string("common.home"))
 
-                Spacer()
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(trip.displayName)
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                    Text(trip.formattedDateRange)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .layoutPriority(1)
+
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.green)
+                    .frame(width: 34, height: 34)
+                    .background(forestColor.opacity(0.10), in: Circle())
+                    .accessibilityLabel(L10n.string("trip.detail.offlineReady"))
 
                 Button {
                     searchAnotherDestination()
                 } label: {
-                    Label("trip.detail.changePlace", systemImage: "magnifyingglass")
-                        .font(.subheadline.weight(.bold))
+                    Image(systemName: "magnifyingglass")
+                        .font(.headline.weight(.bold))
                         .foregroundStyle(primaryColor)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+                        .frame(width: 34, height: 34)
                         .background(primaryColor.opacity(0.10), in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(L10n.string("trip.detail.changePlace"))
             }
 
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .top, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(trip.displayName)
-                            .font(.title3.weight(.heavy))
-                            .foregroundStyle(.primary)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.82)
-                        Text(trip.formattedDateRange)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .layoutPriority(1)
+            HStack(spacing: 7) {
+                TripHeaderMetric(value: "\(trip.duration + 1)", label: L10n.string("trip.detail.days"), color: primaryColor)
+                TripHeaderMetric(value: "\(spots.count)", label: L10n.string("trip.detail.spots"), color: forestColor)
+                TripHeaderMetric(value: totalDurationText(for: trip), label: L10n.string("trip.detail.estimate"), color: primaryColor)
+            }
 
-                    HStack(spacing: 5) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                        Text("trip.detail.offlineReady")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(forestColor)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.78)
-                    }
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 6)
-                    .background(forestColor.opacity(0.10), in: Capsule())
-                }
-
-                HStack(spacing: 10) {
-                    TripHeaderMetric(value: "\(trip.duration + 1)", label: L10n.string("trip.detail.days"), color: primaryColor)
-                    TripHeaderMetric(value: "\(spots.count)", label: L10n.string("trip.detail.spots"), color: forestColor)
-                    TripHeaderMetric(value: totalDurationText(for: trip), label: L10n.string("trip.detail.estimate"), color: primaryColor)
-                }
-
+            HStack(spacing: 8) {
                 ProgressView(value: spots.isEmpty ? 0 : Double(visitedCount) / Double(spots.count))
                     .tint(primaryColor)
 
                 Text(L10n.format("trip.detail.completed.format", visitedCount, spots.count))
-                    .font(.caption.weight(.semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            .padding(14)
-            .background(cardBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(.black.opacity(0.05), lineWidth: 1)
-            )
-            .shadow(color: .black.opacity(0.05), radius: 12, y: 5)
         }
+        .padding(12)
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(.black.opacity(0.05), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.05), radius: 12, y: 5)
         .padding(.horizontal, 18)
-        .padding(.top, 10)
-        .padding(.bottom, 10)
+        .padding(.top, 4)
+        .padding(.bottom, 8)
         .background(pageBackground)
     }
 
@@ -726,21 +721,23 @@ struct TripPlannerView: View {
         let color: Color
 
         var body: some View {
-            VStack(spacing: 3) {
+            HStack(spacing: 3) {
                 Text(value)
-                    .font(.subheadline.weight(.heavy))
+                    .font(.caption.weight(.heavy))
                     .foregroundStyle(color)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.74)
+                    .minimumScaleFactor(0.68)
 
                 Text(label)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.72)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(color.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 5)
+            .background(color.opacity(0.10), in: Capsule())
         }
     }
 
@@ -2367,6 +2364,7 @@ struct TimelinePoint: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -2403,6 +2401,7 @@ struct TimelineDayHeader: View {
             Spacer()
         }
         .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -2521,7 +2520,10 @@ struct TimelineSpotCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(.black.opacity(0.05), lineWidth: 1)
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(1)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var durationText: String {
