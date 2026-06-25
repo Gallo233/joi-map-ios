@@ -47,7 +47,8 @@ struct TripPlannerView: View {
             .sheet(isPresented: $showDestinationSearch) {
                 destinationSearchSheet
                     .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                    .presentationDragIndicator(.hidden)
+                    .interactiveDismissDisabled(true)
             }
             .sheet(isPresented: $showNewTrip) {
                 newTripSheet
@@ -101,9 +102,11 @@ struct TripPlannerView: View {
             }
             .onAppear {
                 service.refreshLocalizedTemplates()
+                openQASampleTripIfNeeded()
             }
             .onChange(of: settingsService.language) { _, _ in
                 service.refreshLocalizedTemplates()
+                openQASampleTripIfNeeded()
             }
         }
     }
@@ -379,23 +382,19 @@ struct TripPlannerView: View {
                 VStack(spacing: 0) {
                     tripHeader(trip)
 
-                    ZStack(alignment: .bottom) {
-                        ScrollView {
-                            VStack(spacing: 16) {
-                                guideScriptCard(for: trip)
-                                journeyMemoryCard(for: trip)
-                                timelineContent(for: trip)
-                            }
-                                .padding(.horizontal, 18)
-                                .padding(.top, 18)
-                                .padding(.bottom, 190)
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            guideScriptCard(for: trip)
+                            narrationPlayerCard(for: trip)
+                            journeyMemoryCard(for: trip)
+                            timelineContent(for: trip)
                         }
-                        .background(pageBackground)
-
-                        bottomPlayer(for: trip)
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 104)
+                        .padding(.horizontal, 18)
+                        .padding(.top, 8)
+                        .padding(.bottom, 128)
                     }
+                    .background(pageBackground)
+                    .scrollBounceBehavior(.basedOnSize)
                 }
             } else {
                 tripListView
@@ -633,7 +632,10 @@ struct TripPlannerView: View {
 
     // MARK: - Trip Header
     private func tripHeader(_ trip: TripPlannerService.Trip) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        let spots = trip.days.flatMap { $0.spots }
+        let visitedCount = spots.filter(\.isVisited).count
+
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Button {
                     showTripHome()
@@ -641,10 +643,10 @@ struct TripPlannerView: View {
                     Label("common.home", systemImage: "chevron.left")
                         .font(.subheadline.weight(.bold))
                         .labelStyle(.titleAndIcon)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(primaryColor)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(.white.opacity(0.16), in: Capsule())
+                        .background(primaryColor.opacity(0.10), in: Capsule())
                 }
                 .buttonStyle(.plain)
 
@@ -655,169 +657,156 @@ struct TripPlannerView: View {
                 } label: {
                     Label("trip.detail.changePlace", systemImage: "magnifyingglass")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(primaryColor)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(.white.opacity(0.16), in: Capsule())
+                        .background(primaryColor.opacity(0.10), in: Capsule())
                 }
                 .buttonStyle(.plain)
             }
 
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(trip.displayName)
-                        .font(.title2.weight(.heavy))
-                        .foregroundStyle(.white)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.82)
-                    Text(trip.formattedDateRange)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.7))
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(trip.displayName)
+                            .font(.title3.weight(.heavy))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.82)
+                        Text(trip.formattedDateRange)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .layoutPriority(1)
+
+                    HStack(spacing: 5) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                        Text("trip.detail.offlineReady")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(forestColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.78)
+                    }
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 6)
+                    .background(forestColor.opacity(0.10), in: Capsule())
                 }
-                .layoutPriority(1)
 
-                Spacer()
-
-                // Stats
-                HStack(spacing: 16) {
-                    VStack {
-                        Text("\(trip.duration + 1)")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                        Text("trip.detail.days")
-                            .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-
-                    VStack {
-                        Text("\(trip.days.flatMap { $0.spots }.count)")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                        Text("trip.detail.spots")
-                            .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-
-                    VStack {
-                        Text(totalDurationText(for: trip))
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                        Text("trip.detail.estimate")
-                            .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
+                HStack(spacing: 10) {
+                    TripHeaderMetric(value: "\(trip.duration + 1)", label: L10n.string("trip.detail.days"), color: primaryColor)
+                    TripHeaderMetric(value: "\(spots.count)", label: L10n.string("trip.detail.spots"), color: forestColor)
+                    TripHeaderMetric(value: totalDurationText(for: trip), label: L10n.string("trip.detail.estimate"), color: primaryColor)
                 }
-                .fixedSize(horizontal: true, vertical: false)
+
+                ProgressView(value: spots.isEmpty ? 0 : Double(visitedCount) / Double(spots.count))
+                    .tint(primaryColor)
+
+                Text(L10n.format("trip.detail.completed.format", visitedCount, spots.count))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
             }
-
-            // Progress bar
-            HStack {
-                Text(L10n.format(
-                    "trip.detail.completed.format",
-                    trip.days.flatMap { $0.spots }.filter { $0.isVisited }.count,
-                    trip.days.flatMap { $0.spots }.count
-                ))
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.7))
-
-                Spacer()
-
-                // Offline badge
-                HStack(spacing: 4) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                    Text("trip.detail.offlineReady")
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.7))
-                }
-            }
+            .padding(14)
+            .background(cardBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(.black.opacity(0.05), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.05), radius: 12, y: 5)
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 12)
-        .padding(.bottom, 18)
-        .background(primaryColor)
+        .padding(.horizontal, 18)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .background(pageBackground)
     }
 
-    // MARK: - Bottom Player
-    private func bottomPlayer(for trip: TripPlannerService.Trip) -> some View {
+    private struct TripHeaderMetric: View {
+        let value: String
+        let label: String
+        let color: Color
+
+        var body: some View {
+            VStack(spacing: 3) {
+                Text(value)
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.74)
+
+                Text(label)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(color.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+
+    // MARK: - Narration Player
+    private func narrationPlayerCard(for trip: TripPlannerService.Trip) -> some View {
         let spot = activeSpot(in: trip)
 
-        return VStack(spacing: 10) {
-            HStack {
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(primaryColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
-                    .overlay(
-                        Image(systemName: "waveform")
-                            .foregroundStyle(primaryColor)
-                    )
+        return HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(primaryColor.opacity(0.10))
+                .frame(width: 48, height: 48)
+                .overlay(
+                    Image(systemName: "waveform")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(primaryColor)
+                )
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(L10n.format("trip.player.now.format", spot?.displayName ?? trip.displayName))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                    Text(spot?.displayNotes ?? L10n.string("trip.player.sequenceHint"))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+            VStack(alignment: .leading, spacing: 5) {
+                Text(L10n.format("trip.player.now.format", spot?.displayName ?? trip.displayName))
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+
+                Text(spot?.displayNotes ?? L10n.string("trip.player.sequenceHint"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                ProgressView(value: max(0, ttsService.progress))
+                    .tint(primaryColor)
+            }
+            .layoutPriority(1)
+
+            HStack(spacing: 8) {
+                Button {
+                    replayNarration(for: trip)
+                } label: {
+                    Image(systemName: "gobackward")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(primaryColor)
+                        .frame(width: 40, height: 40)
+                        .background(primaryColor.opacity(0.10), in: Circle())
                 }
-
-                Spacer()
+                .buttonStyle(.plain)
+                .accessibilityLabel(L10n.string("trip.player.replay"))
 
                 Button {
                     toggleNarration(for: trip)
                 } label: {
                     Image(systemName: ttsService.isSpeaking ? "pause.fill" : "play.fill")
-                        .font(.title2)
+                        .font(.headline.weight(.semibold))
                         .foregroundStyle(.white)
-                        .frame(width: 44, height: 44)
+                        .frame(width: 42, height: 42)
                         .background(primaryColor, in: Circle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel(ttsService.isSpeaking ? L10n.string("trip.player.pause") : L10n.string("trip.player.play"))
-            }
-
-            ProgressView(value: max(0.02, ttsService.progress))
-                .tint(primaryColor)
-
-            HStack(spacing: 12) {
-                Button {
-                    replayNarration(for: trip)
-                } label: {
-                    Label("trip.player.replay", systemImage: "gobackward")
-                        .font(.caption.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(.gray.opacity(0.14), in: Capsule())
-                }
-                .buttonStyle(.plain)
-
-                Button {
-                    searchAnotherDestination()
-                } label: {
-                    Label("trip.detail.changePlace", systemImage: "magnifyingglass")
-                        .font(.caption.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(.gray.opacity(0.14), in: Capsule())
-                }
-                .buttonStyle(.plain)
-
-                Button {
-                    showTripHome()
-                } label: {
-                    Label("common.home", systemImage: "list.bullet")
-                        .font(.caption.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(.gray.opacity(0.14), in: Capsule())
-                }
-                .buttonStyle(.plain)
             }
         }
         .padding(14)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .shadow(color: .black.opacity(0.18), radius: 22, y: 10)
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(.black.opacity(0.05), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
     }
 
     // MARK: - Destination Search
@@ -1159,6 +1148,15 @@ struct TripPlannerView: View {
 
     private var canGenerateFromKeyword: Bool {
         !destinationQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !service.isSearching
+    }
+
+    private var shouldOpenQASampleTrip: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SAMPLE_TRIP")
+    }
+
+    private func openQASampleTripIfNeeded() {
+        guard shouldOpenQASampleTrip, !service.isPlanning else { return }
+        service.loadQASampleTrip()
     }
 
     private func runDestinationSearch() {

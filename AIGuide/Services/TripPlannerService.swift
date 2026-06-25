@@ -288,6 +288,16 @@ class TripPlannerService: ObservableObject {
         tripTemplates = TripTemplate.mockTemplates
     }
 
+    /// Load a deterministic local trip for simulator screenshot checks.
+    func loadQASampleTrip() {
+        guard let destination = placeResolver.knownDestinations(matching: "Louvre Museum Paris").first else {
+            return
+        }
+
+        currentTrip = buildFallbackTrip(destination: destinationResult(from: destination), nearbyItems: [])
+        isPlanning = true
+    }
+
     /// Create a new trip
     func createTrip(name: String, description: String, startDate: Date, endDate: Date) -> Trip {
         let trip = Trip(

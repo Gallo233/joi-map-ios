@@ -35,10 +35,165 @@ class SearchService: ObservableObject {
             }
         }
     }
+
+    private struct SearchRecord {
+        let id: String
+        let title: String
+        let subtitle: String
+        let category: SearchResult.SearchCategory
+        let icon: String
+        let keywords: [String]
+    }
     
     // MARK: - Private Properties
     private let recentSearchesKey = "com.aiguide.recent.searches"
     private let defaults = UserDefaults.standard
+    private let searchCatalog: [SearchRecord] = [
+        SearchRecord(
+            id: "poi-entrance",
+            title: "入口/出口",
+            subtitle: "入园、离园、检票和集合位置",
+            category: .poi,
+            icon: "door.left.hand.open",
+            keywords: ["入口", "出口", "检票", "闸机", "集合", "景点", "地点"]
+        ),
+        SearchRecord(
+            id: "poi-main-hall",
+            title: "主展厅",
+            subtitle: "当前场馆的核心参观点",
+            category: .poi,
+            icon: "building.columns.fill",
+            keywords: ["主展厅", "展厅", "景点", "必看", "核心", "参观"]
+        ),
+        SearchRecord(
+            id: "poi-viewpoint",
+            title: "观景点",
+            subtitle: "适合停留、拍照和观察全景的位置",
+            category: .poi,
+            icon: "camera.viewfinder",
+            keywords: ["观景", "拍照", "打卡", "景点", "视野", "全景"]
+        ),
+        SearchRecord(
+            id: "poi-garden",
+            title: "花园/户外区",
+            subtitle: "适合休息和慢速游览的开放空间",
+            category: .poi,
+            icon: "leaf.fill",
+            keywords: ["花园", "户外", "广场", "休息", "景点", "开放空间"]
+        ),
+        SearchRecord(
+            id: "exhibition-permanent",
+            title: "常设展",
+            subtitle: "长期开放的主题陈列",
+            category: .exhibition,
+            icon: "photo.fill",
+            keywords: ["常设展", "展览", "展品", "陈列", "展厅"]
+        ),
+        SearchRecord(
+            id: "exhibition-temporary",
+            title: "临时展",
+            subtitle: "限时开放的专题展览",
+            category: .exhibition,
+            icon: "sparkles",
+            keywords: ["临时展", "特展", "专题展", "展览", "限时"]
+        ),
+        SearchRecord(
+            id: "exhibition-highlights",
+            title: "精选展品",
+            subtitle: "适合快速了解亮点内容",
+            category: .exhibition,
+            icon: "star.fill",
+            keywords: ["精选", "亮点", "展品", "必看", "推荐"]
+        ),
+        SearchRecord(
+            id: "exhibition-interactive",
+            title: "互动体验",
+            subtitle: "可参与的沉浸式展示或体验区",
+            category: .exhibition,
+            icon: "hand.tap.fill",
+            keywords: ["互动", "体验", "沉浸", "展览", "体验区"]
+        ),
+        SearchRecord(
+            id: "facility-visitor-center",
+            title: "游客中心",
+            subtitle: "咨询、票务、寄存和服务台",
+            category: .facility,
+            icon: "info.circle.fill",
+            keywords: ["游客中心", "咨询", "票务", "寄存", "服务台", "服务"]
+        ),
+        SearchRecord(
+            id: "facility-restroom",
+            title: "卫生间",
+            subtitle: "附近公共卫生间和无障碍卫生间",
+            category: .facility,
+            icon: "figure.stand",
+            keywords: ["卫生间", "洗手间", "厕所", "无障碍卫生间", "设施"]
+        ),
+        SearchRecord(
+            id: "facility-food",
+            title: "餐饮",
+            subtitle: "餐厅、咖啡、轻食和休息补给点",
+            category: .facility,
+            icon: "fork.knife",
+            keywords: ["餐饮", "餐厅", "咖啡", "轻食", "吃饭", "饮品"]
+        ),
+        SearchRecord(
+            id: "facility-shop",
+            title: "纪念品商店",
+            subtitle: "文创、纪念品和导览周边",
+            category: .facility,
+            icon: "bag.fill",
+            keywords: ["商店", "纪念品", "文创", "购物", "周边"]
+        ),
+        SearchRecord(
+            id: "facility-water",
+            title: "饮水处",
+            subtitle: "直饮水、补水和自动售卖点",
+            category: .facility,
+            icon: "drop.fill",
+            keywords: ["饮水", "水", "补水", "售卖", "设施"]
+        ),
+        SearchRecord(
+            id: "facility-accessibility",
+            title: "无障碍服务",
+            subtitle: "轮椅、坡道、电梯和辅助通行信息",
+            category: .facility,
+            icon: "figure.roll",
+            keywords: ["无障碍", "轮椅", "坡道", "电梯", "辅助", "通行"]
+        ),
+        SearchRecord(
+            id: "tour-recommended",
+            title: "推荐路线",
+            subtitle: "覆盖核心景点和展览的经典游览动线",
+            category: .tour,
+            icon: "map.fill",
+            keywords: ["路线", "推荐", "经典", "核心", "导览"]
+        ),
+        SearchRecord(
+            id: "tour-family",
+            title: "亲子路线",
+            subtitle: "节奏轻松、适合家庭同行的路线",
+            category: .tour,
+            icon: "figure.2.and.child.holdinghands",
+            keywords: ["亲子", "家庭", "孩子", "轻松", "路线"]
+        ),
+        SearchRecord(
+            id: "tour-short",
+            title: "快速游览",
+            subtitle: "时间有限时优先参观的精简路线",
+            category: .tour,
+            icon: "clock.fill",
+            keywords: ["快速", "半日", "精简", "短线", "路线"]
+        ),
+        SearchRecord(
+            id: "tour-accessible",
+            title: "无障碍路线",
+            subtitle: "优先经过坡道、电梯和便捷服务点",
+            category: .tour,
+            icon: "accessibility",
+            keywords: ["无障碍", "轮椅", "电梯", "坡道", "路线"]
+        )
+    ]
     
     // MARK: - Initialization
     init() {
@@ -49,7 +204,8 @@ class SearchService: ObservableObject {
     
     /// Search with query
     func search(_ query: String) async {
-        guard !query.isEmpty else {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else {
             searchResults = []
             return
         }
@@ -63,26 +219,26 @@ class SearchService: ObservableObject {
         var results: [SearchResult] = []
         
         // Search POIs
-        let poiResults = searchPOIs(query)
+        let poiResults = searchPOIs(trimmedQuery)
         results.append(contentsOf: poiResults)
         
         // Search exhibitions
-        let exhibitionResults = searchExhibitions(query)
+        let exhibitionResults = searchExhibitions(trimmedQuery)
         results.append(contentsOf: exhibitionResults)
         
         // Search facilities
-        let facilityResults = searchFacilities(query)
+        let facilityResults = searchFacilities(trimmedQuery)
         results.append(contentsOf: facilityResults)
         
         // Search tours
-        let tourResults = searchTours(query)
+        let tourResults = searchTours(trimmedQuery)
         results.append(contentsOf: tourResults)
         
         searchResults = results
         
         // Save to recent searches
         if !results.isEmpty {
-            saveRecentSearch(query)
+            saveRecentSearch(trimmedQuery)
         }
     }
     
@@ -107,92 +263,42 @@ class SearchService: ObservableObject {
     // MARK: - Private Methods - Search
     
     private func searchPOIs(_ query: String) -> [SearchResult] {
-        let pois = POI.mockList
-        let filtered = pois.filter { poi in
-            poi.name.localizedCaseInsensitiveContains(query) ||
-            poi.description.localizedCaseInsensitiveContains(query)
-        }
-        
-        return filtered.map { poi in
-            SearchResult(
-                id: poi.id,
-                title: poi.name,
-                subtitle: poi.description,
-                category: .poi,
-                icon: "building.2.fill",
-                poi: poi
-            )
-        }
+        searchRecords(query, in: .poi)
     }
     
     private func searchExhibitions(_ query: String) -> [SearchResult] {
-        // Mock exhibitions
-        let exhibitions = [
-            (id: "ex1", name: "故宫珍宝展", description: "清代宫廷珍宝文物"),
-            (id: "ex2", name: "钟表馆", description: "清代宫廷钟表收藏"),
-            (id: "ex3", name: "书画馆", description: "历代书画精品"),
-            (id: "ex4", name: "陶瓷馆", description: "中国古代陶瓷"),
-        ]
-        
-        let filtered = exhibitions.filter { $0.name.localizedCaseInsensitiveContains(query) || $0.description.localizedCaseInsensitiveContains(query) }
-        
-        return filtered.map { exhibition in
-            SearchResult(
-                id: exhibition.id,
-                title: exhibition.name,
-                subtitle: exhibition.description,
-                category: .exhibition,
-                icon: "photo.fill",
-                poi: nil
-            )
-        }
+        searchRecords(query, in: .exhibition)
     }
     
     private func searchFacilities(_ query: String) -> [SearchResult] {
-        // Mock facilities
-        let facilities = [
-            (id: "f1", name: "卫生间", description: "太和殿东侧", icon: "figure.stand"),
-            (id: "f2", name: "餐厅", description: "御膳房", icon: "fork.knife"),
-            (id: "f3", name: "纪念品商店", description: "故宫商店", icon: "bag.fill"),
-            (id: "f4", name: "饮水处", description: "各主要景点", icon: "drop.fill"),
-            (id: "f5", name: "轮椅租赁", description: "午门入口", icon: "figure.roll"),
-            (id: "f6", name: "母婴室", description: "乾清宫附近", icon: "figure.and.child.holdinghands"),
-        ]
-        
-        let filtered = facilities.filter { $0.name.localizedCaseInsensitiveContains(query) || $0.description.localizedCaseInsensitiveContains(query) }
-        
-        return filtered.map { facility in
-            SearchResult(
-                id: facility.id,
-                title: facility.name,
-                subtitle: facility.description,
-                category: .facility,
-                icon: facility.icon,
-                poi: nil
-            )
-        }
+        searchRecords(query, in: .facility)
     }
     
     private func searchTours(_ query: String) -> [SearchResult] {
-        // Mock tours
-        let tours = [
-            (id: "t1", name: "中轴线精华游", description: "太和殿-中和殿-保和殿"),
-            (id: "t2", name: "后宫探秘", description: "乾清宫-坤宁宫-御花园"),
-            (id: "t3", name: "珍宝之旅", description: "珍宝馆-钟表馆"),
-            (id: "t4", name: "亲子路线", description: "适合带小朋友的轻松路线"),
-        ]
-        
-        let filtered = tours.filter { $0.name.localizedCaseInsensitiveContains(query) || $0.description.localizedCaseInsensitiveContains(query) }
-        
-        return filtered.map { tour in
-            SearchResult(
-                id: tour.id,
-                title: tour.name,
-                subtitle: tour.description,
-                category: .tour,
-                icon: "map.fill",
-                poi: nil
-            )
+        searchRecords(query, in: .tour)
+    }
+
+    private func searchRecords(_ query: String, in category: SearchResult.SearchCategory) -> [SearchResult] {
+        searchCatalog
+            .filter { record in
+                record.category == category && matches(record, query: query)
+            }
+            .map { record in
+                SearchResult(
+                    id: record.id,
+                    title: record.title,
+                    subtitle: record.subtitle,
+                    category: record.category,
+                    icon: record.icon,
+                    poi: nil
+                )
+            }
+    }
+
+    private func matches(_ record: SearchRecord, query: String) -> Bool {
+        ([record.title, record.subtitle] + record.keywords).contains { value in
+            value.localizedCaseInsensitiveContains(query) ||
+            query.localizedCaseInsensitiveContains(value)
         }
     }
     

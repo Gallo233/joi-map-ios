@@ -7,6 +7,15 @@ struct SearchView: View {
     @State private var showResults = false
     @FocusState private var isSearchFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    private let quickSearchItems: [QuickSearchItem] = [
+        QuickSearchItem(icon: "mappin.and.ellipse", title: "景点", query: "景点", color: .red),
+        QuickSearchItem(icon: "paintbrush.fill", title: "展品", query: "展品", color: .purple),
+        QuickSearchItem(icon: "figure.stand", title: "卫生间", query: "卫生间", color: .blue),
+        QuickSearchItem(icon: "fork.knife", title: "餐饮", query: "餐饮", color: .orange),
+        QuickSearchItem(icon: "bag.fill", title: "商店", query: "商店", color: .green),
+        QuickSearchItem(icon: "map.fill", title: "路线", query: "路线", color: .cyan)
+    ]
+    private let popularSearchTags = ["入口", "游客中心", "主展厅", "临时展", "卫生间", "餐饮", "纪念品", "无障碍"]
     
     var body: some View {
         NavigationStack {
@@ -133,34 +142,10 @@ struct SearchView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 12) {
-                categoryButton(icon: "building.2.fill", title: "宫殿", color: .red) {
-                    searchService.searchText = "宫殿"
-                    Task { await searchService.search("宫殿") }
-                }
-                
-                categoryButton(icon: "paintbrush.fill", title: "展览", color: .purple) {
-                    searchService.searchText = "展览"
-                    Task { await searchService.search("展览") }
-                }
-                
-                categoryButton(icon: "figure.stand", title: "卫生间", color: .blue) {
-                    searchService.searchText = "卫生间"
-                    Task { await searchService.search("卫生间") }
-                }
-                
-                categoryButton(icon: "fork.knife", title: "餐厅", color: .orange) {
-                    searchService.searchText = "餐厅"
-                    Task { await searchService.search("餐厅") }
-                }
-                
-                categoryButton(icon: "bag.fill", title: "商店", color: .green) {
-                    searchService.searchText = "商店"
-                    Task { await searchService.search("商店") }
-                }
-                
-                categoryButton(icon: "map.fill", title: "路线", color: .cyan) {
-                    searchService.searchText = "路线"
-                    Task { await searchService.search("路线") }
+                ForEach(quickSearchItems) { item in
+                    categoryButton(icon: item.icon, title: item.title, color: item.color) {
+                        runSearch(item.query)
+                    }
                 }
             }
         }
@@ -188,10 +173,9 @@ struct SearchView: View {
                 .font(.headline)
             
             FlowLayout(spacing: 8) {
-                ForEach(["太和殿", "珍宝馆", "钟表馆", "御花园", "乾清宫", "午门", "中和殿", "保和殿"], id: \.self) { tag in
+                ForEach(popularSearchTags, id: \.self) { tag in
                     Button(action: {
-                        searchService.searchText = tag
-                        Task { await searchService.search(tag) }
+                        runSearch(tag)
                     }) {
                         Text(tag)
                             .font(.subheadline)
@@ -203,6 +187,11 @@ struct SearchView: View {
                 }
             }
         }
+    }
+
+    private func runSearch(_ query: String) {
+        searchService.searchText = query
+        Task { await searchService.search(query) }
     }
     
     // MARK: - Loading View
@@ -250,6 +239,14 @@ struct SearchView: View {
         }
         .listStyle(.plain)
     }
+}
+
+private struct QuickSearchItem: Identifiable {
+    var id: String { query }
+    let icon: String
+    let title: String
+    let query: String
+    let color: Color
 }
 
 // MARK: - Search Result Row
