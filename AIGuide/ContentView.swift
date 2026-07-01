@@ -65,6 +65,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showIndoor) {
             IndoorLocationView()
+                .presentationDetents([.large])
         }
         .environment(\.locale, settingsService.language.locale)
         .onAppear {
@@ -72,6 +73,7 @@ struct ContentView: View {
                 showOnboarding = false
                 selectedTab = qaTab
                 showNumberInput = Self.opensNumberInputForQA
+                showIndoor = Self.opensIndoorForQA
                 return
             }
 
@@ -100,10 +102,15 @@ struct ContentView: View {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_NUMBER_INPUT")
     }
 
+    private static var opensIndoorForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_INDOOR")
+    }
+
     private static var qaInitialSelectedTab: Int? {
         if opensSettingsForQA { return 3 }
         if opensTripsForQA { return 2 }
         if opensScanForQA { return 1 }
+        if opensIndoorForQA { return 0 }
         if opensNumberInputForQA { return 0 }
         return nil
     }

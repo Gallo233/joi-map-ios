@@ -332,7 +332,7 @@ struct CreateTourView: View {
                 }
                 
                 Section("tour.choosePlaces") {
-                    ForEach(POI.mockList) { poi in
+                    ForEach(POI.seedList) { poi in
                         Button(action: { toggleStop(poi) }) {
                             HStack {
                                 Text(poi.name)

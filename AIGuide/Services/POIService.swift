@@ -17,19 +17,17 @@ class POIService: ObservableObject {
     
     // MARK: - Initialization
     init() {
-        loadMockData()
+        loadSeedData()
     }
     
     // MARK: - Public Methods
     
-    /// Load POIs (mock for now, will connect to backend)
+    /// Load POIs from the bundled seed catalog until backend content is available.
     func loadPOIs() async {
         isLoading = true
         defer { isLoading = false }
-        
-        // TODO: Replace with actual API call
-        // For now, use mock data
-        loadMockData()
+
+        loadSeedData()
     }
     
     /// Update nearby POIs based on current location
@@ -57,12 +55,18 @@ class POIService: ObservableObject {
     
     // MARK: - Private Methods
     
-    private func loadMockData() {
+    private func loadSeedData() {
         allPOIs = POI.seedList
-        
-        // Set initial nearby POIs (mock location at 太和殿)
-        let mockLocation = CLLocation(latitude: 39.9163, longitude: 116.3972)
-        updateNearbyPOIs(location: mockLocation)
+
+        if let firstSeed = POI.curatedWorldList.first {
+            let seedLocation = CLLocation(
+                latitude: firstSeed.coordinate.latitude,
+                longitude: firstSeed.coordinate.longitude
+            )
+            updateNearbyPOIs(location: seedLocation)
+        } else {
+            nearbyPOIs = Array(allPOIs.prefix(3))
+        }
     }
 }
 

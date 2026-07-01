@@ -170,7 +170,7 @@ struct IndoorLocationView: View {
             if !viewModel.highlightedPOIs.isEmpty {
                 Section("区域内景点") {
                     ForEach(viewModel.highlightedPOIs, id: \.self) { poiId in
-                        if let poi = POI.mockList.first(where: { $0.id == poiId }) {
+                        if let poi = POI.seedList.first(where: { $0.id == poiId }) {
                             HStack {
                                 Image(systemName: "building.2.fill")
                                     .foregroundStyle(.blue)

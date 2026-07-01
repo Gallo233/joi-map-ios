@@ -47,7 +47,7 @@ struct ARGuideView: View {
                 if let location = newLocation {
                     arService.updatePOIs(
                         userLocation: location.coordinate,
-                        pois: POI.mockList
+                        pois: POI.seedList
                     )
                 }
             }
@@ -117,4 +117,3 @@ struct ARGuideView: View {
         )
     }
 }
-
