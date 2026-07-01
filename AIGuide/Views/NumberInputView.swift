@@ -1,4 +1,4 @@
-// Number Input View - Museum Exhibit Lookup
+// Number Input View - Place Code Lookup
 
 import SwiftUI
 
@@ -7,38 +7,43 @@ struct NumberInputView: View {
     @State private var showResult = false
     @FocusState private var isInputFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    private let accent = Color(red: 0.12, green: 0.40, blue: 0.24)
+    private let warmAccent = Color(red: 0.88, green: 0.33, blue: 0.13)
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                // Header
-                headerSection
-                
-                // Number input
-                inputSection
-                
-                // Result
-                if let poi = numberService.matchedPOI {
-                    resultSection(poi)
+            ScrollView {
+                VStack(spacing: 18) {
+                    // Header
+                    headerSection
+
+                    // Number input
+                    inputSection
+
+                    // Result
+                    if let poi = numberService.matchedPOI {
+                        resultSection(poi)
+                    }
+
+                    // Recent lookups
+                    if !numberService.recentLookups.isEmpty {
+                        recentSection
+                    }
                 }
-                
-                // Recent lookups
-                if !numberService.recentLookups.isEmpty {
-                    recentSection
-                }
-                
-                Spacer()
+                .padding(.horizontal)
+                .padding(.top, 10)
+                .padding(.bottom, 32)
             }
-            .padding()
-            .navigationTitle("编号查询")
+            .scrollDismissesKeyboard(.interactively)
+            .navigationTitle(L10n.string("number.lookup.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("关闭") { dismiss() }
+                    Button(L10n.string("common.close")) { dismiss() }
                 }
             }
-            .alert("查询失败", isPresented: $numberService.showError) {
-                Button("确定", role: .cancel) {}
+            .alert(L10n.string("number.lookup.error.title"), isPresented: $numberService.showError) {
+                Button(L10n.string("common.ok"), role: .cancel) {}
             } message: {
                 Text(numberService.errorMessage)
             }
@@ -47,16 +52,16 @@ struct NumberInputView: View {
     
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 9) {
             Image(systemName: "number.square")
-                .font(.system(size: 50))
-                .foregroundStyle(.blue)
+                .font(.system(size: 42))
+                .foregroundStyle(accent)
             
-            Text("输入展品编号")
+            Text(L10n.string("number.lookup.heading"))
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Text("在展品旁边的标签上找到编号，输入即可查看讲解")
+            Text(L10n.string("number.lookup.subtitle"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -65,18 +70,19 @@ struct NumberInputView: View {
     
     // MARK: - Input Section
     private var inputSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             // Number input field
             HStack {
                 Image(systemName: "number")
                     .foregroundStyle(.secondary)
                 
-                TextField("输入编号", text: $numberService.inputNumber)
-                    .keyboardType(.numberPad)
+                TextField(L10n.string("number.lookup.placeholder"), text: $numberService.inputNumber)
+                    .keyboardType(.asciiCapable)
+                    .textInputAutocapitalization(.characters)
+                    .autocorrectionDisabled()
                     .font(.title2)
                     .focused($isInputFocused)
                     .onChange(of: numberService.inputNumber) { _, newValue in
-                        // Auto-lookup after 3 digits
                         if newValue.count >= 3 {
                             Task {
                                 await numberService.lookup(newValue)
@@ -107,39 +113,46 @@ struct NumberInputView: View {
                             .tint(.white)
                     }
                     
-                    Text("查询")
+                    Text(L10n.string("查询"))
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(numberService.inputNumber.isEmpty ? .gray : .blue)
+                .background(numberService.inputNumber.isEmpty ? .gray : accent)
                 .foregroundStyle(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .disabled(numberService.inputNumber.isEmpty || numberService.isSearching)
             
             // Quick numbers
-            VStack(alignment: .leading, spacing: 8) {
-                Text("常用编号")
+            VStack(alignment: .leading, spacing: 7) {
+                Text(L10n.string("number.lookup.suggestions"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(["001", "002", "003", "100", "101", "200"], id: \.self) { number in
+                        ForEach(numberService.suggestedLookups) { suggestion in
                             Button(action: {
-                                numberService.inputNumber = number
+                                numberService.inputNumber = suggestion.code
                                 Task {
-                                    await numberService.lookup(number)
+                                    await numberService.lookup(suggestion.code)
                                 }
                             }) {
-                                Text(number)
-                                    .font(.subheadline)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(.blue.opacity(0.1))
-                                    .foregroundStyle(.blue)
-                                    .clipShape(Capsule())
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(suggestion.code)
+                                        .font(.subheadline.weight(.semibold))
+                                        .lineLimit(1)
+                                    Text(suggestion.poi.name)
+                                        .font(.caption2)
+                                        .lineLimit(1)
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 7)
+                                .frame(maxWidth: 128, alignment: .leading)
+                                .background(accent.opacity(0.1))
+                                .foregroundStyle(accent)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
                             }
                         }
                     }
@@ -155,7 +168,7 @@ struct NumberInputView: View {
             HStack {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
-                Text("找到展品")
+                Text(L10n.string("number.lookup.found"))
                     .font(.headline)
                 Spacer()
             }
@@ -177,7 +190,7 @@ struct NumberInputView: View {
                     
                     Image(systemName: categoryIcon(poi.category))
                         .font(.system(size: 40))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(accent)
                 }
                 
                 Divider()
@@ -189,7 +202,7 @@ struct NumberInputView: View {
                 HStack {
                     Image(systemName: "shield.checkered")
                         .foregroundStyle(.secondary)
-                    Text("来源：\(poi.source.name)")
+                    Text(L10n.format("来源：%@", poi.source.name))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -204,10 +217,10 @@ struct NumberInputView: View {
                 Button(action: {
                     // Start guide
                 }) {
-                    Label("开始讲解", systemImage: "play.fill")
+                    Label(L10n.string("开始讲解"), systemImage: "play.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(.blue)
+                        .background(accent)
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
@@ -215,10 +228,10 @@ struct NumberInputView: View {
                 Button(action: {
                     // View on map
                 }) {
-                    Label("地图定位", systemImage: "map")
+                    Label(L10n.string("地图定位"), systemImage: "map")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(.green)
+                        .background(warmAccent)
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
@@ -238,7 +251,7 @@ struct NumberInputView: View {
                 
                 Spacer()
                 
-                Button("清空") {
+                Button(L10n.string("清空")) {
                     numberService.clearRecentLookups()
                 }
                 .font(.subheadline)

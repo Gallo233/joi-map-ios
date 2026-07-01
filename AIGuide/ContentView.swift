@@ -61,6 +61,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showNumberInput) {
             NumberInputView()
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $showIndoor) {
             IndoorLocationView()
@@ -70,6 +71,7 @@ struct ContentView: View {
             if let qaTab = Self.qaInitialSelectedTab {
                 showOnboarding = false
                 selectedTab = qaTab
+                showNumberInput = Self.opensNumberInputForQA
                 return
             }
 
@@ -94,10 +96,15 @@ struct ContentView: View {
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIP_SEARCH")
     }
 
+    private static var opensNumberInputForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_NUMBER_INPUT")
+    }
+
     private static var qaInitialSelectedTab: Int? {
         if opensSettingsForQA { return 3 }
         if opensTripsForQA { return 2 }
         if opensScanForQA { return 1 }
+        if opensNumberInputForQA { return 0 }
         return nil
     }
 
