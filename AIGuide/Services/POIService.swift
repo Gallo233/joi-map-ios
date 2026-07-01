@@ -58,7 +58,7 @@ class POIService: ObservableObject {
     // MARK: - Private Methods
     
     private func loadMockData() {
-        allPOIs = POI.mockList
+        allPOIs = POI.seedList
         
         // Set initial nearby POIs (mock location at 太和殿)
         let mockLocation = CLLocation(latitude: 39.9163, longitude: 116.3972)

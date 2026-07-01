@@ -43,7 +43,7 @@ class GuideViewModel: ObservableObject {
 
     // MARK: - Playback tracking
     private var playbackStartTime: Date?
-    private var allPOIs: [POI] = POI.mockList
+    private var allPOIs: [POI] = POI.seedList
     private var lastContextResolveAt: Date?
     private var visualConfirmations: [String: VisualConfirmation] = [:]
     private let remoteResolveInterval: TimeInterval = 8
@@ -207,9 +207,9 @@ class GuideViewModel: ObservableObject {
 
     private func setupMockData() {
         if let cachedPOIs = loadCachedPOIs(), !cachedPOIs.isEmpty {
-            allPOIs = mergePOIs(POI.mockList, with: cachedPOIs)
+            allPOIs = mergePOIs(POI.seedList, with: cachedPOIs)
         } else {
-            allPOIs = POI.mockList
+            allPOIs = POI.seedList
         }
         confidenceList = []
         nearbyPOIs = []
@@ -330,7 +330,7 @@ class GuideViewModel: ObservableObject {
             let cachedUserPOIs = loadCachedPOIs()?.filter { poi in
                 poi.id.hasPrefix(userPOIPrefix) || poi.source.type == .userContributed
             } ?? []
-            allPOIs = mergePOIs(pois.isEmpty ? POI.mockList : pois, with: cachedUserPOIs)
+            allPOIs = mergePOIs(pois.isEmpty ? POI.seedList : pois, with: cachedUserPOIs)
             saveCachedPOIs(allPOIs)
             if locationService.currentLocation == nil {
                 nearbyPOIs = []
@@ -343,9 +343,9 @@ class GuideViewModel: ObservableObject {
                 positioningSummary = L10n.string("guide.offlineReady")
             }
             if let cachedPOIs = loadCachedPOIs(), !cachedPOIs.isEmpty {
-                allPOIs = mergePOIs(POI.mockList, with: cachedPOIs)
+                allPOIs = mergePOIs(POI.seedList, with: cachedPOIs)
             } else if allPOIs.isEmpty {
-                allPOIs = POI.mockList
+                allPOIs = POI.seedList
             }
             if currentPOI == nil {
                 nearbyPOIs = []
@@ -1287,7 +1287,7 @@ class GuideViewModel: ObservableObject {
     }
 
     private func poi(for id: String) -> POI? {
-        allPOIs.first { $0.id == id } ?? POI.mockList.first { $0.id == id }
+        allPOIs.first { $0.id == id } ?? POI.seedList.first { $0.id == id }
     }
 
     private func localNearbyRadius(for location: CLLocation) -> CLLocationDistance {

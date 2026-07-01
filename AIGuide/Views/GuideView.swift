@@ -2136,7 +2136,7 @@ struct MapViewContainer: UIViewRepresentable {
     }
 
     private func poi(for id: String) -> POI? {
-        nearbyPOIs.first { $0.id == id } ?? POI.mockList.first { $0.id == id }
+        nearbyPOIs.first { $0.id == id } ?? POI.seedList.first { $0.id == id }
     }
 
     private func mergedPOIs(_ pois: [POI]) -> [POI] {

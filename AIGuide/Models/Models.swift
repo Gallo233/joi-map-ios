@@ -220,6 +220,13 @@ struct QASession: Identifiable, Codable {
 
 // MARK: - Mock Data
 extension POI {
+    static var seedList: [POI] {
+        var seen = Set<String>()
+        return (mockList + curatedWorldList).filter { poi in
+            seen.insert(poi.id).inserted
+        }
+    }
+
     static var mock: POI {
         POI(
             id: "taihedian",
@@ -281,6 +288,112 @@ extension POI {
                 source: ContentSource(name: L10n.string("guide.source.palaceMuseum"), type: .official, verified: true)
             )
         ]
+    }
+
+    static var curatedWorldList: [POI] {
+        [
+            curatedDestination(
+                id: "louvre-paris",
+                nameKey: "destination.louvre-paris.name",
+                descriptionKey: "trip.search.featured.paris.subtitle",
+                latitude: 48.8606,
+                longitude: 2.3376,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "met-museum-new-york",
+                nameKey: "destination.met-museum-new-york.name",
+                descriptionKey: "trip.search.featured.newYork.subtitle",
+                latitude: 40.7794,
+                longitude: -73.9632,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "british-museum-london",
+                nameKey: "destination.british-museum-london.name",
+                descriptionKey: "destination.british-museum-london.subtitle",
+                latitude: 51.5194,
+                longitude: -0.1270,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "tokyo-national-museum",
+                nameKey: "destination.tokyo-national-museum.name",
+                descriptionKey: "destination.tokyo-national-museum.subtitle",
+                latitude: 35.7188,
+                longitude: 139.7765,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "national-palace-museum-taipei",
+                nameKey: "destination.national-palace-museum-taipei.name",
+                descriptionKey: "destination.national-palace-museum-taipei.subtitle",
+                latitude: 25.1024,
+                longitude: 121.5485,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "contemporary-jewish-museum-san-francisco",
+                nameKey: "destination.contemporary-jewish-museum-san-francisco.name",
+                descriptionKey: "guide.offlinePOI.cjm.desc",
+                latitude: 37.7863,
+                longitude: -122.4039,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "sfmoma",
+                name: "San Francisco Museum of Modern Art",
+                descriptionKey: "guide.offlinePOI.sfmoma.desc",
+                latitude: 37.7857,
+                longitude: -122.4011,
+                category: .museum
+            ),
+            curatedDestination(
+                id: "union-square-sf",
+                name: "Union Square",
+                descriptionKey: "guide.offlinePOI.unionSquare.desc",
+                latitude: 37.7880,
+                longitude: -122.4075,
+                category: .building
+            )
+        ]
+    }
+
+    private static func curatedDestination(
+        id: String,
+        nameKey: String,
+        descriptionKey: String,
+        latitude: Double,
+        longitude: Double,
+        category: POICategory
+    ) -> POI {
+        curatedDestination(
+            id: id,
+            name: L10n.string(nameKey),
+            descriptionKey: descriptionKey,
+            latitude: latitude,
+            longitude: longitude,
+            category: category
+        )
+    }
+
+    private static func curatedDestination(
+        id: String,
+        name: String,
+        descriptionKey: String,
+        latitude: Double,
+        longitude: Double,
+        category: POICategory
+    ) -> POI {
+        POI(
+            id: id,
+            name: name,
+            description: L10n.string(descriptionKey),
+            coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            category: category,
+            images: [],
+            source: ContentSource(name: L10n.string("guide.source.offlineCultural"), type: .curated, verified: false)
+        )
     }
 }
 

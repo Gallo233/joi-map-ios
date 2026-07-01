@@ -87,7 +87,8 @@ class SeeAndAskService: ObservableObject {
         // Recognize using Vision framework
         if let result = await visionService.recognizeImage(image) {
             // Find related POI
-            let relatedPOI = findRelatedPOI(for: result.label)
+            let recognitionLocation = locationService.currentLocation
+            let relatedPOI = findRelatedPOI(for: result.label, near: recognitionLocation)
             let sourceName = relatedPOI.map { localizedSourceName($0.source.name) } ?? L10n.string("see.source.localVision")
 
             recognizedObject = RecognizedObject(
@@ -101,7 +102,7 @@ class SeeAndAskService: ObservableObject {
                 sourceName: sourceName,
                 sourceVerified: relatedPOI?.source.verified ?? false
             )
-            recognitionCandidates = makeCandidates(primary: result, relatedPOI: relatedPOI)
+            recognitionCandidates = makeCandidates(primary: result, relatedPOI: relatedPOI, near: recognitionLocation)
 
             // Add initial message
             conversationHistory = [
@@ -259,7 +260,10 @@ class SeeAndAskService: ObservableObject {
     }
 
     private func applyBackendRecognition(_ response: BackendVisionResponse, imageData: Data?) {
-        let relatedPOI = response.poi ?? response.suggestions.first
+        let recognitionLocation = locationService.currentLocation
+        let relatedPOI = response.poi
+            ?? response.suggestions.first
+            ?? response.label.flatMap { findRelatedPOI(for: $0, near: recognitionLocation) }
         let source = response.source
             ?? relatedPOI?.source
             ?? ContentSource(name: L10n.string("see.source.mimoVision"), type: .curated, verified: false)
@@ -279,7 +283,7 @@ class SeeAndAskService: ObservableObject {
             sourceName: localizedSourceName(source.name),
             sourceVerified: source.verified
         )
-        recognitionCandidates = makeCandidates(from: response)
+        recognitionCandidates = makeCandidates(from: response, near: recognitionLocation)
         conversationHistory = [
             ConversationMessage(
                 role: .assistant,
@@ -293,14 +297,8 @@ class SeeAndAskService: ObservableObject {
         ]
     }
 
-    private func findRelatedPOI(for label: String) -> POI? {
-        let normalizedLabel = normalize(label)
-
-        return POI.mockList.first { poi in
-            aliases(for: poi).contains { alias in
-                normalizedLabel.contains(normalize(alias)) || normalize(alias).contains(normalizedLabel)
-            }
-        }
+    private func findRelatedPOI(for label: String, near location: CLLocation?) -> POI? {
+        rankedPOIs(matching: label, near: location).first?.poi
     }
 
     private func generateAnswer(
@@ -422,7 +420,8 @@ class SeeAndAskService: ObservableObject {
 
     private func makeCandidates(
         primary result: VisionService.RecognitionResult,
-        relatedPOI: POI?
+        relatedPOI: POI?,
+        near location: CLLocation?
     ) -> [RecognitionCandidate] {
         var candidates: [RecognitionCandidate] = [
             RecognitionCandidate(
@@ -434,26 +433,28 @@ class SeeAndAskService: ObservableObject {
         ]
 
         let relatedID = relatedPOI?.id
-        let alternatives = POI.mockList
-            .filter { $0.id != relatedID }
+        let alternatives = rankedPOIs(matching: result.label, near: location)
+            .filter { $0.poi.id != relatedID }
             .prefix(2)
             .enumerated()
-            .map { index, poi in
+            .map { index, match in
                 RecognitionCandidate(
                     rank: index + 2,
-                    name: poi.name,
-                    confidence: max(0.08, result.confidence - Double(index + 1) * 0.18),
-                    poi: poi
+                    name: match.poi.name,
+                    confidence: min(0.92, max(0.08, result.confidence * 0.72 + match.score * 0.28 - Double(index) * 0.08)),
+                    poi: match.poi
                 )
             }
 
         candidates.append(contentsOf: alternatives)
-        return candidates
+        return candidates.uniquedByName().prefix(3).map { $0 }
     }
 
-    private func makeCandidates(from response: BackendVisionResponse) -> [RecognitionCandidate] {
+    private func makeCandidates(from response: BackendVisionResponse, near location: CLLocation?) -> [RecognitionCandidate] {
+        var candidates: [RecognitionCandidate] = []
+
         if !response.suggestions.isEmpty {
-            return response.suggestions
+            candidates = response.suggestions
                 .prefix(3)
                 .enumerated()
                 .map { index, poi in
@@ -467,12 +468,114 @@ class SeeAndAskService: ObservableObject {
         }
 
         if let label = response.label {
-            return [
-                RecognitionCandidate(rank: 1, name: label, confidence: response.confidence)
-            ]
+            if candidates.isEmpty {
+                candidates.append(RecognitionCandidate(rank: 1, name: label, confidence: response.confidence))
+            }
+
+            let existingIDs = Set(candidates.compactMap { $0.poi?.id })
+            let localMatches = rankedPOIs(matching: label, near: location)
+                .filter { !existingIDs.contains($0.poi.id) }
+                .prefix(max(0, 3 - candidates.count))
+
+            for match in localMatches {
+                candidates.append(
+                    RecognitionCandidate(
+                        rank: candidates.count + 1,
+                        name: match.poi.name,
+                        confidence: min(0.92, max(0.08, response.confidence * 0.72 + match.score * 0.28)),
+                        poi: match.poi
+                    )
+                )
+            }
         }
 
-        return []
+        return candidates.uniquedByName().prefix(3).enumerated().map { index, candidate in
+            RecognitionCandidate(
+                rank: index + 1,
+                name: candidate.name,
+                confidence: candidate.confidence,
+                poi: candidate.poi
+            )
+        }
+    }
+
+    private func rankedPOIs(matching label: String, near location: CLLocation?) -> [(poi: POI, score: Double)] {
+        let normalizedLabel = normalize(label)
+        guard !normalizedLabel.isEmpty else { return [] }
+
+        return POI.seedList.compactMap { poi -> (poi: POI, score: Double)? in
+            let textScore = textualScore(for: normalizedLabel, poi: poi)
+            let categoryScore = categoryScore(for: normalizedLabel, poi: poi)
+            let proximityScore = location.map { distanceScore(from: $0, to: poi) } ?? 0
+            let score = max(textScore, categoryScore) + proximityScore
+            let isNearby = location.map { distance(from: $0, to: poi.coordinate) <= 260 } ?? false
+
+            guard score >= 0.34 || isNearby else { return nil }
+            return (poi, min(score, 0.98))
+        }
+        .sorted { first, second in
+            if first.score == second.score {
+                guard let location else { return first.poi.name < second.poi.name }
+                return distance(from: location, to: first.poi.coordinate) < distance(from: location, to: second.poi.coordinate)
+            }
+            return first.score > second.score
+        }
+    }
+
+    private func textualScore(for normalizedLabel: String, poi: POI) -> Double {
+        aliases(for: poi).reduce(0) { bestScore, alias in
+            let normalizedAlias = normalize(alias)
+            guard !normalizedAlias.isEmpty else { return bestScore }
+
+            if normalizedAlias == normalizedLabel {
+                return max(bestScore, 0.82)
+            }
+
+            if normalizedAlias.contains(normalizedLabel), normalizedLabel.count >= 4 {
+                return max(bestScore, 0.68)
+            }
+
+            if normalizedLabel.contains(normalizedAlias), normalizedAlias.count >= 4 {
+                return max(bestScore, 0.72)
+            }
+
+            return bestScore
+        }
+    }
+
+    private func categoryScore(for normalizedLabel: String, poi: POI) -> Double {
+        switch poi.category {
+        case .museum:
+            return containsAny(normalizedLabel, ["museum", "gallery", "博物馆", "美术馆", "미술관", "박물관"]) ? 0.26 : 0
+        case .palace:
+            return containsAny(normalizedLabel, ["palace", "hall", "宫", "殿", "궁", "전"]) ? 0.26 : 0
+        case .garden:
+            return containsAny(normalizedLabel, ["garden", "park", "花园", "公园", "庭園", "정원"]) ? 0.22 : 0
+        case .temple:
+            return containsAny(normalizedLabel, ["temple", "shrine", "寺", "庙", "神社", "사원"]) ? 0.22 : 0
+        case .building:
+            return containsAny(normalizedLabel, ["building", "landmark", "square", "tower", "建筑", "地标", "广场"]) ? 0.20 : 0
+        case .exhibit:
+            return containsAny(normalizedLabel, ["artifact", "exhibit", "painting", "展品", "文物", "絵画"]) ? 0.22 : 0
+        }
+    }
+
+    private func distanceScore(from location: CLLocation, to poi: POI) -> Double {
+        switch distance(from: location, to: poi.coordinate) {
+        case 0...120: return 0.56
+        case 120...300: return 0.44
+        case 300...1_200: return 0.26
+        case 1_200...5_000: return 0.10
+        default: return 0
+        }
+    }
+
+    private func distance(from location: CLLocation, to coordinate: CLLocationCoordinate2D) -> CLLocationDistance {
+        location.distance(from: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude))
+    }
+
+    private func containsAny(_ value: String, _ needles: [String]) -> Bool {
+        needles.contains { value.contains(normalize($0)) }
     }
 
     private func aliases(for poi: POI) -> [String] {
@@ -483,6 +586,28 @@ class SeeAndAskService: ObservableObject {
             return [poi.name, "中和殿", "hall of central harmony", "central harmony"]
         case "baohedian":
             return [poi.name, "保和殿", "hall of preserving harmony", "preserving harmony"]
+        case "wumen":
+            return [poi.name, "午门", "meridian gate", "forbidden city gate"]
+        case "taihemen":
+            return [poi.name, "太和门", "gate of supreme harmony"]
+        case "qianqinggong":
+            return [poi.name, "乾清宫", "palace of heavenly purity"]
+        case "louvre-paris":
+            return [poi.name, "louvre", "louvre museum", "卢浮宫", "羅浮宮", "ルーヴル", "루브르", "mona lisa", "venus de milo"]
+        case "met-museum-new-york":
+            return [poi.name, "the met", "met museum", "metropolitan museum", "大都会艺术博物馆", "大都會藝術博物館", "メトロポリタン美術館"]
+        case "british-museum-london":
+            return [poi.name, "british museum", "大英博物馆", "大英博物館", "대영박물관"]
+        case "tokyo-national-museum":
+            return [poi.name, "tokyo national museum", "东京国立博物馆", "東京国立博物館", "도쿄국립박물관"]
+        case "national-palace-museum-taipei":
+            return [poi.name, "national palace museum", "台北故宫", "台北故宮", "国立故宮博物院"]
+        case "contemporary-jewish-museum-san-francisco":
+            return [poi.name, "contemporary jewish museum", "cjm", "当代犹太博物馆", "當代猶太博物館"]
+        case "sfmoma":
+            return [poi.name, "sfmoma", "san francisco moma", "modern art museum", "旧金山现代艺术博物馆"]
+        case "union-square-sf":
+            return [poi.name, "union square", "联合广场", "聯合廣場"]
         default:
             return [poi.name]
         }
@@ -491,9 +616,8 @@ class SeeAndAskService: ObservableObject {
     private func normalize(_ value: String) -> String {
         value
             .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
-            .replacingOccurrences(of: " ", with: "")
-            .replacingOccurrences(of: "-", with: "")
-            .replacingOccurrences(of: "_", with: "")
+            .lowercased()
+            .replacingOccurrences(of: "[^\\p{L}\\p{N}]+", with: "", options: .regularExpression)
     }
 
     private func localizedCategory(_ category: String?, poi: POI?) -> String {
@@ -555,6 +679,19 @@ private extension SeeAndAskService.ConversationMessage.MessageRole {
         switch self {
         case .user: return "user"
         case .assistant: return "assistant"
+        }
+    }
+}
+
+private extension Array where Element == SeeAndAskService.RecognitionCandidate {
+    func uniquedByName() -> [Element] {
+        var seen = Set<String>()
+        return filter { candidate in
+            let key = candidate.name
+                .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+                .lowercased()
+                .replacingOccurrences(of: "[^\\p{L}\\p{N}]+", with: "", options: .regularExpression)
+            return seen.insert(key).inserted
         }
     }
 }
