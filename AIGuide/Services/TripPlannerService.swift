@@ -231,6 +231,73 @@ class TripPlannerService: ObservableObject {
         let mapItem: MKMapItem
     }
 
+    struct TripPlanPreferences: Equatable {
+        var durationHours: Int = 4
+        var interest: Interest = .essentials
+        var audience: Audience = .general
+        var pace: Pace = .balanced
+
+        enum Interest: String, CaseIterable {
+            case essentials
+            case history
+            case architecture
+            case photography
+        }
+
+        enum Audience: String, CaseIterable {
+            case general
+            case family
+            case kids
+        }
+
+        enum Pace: String, CaseIterable {
+            case relaxed
+            case balanced
+            case efficient
+        }
+
+        var maxStops: Int {
+            let baseStops: Int
+            switch durationHours {
+            case ...2: baseStops = 3
+            case 3...4: baseStops = 5
+            default: baseStops = 6
+            }
+
+            switch pace {
+            case .relaxed: return max(2, baseStops - 1)
+            case .balanced: return baseStops
+            case .efficient: return min(7, baseStops + 1)
+            }
+        }
+
+        var mainStopMinutes: Int {
+            switch durationHours {
+            case ...2: return 55
+            case 3...4: return 75
+            default: return 95
+            }
+        }
+
+        var secondaryStopMinutes: Int {
+            switch pace {
+            case .relaxed: return 42
+            case .balanced: return 35
+            case .efficient: return 28
+            }
+        }
+
+        var llmPayload: [String: Any] {
+            [
+                "duration_hours": durationHours,
+                "interest": interest.rawValue,
+                "audience": audience.rawValue,
+                "pace": pace.rawValue,
+                "max_stops": maxStops
+            ]
+        }
+    }
+
     private struct DestinationPlace {
         let id: String
         let name: String
@@ -383,7 +450,10 @@ class TripPlannerService: ObservableObject {
     }
 
     /// Generate a practical one-day route and highlights from a searched place.
-    func generateRecommendedTrip(for result: DestinationSearchResult) async {
+    func generateRecommendedTrip(
+        for result: DestinationSearchResult,
+        preferences: TripPlanPreferences = TripPlanPreferences()
+    ) async {
         isSearching = true
         searchError = nil
         defer { isSearching = false }
@@ -391,10 +461,10 @@ class TripPlannerService: ObservableObject {
         let nearbyItems = await searchNearbyHighlights(around: result)
         let trip: Trip
         do {
-            let response = try await requestLLMTripPlan(destination: result, nearbyItems: nearbyItems)
-            trip = buildTrip(from: response, destination: result, nearbyItems: nearbyItems)
+            let response = try await requestLLMTripPlan(destination: result, nearbyItems: nearbyItems, preferences: preferences)
+            trip = buildTrip(from: response, destination: result, nearbyItems: nearbyItems, preferences: preferences)
         } catch {
-            trip = buildFallbackTrip(destination: result, nearbyItems: nearbyItems)
+            trip = buildFallbackTrip(destination: result, nearbyItems: nearbyItems, preferences: preferences)
         }
 
         currentTrip = trip
@@ -403,7 +473,10 @@ class TripPlannerService: ObservableObject {
     }
 
     /// Generate through the LLM even when Apple Maps search is temporarily unavailable.
-    func generateRecommendedTrip(forKeyword keyword: String) async {
+    func generateRecommendedTrip(
+        forKeyword keyword: String,
+        preferences: TripPlanPreferences = TripPlanPreferences()
+    ) async {
         let trimmed = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
@@ -412,7 +485,7 @@ class TripPlannerService: ObservableObject {
         defer { isSearching = false }
 
         if let knownDestination = placeResolver.knownDestinations(matching: trimmed).first {
-            await generateRecommendedTrip(for: destinationResult(from: knownDestination))
+            await generateRecommendedTrip(for: destinationResult(from: knownDestination), preferences: preferences)
             return
         }
 
@@ -431,10 +504,10 @@ class TripPlannerService: ObservableObject {
 
         let trip: Trip
         do {
-            let response = try await requestLLMTripPlan(destination: destination, nearbyItems: [])
-            trip = buildTrip(from: response, destination: destination, nearbyItems: [])
+            let response = try await requestLLMTripPlan(destination: destination, nearbyItems: [], preferences: preferences)
+            trip = buildTrip(from: response, destination: destination, nearbyItems: [], preferences: preferences)
         } catch {
-            trip = buildFallbackTrip(destination: destination, nearbyItems: [])
+            trip = buildFallbackTrip(destination: destination, nearbyItems: [], preferences: preferences)
         }
 
         currentTrip = trip
@@ -616,15 +689,18 @@ class TripPlannerService: ObservableObject {
 
     private func requestLLMTripPlan(
         destination: DestinationSearchResult,
-        nearbyItems: [MKMapItem]
+        nearbyItems: [MKMapItem],
+        preferences: TripPlanPreferences
     ) async throws -> LLMTripPlanResponse {
         let candidates = nearbyItems.prefix(8).compactMap(placePayload(from:))
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "destination": placePayload(from: destination),
             "candidates": candidates,
-            "duration_hours": 4,
             "audience": L10n.string("trip.llm.audience.general")
         ]
+        preferences.llmPayload.forEach { key, value in
+            body[key] = value
+        }
 
         return try await apiClient.post(endpoint: APIConfig.Endpoints.tripPlan, body: body)
     }
@@ -632,11 +708,12 @@ class TripPlannerService: ObservableObject {
     private func buildTrip(
         from response: LLMTripPlanResponse,
         destination: DestinationSearchResult,
-        nearbyItems: [MKMapItem]
+        nearbyItems: [MKMapItem],
+        preferences: TripPlanPreferences
     ) -> Trip {
         let startDate = Date()
         let placeLookup = placeLookup(destination: destination, nearbyItems: nearbyItems)
-        let spots = response.stops.prefix(6).enumerated().map { index, stop in
+        let spots = response.stops.prefix(preferences.maxStops).enumerated().map { index, stop in
             let sourcePlace = stop.poiId.flatMap { placeLookup[$0] }
             let poiId = stop.poiId ?? sourcePlace?.id ?? "llm-\(index)-\(stableID(for: stop.name, coordinate: destination.coordinate))"
             return TripSpot(
@@ -652,7 +729,7 @@ class TripPlannerService: ObservableObject {
             )
         }
 
-        let finalSpots = spots.isEmpty ? buildRecommendedSpots(destination: destination, nearbyItems: nearbyItems) : spots
+        let finalSpots = spots.isEmpty ? buildRecommendedSpots(destination: destination, nearbyItems: nearbyItems, preferences: preferences) : spots
         let day = TripDay(
             id: UUID().uuidString,
             dayNumber: 1,
@@ -683,8 +760,12 @@ class TripPlannerService: ObservableObject {
         )
     }
 
-    private func buildFallbackTrip(destination: DestinationSearchResult, nearbyItems: [MKMapItem]) -> Trip {
-        let spots = buildRecommendedSpots(destination: destination, nearbyItems: nearbyItems)
+    private func buildFallbackTrip(
+        destination: DestinationSearchResult,
+        nearbyItems: [MKMapItem],
+        preferences: TripPlanPreferences = TripPlanPreferences()
+    ) -> Trip {
+        let spots = buildRecommendedSpots(destination: destination, nearbyItems: nearbyItems, preferences: preferences)
         let startDate = Date()
         let day = TripDay(
             id: UUID().uuidString,
@@ -981,34 +1062,41 @@ class TripPlannerService: ObservableObject {
             .map { $0 }
     }
 
-    private func buildRecommendedSpots(destination: DestinationSearchResult, nearbyItems: [MKMapItem]) -> [TripSpot] {
+    private func buildRecommendedSpots(
+        destination: DestinationSearchResult,
+        nearbyItems: [MKMapItem],
+        preferences: TripPlanPreferences
+    ) -> [TripSpot] {
+        let startDate = Date()
         var spots: [TripSpot] = [
             TripSpot(
                 id: UUID().uuidString,
                 poiId: destination.id,
                 name: destination.name,
                 address: destination.subtitle,
-                arrivalTime: Date(),
-                duration: 75 * 60,
+                arrivalTime: startDate,
+                duration: TimeInterval(preferences.mainStopMinutes * 60),
                 category: category(for: destination.name, subtitle: destination.subtitle),
                 priority: .mustSee,
                 notes: L10n.string("trip.spot.mainNotes")
             )
         ]
 
-        let nearbySpots = nearbyItems.prefix(4).enumerated().compactMap { index, item -> TripSpot? in
+        let nearbyLimit = max(0, preferences.maxStops - 1)
+        let nearbySpots = nearbyItems.prefix(nearbyLimit).enumerated().compactMap { index, item -> TripSpot? in
             guard let name = item.name?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
                 return nil
             }
 
             let subtitle = item.placemark.title ?? L10n.string("trip.search.nearMainSpot")
+            let arrivalOffset = preferences.mainStopMinutes + 15 + index * (preferences.secondaryStopMinutes + 10)
             return TripSpot(
                 id: UUID().uuidString,
                 poiId: stableID(for: name, coordinate: item.placemark.coordinate),
                 name: name,
                 address: subtitle,
-                arrivalTime: Calendar.current.date(byAdding: .minute, value: 90 + index * 45, to: Date()),
-                duration: index == 3 ? 45 * 60 : 35 * 60,
+                arrivalTime: Calendar.current.date(byAdding: .minute, value: arrivalOffset, to: startDate),
+                duration: TimeInterval(preferences.secondaryStopMinutes * 60),
                 category: category(for: name, subtitle: subtitle),
                 priority: index < 2 ? .recommended : .optional,
                 notes: note(for: name, subtitle: subtitle, index: index)
@@ -1017,22 +1105,27 @@ class TripPlannerService: ObservableObject {
 
         spots.append(contentsOf: nearbySpots)
 
-        if spots.count < 3 {
-            spots.append(contentsOf: fallbackSpots(for: destination).prefix(3 - spots.count))
+        let minFallbackCount = min(3, preferences.maxStops)
+        if spots.count < minFallbackCount {
+            spots.append(contentsOf: fallbackSpots(for: destination, preferences: preferences, startDate: startDate).prefix(minFallbackCount - spots.count))
         }
 
         return spots
     }
 
-    private func fallbackSpots(for destination: DestinationSearchResult) -> [TripSpot] {
+    private func fallbackSpots(
+        for destination: DestinationSearchResult,
+        preferences: TripPlanPreferences,
+        startDate: Date
+    ) -> [TripSpot] {
         [
             TripSpot(
                 id: UUID().uuidString,
                 poiId: "\(destination.id)-context",
                 name: L10n.string("trip.fallback.contextSpot.name"),
                 address: destination.subtitle,
-                arrivalTime: Calendar.current.date(byAdding: .minute, value: 90, to: Date()),
-                duration: 35 * 60,
+                arrivalTime: Calendar.current.date(byAdding: .minute, value: preferences.mainStopMinutes + 15, to: startDate),
+                duration: TimeInterval(preferences.secondaryStopMinutes * 60),
                 category: .scenic,
                 priority: .recommended,
                 notes: L10n.string("trip.fallback.contextSpot.notes")
@@ -1042,8 +1135,8 @@ class TripPlannerService: ObservableObject {
                 poiId: "\(destination.id)-break",
                 name: L10n.string("trip.fallback.breakSpot.name"),
                 address: L10n.string("trip.fallback.walkable"),
-                arrivalTime: Calendar.current.date(byAdding: .minute, value: 130, to: Date()),
-                duration: 45 * 60,
+                arrivalTime: Calendar.current.date(byAdding: .minute, value: preferences.mainStopMinutes + preferences.secondaryStopMinutes + 30, to: startDate),
+                duration: TimeInterval((preferences.pace == .relaxed ? 50 : 35) * 60),
                 category: .restaurant,
                 priority: .optional,
                 notes: L10n.string("trip.fallback.breakSpot.notes")

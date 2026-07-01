@@ -13,6 +13,7 @@ struct TripPlannerView: View {
     @State private var showDestinationSearch = ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TRIP_SEARCH")
     @State private var destinationQuery = ""
     @State private var generatingDestinationID: String?
+    @State private var tripPlanPreferences = TripPlannerService.TripPlanPreferences()
     @State private var tripName = ""
     @State private var tripDescription = ""
     @State private var startDate = Date()
@@ -811,6 +812,7 @@ struct TripPlannerView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 destinationSearchField
+                tripPreferenceControls
 
                 if service.isSearching {
                     VStack(spacing: 10) {
@@ -918,6 +920,64 @@ struct TripPlannerView: View {
             Capsule()
                 .stroke(.white.opacity(0.55), lineWidth: 1)
         )
+    }
+
+    private var tripPreferenceControls: some View {
+        VStack(spacing: 8) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach([2, 4, 6], id: \.self) { hours in
+                        TripPreferenceChip(
+                            title: "\(hours)h",
+                            icon: "clock",
+                            isSelected: tripPlanPreferences.durationHours == hours,
+                            primaryColor: primaryColor
+                        ) {
+                            tripPlanPreferences.durationHours = hours
+                        }
+                    }
+
+                    ForEach(TripPlannerService.TripPlanPreferences.Pace.allCases, id: \.self) { pace in
+                        TripPreferenceChip(
+                            title: pace.displayTitle,
+                            icon: pace.iconName,
+                            isSelected: tripPlanPreferences.pace == pace,
+                            primaryColor: primaryColor
+                        ) {
+                            tripPlanPreferences.pace = pace
+                        }
+                    }
+                }
+                .padding(.horizontal, 1)
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(TripPlannerService.TripPlanPreferences.Interest.allCases, id: \.self) { interest in
+                        TripPreferenceChip(
+                            title: interest.displayTitle,
+                            icon: interest.iconName,
+                            isSelected: tripPlanPreferences.interest == interest,
+                            primaryColor: primaryColor
+                        ) {
+                            tripPlanPreferences.interest = interest
+                        }
+                    }
+
+                    ForEach(TripPlannerService.TripPlanPreferences.Audience.allCases, id: \.self) { audience in
+                        TripPreferenceChip(
+                            title: audience.displayTitle,
+                            icon: audience.iconName,
+                            isSelected: tripPlanPreferences.audience == audience,
+                            primaryColor: primaryColor
+                        ) {
+                            tripPlanPreferences.audience = audience
+                        }
+                    }
+                }
+                .padding(.horizontal, 1)
+            }
+        }
     }
 
     private var destinationRecommendationContent: some View {
@@ -1189,7 +1249,7 @@ struct TripPlannerView: View {
         ttsService.stop()
         generatingDestinationID = result.id
         Task {
-            await service.generateRecommendedTrip(for: result)
+            await service.generateRecommendedTrip(for: result, preferences: tripPlanPreferences)
             generatingDestinationID = nil
             showDestinationSearch = false
         }
@@ -1205,7 +1265,7 @@ struct TripPlannerView: View {
         ttsService.stop()
         generatingDestinationID = id
         Task {
-            await service.generateRecommendedTrip(forKeyword: keyword)
+            await service.generateRecommendedTrip(forKeyword: keyword, preferences: tripPlanPreferences)
             generatingDestinationID = nil
             showDestinationSearch = false
         }
@@ -2599,6 +2659,93 @@ private struct TripSearchPill: View {
             Capsule()
                 .stroke(.black.opacity(pill.isPrimary ? 0.05 : 0.02), lineWidth: 1)
         )
+    }
+}
+
+private struct TripPreferenceChip: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let primaryColor: Color
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.caption.weight(.bold))
+
+                Text(title)
+                    .font(.caption.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+            }
+            .foregroundStyle(isSelected ? .white : .primary.opacity(0.76))
+            .padding(.horizontal, 12)
+            .frame(height: 34)
+            .background(isSelected ? primaryColor : Color(.secondarySystemGroupedBackground), in: Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(isSelected ? primaryColor.opacity(0.2) : Color.black.opacity(0.05), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private extension TripPlannerService.TripPlanPreferences.Interest {
+    var displayTitle: String {
+        switch self {
+        case .essentials: return L10n.string("trip.priority.mustSee")
+        case .history: return L10n.string("guide.style.history")
+        case .architecture: return L10n.string("guide.style.architecture")
+        case .photography: return L10n.string("tour.category.photography")
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .essentials: return "star.fill"
+        case .history: return "scroll.fill"
+        case .architecture: return "building.columns.fill"
+        case .photography: return "camera.fill"
+        }
+    }
+}
+
+private extension TripPlannerService.TripPlanPreferences.Audience {
+    var displayTitle: String {
+        switch self {
+        case .general: return L10n.string("trip.llm.audience.general")
+        case .family: return L10n.string("trip.search.placeholder.family")
+        case .kids: return L10n.string("guide.style.children")
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .general: return "person.2.fill"
+        case .family: return "figure.2.and.child.holdinghands"
+        case .kids: return "face.smiling.fill"
+        }
+    }
+}
+
+private extension TripPlannerService.TripPlanPreferences.Pace {
+    var displayTitle: String {
+        switch self {
+        case .relaxed: return L10n.string("trip.preference.pace.relaxed")
+        case .balanced: return L10n.string("trip.preference.pace.balanced")
+        case .efficient: return L10n.string("trip.preference.pace.efficient")
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .relaxed: return "leaf.fill"
+        case .balanced: return "slider.horizontal.3"
+        case .efficient: return "bolt.fill"
+        }
     }
 }
 
