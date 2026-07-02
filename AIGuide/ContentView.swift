@@ -10,6 +10,7 @@ struct ContentView: View {
     @State private var showAR = false
     @State private var showNumberInput = false
     @State private var showIndoor = false
+    @State private var didApplyQAOpenActions = false
 
     var body: some View {
         ZStack {
@@ -70,6 +71,8 @@ struct ContentView: View {
         .environment(\.locale, settingsService.language.locale)
         .onAppear {
             if let qaTab = Self.qaInitialSelectedTab {
+                guard !didApplyQAOpenActions else { return }
+                didApplyQAOpenActions = true
                 showOnboarding = false
                 selectedTab = qaTab
                 showSearch = false

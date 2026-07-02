@@ -48,6 +48,8 @@ class SearchService: ObservableObject {
     // MARK: - Private Properties
     private let recentSearchesKey = "com.aiguide.recent.searches"
     private let defaults = UserDefaults.standard
+    private var activeSearchToken = 0
+    private let searchDelayNanoseconds: UInt64 = 180_000_000
     private let searchCatalog: [SearchRecord] = [
         SearchRecord(
             id: "poi-entrance",
@@ -204,17 +206,24 @@ class SearchService: ObservableObject {
     
     /// Search with query
     func search(_ query: String) async {
+        activeSearchToken += 1
+        let searchToken = activeSearchToken
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedQuery.isEmpty else {
             searchResults = []
+            isSearching = false
             return
         }
         
         isSearching = true
-        defer { isSearching = false }
-        
-        // Simulate network delay
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        do {
+            try await Task.sleep(nanoseconds: searchDelayNanoseconds)
+        } catch {
+            completeSearchIfCurrent(searchToken)
+            return
+        }
+
+        guard isCurrentSearch(searchToken) else { return }
         
         var results: [SearchResult] = []
         
@@ -233,8 +242,10 @@ class SearchService: ObservableObject {
         // Search tours
         let tourResults = searchTours(trimmedQuery)
         results.append(contentsOf: tourResults)
-        
+
+        guard isCurrentSearch(searchToken) else { return }
         searchResults = results
+        isSearching = false
         
         // Save to recent searches
         if !results.isEmpty {
@@ -244,8 +255,10 @@ class SearchService: ObservableObject {
     
     /// Clear search
     func clearSearch() {
+        activeSearchToken += 1
         searchText = ""
         searchResults = []
+        isSearching = false
     }
     
     /// Clear recent searches
@@ -300,6 +313,15 @@ class SearchService: ObservableObject {
             value.localizedCaseInsensitiveContains(query) ||
             query.localizedCaseInsensitiveContains(value)
         }
+    }
+
+    private func isCurrentSearch(_ token: Int) -> Bool {
+        token == activeSearchToken
+    }
+
+    private func completeSearchIfCurrent(_ token: Int) {
+        guard isCurrentSearch(token) else { return }
+        isSearching = false
     }
     
     // MARK: - Recent Searches

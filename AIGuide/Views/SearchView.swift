@@ -126,8 +126,7 @@ struct SearchView: View {
 
             ForEach(searchService.recentSearches, id: \.self) { search in
                 Button(action: {
-                    searchService.searchText = search
-                    Task { await searchService.search(search) }
+                    runSearch(search)
                 }) {
                     HStack {
                         Image(systemName: "clock")
@@ -231,8 +230,14 @@ struct SearchView: View {
     }
 
     private func runSearch(_ query: String) {
-        searchService.searchText = query
-        Task { await searchService.search(query) }
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else { return }
+
+        if searchService.searchText == trimmedQuery {
+            Task { await searchService.search(trimmedQuery) }
+        } else {
+            searchService.searchText = trimmedQuery
+        }
     }
     
     // MARK: - Loading View
