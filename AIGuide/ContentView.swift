@@ -72,8 +72,14 @@ struct ContentView: View {
             if let qaTab = Self.qaInitialSelectedTab {
                 showOnboarding = false
                 selectedTab = qaTab
+                showSearch = false
                 showNumberInput = Self.opensNumberInputForQA
                 showIndoor = Self.opensIndoorForQA
+                if Self.opensSearchForQA {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        showSearch = true
+                    }
+                }
                 return
             }
 
@@ -87,6 +93,10 @@ struct ContentView: View {
 
     private static var opensScanForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SCAN")
+    }
+
+    private static var opensSearchForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SEARCH")
     }
 
     private static var opensSettingsForQA: Bool {
@@ -110,6 +120,7 @@ struct ContentView: View {
         if opensSettingsForQA { return 3 }
         if opensTripsForQA { return 2 }
         if opensScanForQA { return 1 }
+        if opensSearchForQA { return 0 }
         if opensIndoorForQA { return 0 }
         if opensNumberInputForQA { return 0 }
         return nil

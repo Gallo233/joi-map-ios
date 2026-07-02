@@ -4,34 +4,43 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var searchService = SearchService.shared
-    @State private var showResults = false
     @FocusState private var isSearchFocused: Bool
     @Environment(\.dismiss) private var dismiss
+
+    private let forest = Color(red: 0.12, green: 0.40, blue: 0.24)
+    private let paper = Color(.systemGroupedBackground)
+    private let surface = Color(.systemBackground)
+
     private let quickSearchItems: [QuickSearchItem] = [
-        QuickSearchItem(icon: "mappin.and.ellipse", title: "景点", query: "景点", color: .red),
-        QuickSearchItem(icon: "paintbrush.fill", title: "展品", query: "展品", color: .purple),
-        QuickSearchItem(icon: "figure.stand", title: "卫生间", query: "卫生间", color: .blue),
-        QuickSearchItem(icon: "fork.knife", title: "餐饮", query: "餐饮", color: .orange),
-        QuickSearchItem(icon: "bag.fill", title: "商店", query: "商店", color: .green),
-        QuickSearchItem(icon: "map.fill", title: "路线", query: "路线", color: .cyan)
+        QuickSearchItem(icon: "mappin.and.ellipse", title: "景点", query: "景点", color: Color(red: 0.86, green: 0.23, blue: 0.10)),
+        QuickSearchItem(icon: "sparkles", title: "展览", query: "展览", color: Color(red: 0.49, green: 0.34, blue: 0.93)),
+        QuickSearchItem(icon: "figure.stand", title: "卫生间", query: "卫生间", color: Color(red: 0.08, green: 0.45, blue: 0.94)),
+        QuickSearchItem(icon: "fork.knife", title: "餐饮", query: "餐饮", color: Color(red: 0.94, green: 0.48, blue: 0.12)),
+        QuickSearchItem(icon: "bag.fill", title: "商店", query: "商店", color: Color(red: 0.13, green: 0.60, blue: 0.32)),
+        QuickSearchItem(icon: "map.fill", title: "路线", query: "路线", color: Color(red: 0.05, green: 0.62, blue: 0.70))
     ]
     private let popularSearchTags = ["入口", "游客中心", "主展厅", "临时展", "卫生间", "餐饮", "纪念品", "无障碍"]
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Search bar
-                searchBar
-                
-                // Content
-                if searchService.searchText.isEmpty {
-                    suggestionsContent
-                } else if searchService.isSearching {
-                    loadingView
-                } else if searchService.searchResults.isEmpty {
-                    emptyResultsView
-                } else {
-                    searchResultsList
+            ZStack {
+                paper
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    searchBar
+
+                    Group {
+                        if searchService.searchText.isEmpty {
+                            suggestionsContent
+                        } else if searchService.isSearching {
+                            loadingView
+                        } else if searchService.searchResults.isEmpty {
+                            emptyResultsView
+                        } else {
+                            searchResultsList
+                        }
+                    }
                 }
             }
             .navigationTitle("搜索")
@@ -46,19 +55,21 @@ struct SearchView: View {
     
     // MARK: - Search Bar
     private var searchBar: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 8) {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
-                
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(forest)
+
                 TextField("搜索景点、展览、设施...", text: $searchService.searchText)
                     .focused($isSearchFocused)
+                    .submitLabel(.search)
                     .onChange(of: searchService.searchText) { _, newValue in
                         Task {
                             await searchService.search(newValue)
                         }
                     }
-                
+
                 if !searchService.searchText.isEmpty {
                     Button(action: { searchService.clearSearch() }) {
                         Image(systemName: "xmark.circle.fill")
@@ -66,30 +77,34 @@ struct SearchView: View {
                     }
                 }
             }
-            .padding(10)
-            .background(.gray.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 14)
+            .frame(height: 52)
+            .background(surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(forest.opacity(isSearchFocused ? 0.45 : 0.12), lineWidth: 1.2)
+            )
         }
-        .padding()
-        .background(.ultraThinMaterial)
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 14)
+        .background(.regularMaterial)
     }
     
     // MARK: - Suggestions Content
     private var suggestionsContent: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Recent searches
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 22) {
                 if !searchService.recentSearches.isEmpty {
                     recentSearchesSection
                 }
-                
-                // Quick categories
+
                 quickCategoriesSection
-                
-                // Popular searches
                 popularSearchesSection
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 36)
         }
     }
     
@@ -99,16 +114,16 @@ struct SearchView: View {
             HStack {
                 Text("最近搜索")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 Button("清空") {
                     searchService.clearRecentSearches()
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
-            
+
             ForEach(searchService.recentSearches, id: \.self) { search in
                 Button(action: {
                     searchService.searchText = search
@@ -126,8 +141,11 @@ struct SearchView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, 14)
+                    .frame(height: 46)
+                    .background(surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -136,8 +154,8 @@ struct SearchView: View {
     private var quickCategoriesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("快速查找")
-                .font(.headline)
-            
+                .font(.title3.weight(.bold))
+
             LazyVGrid(columns: [
                 GridItem(.flexible()),
                 GridItem(.flexible())
@@ -153,37 +171,60 @@ struct SearchView: View {
     
     private func categoryButton(icon: String, title: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(color)
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(color.opacity(0.14))
+                    Image(systemName: icon)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(color)
+                }
+                .frame(width: 38, height: 38)
+
                 Text(title)
+                    .font(.headline.weight(.semibold))
                     .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+
                 Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary.opacity(0.72))
             }
-            .padding()
-            .background(.gray.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 12)
+            .frame(height: 64)
+            .background(surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(.black.opacity(0.06), lineWidth: 1)
+            )
         }
+        .buttonStyle(.plain)
     }
     
     // MARK: - Popular Searches
     private var popularSearchesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("热门搜索")
-                .font(.headline)
-            
+                .font(.title3.weight(.bold))
+
             FlowLayout(spacing: 8) {
                 ForEach(popularSearchTags, id: \.self) { tag in
                     Button(action: {
                         runSearch(tag)
                     }) {
                         Text(tag)
-                            .font(.subheadline)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(.gray.opacity(0.1))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(forest)
+                            .padding(.horizontal, 13)
+                            .padding(.vertical, 8)
+                            .background(forest.opacity(0.09))
                             .clipShape(Capsule())
+                            .overlay(Capsule().stroke(forest.opacity(0.10), lineWidth: 1))
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -199,6 +240,7 @@ struct SearchView: View {
         VStack(spacing: 16) {
             Spacer()
             ProgressView()
+                .tint(forest)
             Text("搜索中...")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -212,7 +254,7 @@ struct SearchView: View {
             Spacer()
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 50))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(forest.opacity(0.45))
             Text("未找到相关内容")
                 .font(.headline)
             Text("试试其他关键词")
@@ -224,20 +266,34 @@ struct SearchView: View {
     
     // MARK: - Search Results
     private var searchResultsList: some View {
-        List {
-            // Group by category
-            ForEach(SearchService.SearchResult.SearchCategory.allCases, id: \.self) { category in
-                let results = searchService.searchResults.filter { $0.category == category }
-                if !results.isEmpty {
-                    Section(category.rawValue) {
-                        ForEach(results) { result in
-                            SearchResultRow(result: result)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(alignment: .leading, spacing: 18) {
+                ForEach(SearchService.SearchResult.SearchCategory.allCases, id: \.self) { category in
+                    let results = searchService.searchResults.filter { $0.category == category }
+                    if !results.isEmpty {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(category.rawValue)
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+
+                            ForEach(results) { result in
+                                SearchResultRow(result: result)
+                                    .padding(.horizontal, 12)
+                                    .frame(height: 72)
+                                    .background(surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                            .stroke(.black.opacity(0.06), lineWidth: 1)
+                                    )
+                            }
                         }
                     }
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 36)
         }
-        .listStyle(.plain)
     }
 }
 
