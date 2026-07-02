@@ -68,6 +68,17 @@ enum POICategory: String, Codable {
     case museum = "museum"
     case exhibit = "exhibit"
     case building = "building"
+
+    var localizedName: String {
+        switch self {
+        case .palace: return L10n.string("guide.category.palace")
+        case .temple: return L10n.string("guide.category.temple")
+        case .garden: return L10n.string("guide.category.garden")
+        case .museum: return L10n.string("guide.category.museum")
+        case .exhibit: return L10n.string("guide.category.exhibit")
+        case .building: return L10n.string("guide.category.building")
+        }
+    }
 }
 
 // MARK: - Content Source

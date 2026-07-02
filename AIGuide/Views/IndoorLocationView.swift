@@ -86,7 +86,7 @@ struct IndoorLocationView: View {
                 Circle()
                     .fill(accuracyColor)
                     .frame(width: 8, height: 8)
-                Text(indoorService.positioningAccuracy.rawValue)
+                Text(indoorService.positioningAccuracy.localizedName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -39,6 +39,15 @@ class IndoorLocationService: NSObject, ObservableObject {
         case medium = "中等精度"
         case low = "低精度"
         case unavailable = "不可用"
+
+        var localizedName: String {
+            switch self {
+            case .high: return L10n.string("indoor.accuracy.high")
+            case .medium: return L10n.string("indoor.accuracy.medium")
+            case .low: return L10n.string("indoor.accuracy.low")
+            case .unavailable: return L10n.string("indoor.accuracy.unavailable")
+            }
+        }
         
         var color: String {
             switch self {

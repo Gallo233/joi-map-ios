@@ -181,7 +181,7 @@ struct NumberInputView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                         
-                        Text(poi.category.rawValue)
+                        Text(poi.category.localizedName)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }

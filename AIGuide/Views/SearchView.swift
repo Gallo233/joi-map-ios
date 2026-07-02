@@ -12,14 +12,23 @@ struct SearchView: View {
     private let surface = Color(.systemBackground)
 
     private let quickSearchItems: [QuickSearchItem] = [
-        QuickSearchItem(icon: "mappin.and.ellipse", title: "景点", query: "景点", color: Color(red: 0.86, green: 0.23, blue: 0.10)),
-        QuickSearchItem(icon: "sparkles", title: "展览", query: "展览", color: Color(red: 0.49, green: 0.34, blue: 0.93)),
-        QuickSearchItem(icon: "figure.stand", title: "卫生间", query: "卫生间", color: Color(red: 0.08, green: 0.45, blue: 0.94)),
-        QuickSearchItem(icon: "fork.knife", title: "餐饮", query: "餐饮", color: Color(red: 0.94, green: 0.48, blue: 0.12)),
-        QuickSearchItem(icon: "bag.fill", title: "商店", query: "商店", color: Color(red: 0.13, green: 0.60, blue: 0.32)),
-        QuickSearchItem(icon: "map.fill", title: "路线", query: "路线", color: Color(red: 0.05, green: 0.62, blue: 0.70))
+        QuickSearchItem(icon: "mappin.and.ellipse", titleKey: "search.quick.poi", queryKey: "search.category.poi", color: Color(red: 0.86, green: 0.23, blue: 0.10)),
+        QuickSearchItem(icon: "sparkles", titleKey: "search.quick.exhibition", queryKey: "search.category.exhibition", color: Color(red: 0.49, green: 0.34, blue: 0.93)),
+        QuickSearchItem(icon: "figure.stand", titleKey: "search.quick.restroom", queryKey: "search.record.facilityRestroom.title", color: Color(red: 0.08, green: 0.45, blue: 0.94)),
+        QuickSearchItem(icon: "fork.knife", titleKey: "search.quick.food", queryKey: "search.quick.food", color: Color(red: 0.94, green: 0.48, blue: 0.12)),
+        QuickSearchItem(icon: "bag.fill", titleKey: "search.quick.shop", queryKey: "search.quick.shop", color: Color(red: 0.13, green: 0.60, blue: 0.32)),
+        QuickSearchItem(icon: "map.fill", titleKey: "search.quick.route", queryKey: "search.category.tour", color: Color(red: 0.05, green: 0.62, blue: 0.70))
     ]
-    private let popularSearchTags = ["入口", "游客中心", "主展厅", "临时展", "卫生间", "餐饮", "纪念品", "无障碍"]
+    private let popularSearchTags: [PopularSearchTag] = [
+        PopularSearchTag(titleKey: "search.popular.entrance", queryKey: "search.popular.entrance"),
+        PopularSearchTag(titleKey: "search.popular.visitorCenter", queryKey: "search.record.facilityVisitorCenter.title"),
+        PopularSearchTag(titleKey: "search.popular.mainHall", queryKey: "search.record.poiMainHall.title"),
+        PopularSearchTag(titleKey: "search.popular.temporaryExhibition", queryKey: "search.record.exhibitionTemporary.title"),
+        PopularSearchTag(titleKey: "search.popular.restroom", queryKey: "search.record.facilityRestroom.title"),
+        PopularSearchTag(titleKey: "search.popular.food", queryKey: "search.quick.food"),
+        PopularSearchTag(titleKey: "search.popular.souvenir", queryKey: "search.popular.souvenir"),
+        PopularSearchTag(titleKey: "search.popular.accessibility", queryKey: "search.popular.accessibility")
+    ]
     
     var body: some View {
         NavigationStack {
@@ -43,11 +52,11 @@ struct SearchView: View {
                     }
                 }
             }
-            .navigationTitle("搜索")
+            .navigationTitle(L10n.string("搜索"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("取消") { dismiss() }
+                    Button(L10n.string("取消")) { dismiss() }
                 }
             }
         }
@@ -61,7 +70,7 @@ struct SearchView: View {
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(forest)
 
-                TextField("搜索景点、展览、设施...", text: $searchService.searchText)
+                TextField(L10n.string("搜索景点、展览、设施..."), text: $searchService.searchText)
                     .focused($isSearchFocused)
                     .submitLabel(.search)
                     .onChange(of: searchService.searchText) { _, newValue in
@@ -112,12 +121,12 @@ struct SearchView: View {
     private var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("最近搜索")
+                Text(L10n.string("最近搜索"))
                     .font(.headline)
 
                 Spacer()
 
-                Button("清空") {
+                Button(L10n.string("清空")) {
                     searchService.clearRecentSearches()
                 }
                 .font(.subheadline)
@@ -152,7 +161,7 @@ struct SearchView: View {
     // MARK: - Quick Categories
     private var quickCategoriesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("快速查找")
+            Text(L10n.string("快速查找"))
                 .font(.title3.weight(.bold))
 
             LazyVGrid(columns: [
@@ -184,7 +193,7 @@ struct SearchView: View {
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.82)
+                    .minimumScaleFactor(0.62)
 
                 Spacer()
 
@@ -206,15 +215,15 @@ struct SearchView: View {
     // MARK: - Popular Searches
     private var popularSearchesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("热门搜索")
+            Text(L10n.string("热门搜索"))
                 .font(.title3.weight(.bold))
 
             FlowLayout(spacing: 8) {
                 ForEach(popularSearchTags, id: \.self) { tag in
                     Button(action: {
-                        runSearch(tag)
+                        runSearch(tag.query)
                     }) {
-                        Text(tag)
+                        Text(tag.title)
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(forest)
                             .padding(.horizontal, 13)
@@ -246,7 +255,7 @@ struct SearchView: View {
             Spacer()
             ProgressView()
                 .tint(forest)
-            Text("搜索中...")
+            Text(L10n.string("搜索中..."))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -260,9 +269,9 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 50))
                 .foregroundStyle(forest.opacity(0.45))
-            Text("未找到相关内容")
+            Text(L10n.string("未找到相关内容"))
                 .font(.headline)
-            Text("试试其他关键词")
+            Text(L10n.string("试试其他关键词"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -277,7 +286,7 @@ struct SearchView: View {
                     let results = searchService.searchResults.filter { $0.category == category }
                     if !results.isEmpty {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text(category.rawValue)
+                            Text(category.localizedName)
                                 .font(.headline)
                                 .foregroundStyle(.secondary)
 
@@ -303,11 +312,32 @@ struct SearchView: View {
 }
 
 private struct QuickSearchItem: Identifiable {
-    var id: String { query }
+    var id: String { titleKey }
     let icon: String
-    let title: String
-    let query: String
+    let titleKey: String
+    let queryKey: String
     let color: Color
+
+    var title: String {
+        L10n.string(titleKey)
+    }
+
+    var query: String {
+        L10n.string(queryKey)
+    }
+}
+
+private struct PopularSearchTag: Hashable {
+    let titleKey: String
+    let queryKey: String
+
+    var title: String {
+        L10n.string(titleKey)
+    }
+
+    var query: String {
+        L10n.string(queryKey)
+    }
 }
 
 // MARK: - Search Result Row
@@ -340,7 +370,7 @@ struct SearchResultRow: View {
             Spacer()
             
             // Category badge
-            Text(result.category.rawValue)
+            Text(result.category.localizedName)
                 .font(.caption2)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
