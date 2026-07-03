@@ -246,7 +246,7 @@ struct NumberInputView: View {
     private var recentSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("最近查询")
+                Text(L10n.string("最近查询"))
                     .font(.headline)
                 
                 Spacer()

@@ -18,16 +18,16 @@ struct JourneyNarrativeView: View {
                     journeyListView
                 }
             }
-            .navigationTitle("行程")
+            .navigationTitle(L10n.string("行程"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("关闭") { dismiss() }
+                    Button(L10n.string("关闭")) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     if !service.isRecording {
-                        Button("开始旅程") {
+                        Button(L10n.string("开始旅程")) {
                             showNewJourney = true
                         }
                     }
@@ -64,9 +64,9 @@ struct JourneyNarrativeView: View {
                     }
                     
                     HStack(spacing: 20) {
-                        StatBadge(value: "\(service.chapters.count)", label: "景点", icon: "mappin.circle")
-                        StatBadge(value: "\(journey.photos.count)", label: "照片", icon: "photo")
-                        StatBadge(value: "\(journey.notes.count)", label: "笔记", icon: "note.text")
+                        StatBadge(value: "\(service.chapters.count)", label: L10n.string("journey.stat.places"), icon: "mappin.circle")
+                        StatBadge(value: "\(journey.photos.count)", label: L10n.string("journey.stat.photos"), icon: "photo")
+                        StatBadge(value: "\(journey.notes.count)", label: L10n.string("journey.stat.notes"), icon: "note.text")
                     }
                 }
                 .padding()
@@ -84,9 +84,9 @@ struct JourneyNarrativeView: View {
             
             HStack(spacing: 12) {
                 Button(action: {
-                    service.addNote(content: "这是一条测试笔记")
+                    service.addNote(content: L10n.string("journey.note.default"))
                 }) {
-                    Label("添加笔记", systemImage: "note.text.badge.plus")
+                    Label(L10n.string("添加笔记"), systemImage: "note.text.badge.plus")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(.gray.opacity(0.1))
@@ -96,7 +96,7 @@ struct JourneyNarrativeView: View {
                 Button(action: {
                     service.endJourney()
                 }) {
-                    Label("结束旅程", systemImage: "stop.circle")
+                    Label(L10n.string("结束旅程"), systemImage: "stop.circle")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(.red)
@@ -123,17 +123,17 @@ struct JourneyNarrativeView: View {
                     .foregroundStyle(.secondary)
                 
                 VStack(spacing: 8) {
-                    Text("开始您的旅程")
+                    Text(L10n.string("开始您的旅程"))
                         .font(.headline)
                     
-                    Text("记录游览的每个精彩瞬间\n形成完整的游览故事")
+                    Text(L10n.string("记录游览的每个精彩瞬间\n形成完整的游览故事"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 
                 Button(action: { showNewJourney = true }) {
-                    Label("开始新旅程", systemImage: "plus.circle.fill")
+                    Label(L10n.string("开始新旅程"), systemImage: "plus.circle.fill")
                         .font(.headline)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
@@ -150,14 +150,14 @@ struct JourneyNarrativeView: View {
     // MARK: - Stats Section
     private func statsSection(_ stats: JourneyNarrativeService.JourneyStats) -> some View {
         VStack(spacing: 16) {
-            Text("游览统计")
+            Text(L10n.string("游览统计"))
                 .font(.headline)
             
             HStack(spacing: 20) {
-                StatCard(value: "\(stats.totalJourneys)", label: "旅程", icon: "map")
-                StatCard(value: "\(stats.totalChapters)", label: "章节", icon: "book")
-                StatCard(value: "\(stats.totalPhotos)", label: "照片", icon: "photo")
-                StatCard(value: stats.formattedDuration, label: "总时长", icon: "clock")
+                StatCard(value: "\(stats.totalJourneys)", label: L10n.string("journey.stat.journeys"), icon: "map")
+                StatCard(value: "\(stats.totalChapters)", label: L10n.string("journey.stat.chapters"), icon: "book")
+                StatCard(value: "\(stats.totalPhotos)", label: L10n.string("journey.stat.photos"), icon: "photo")
+                StatCard(value: stats.formattedDuration, label: L10n.string("journey.stat.totalDuration"), icon: "clock")
             }
         }
         .padding()
@@ -168,27 +168,27 @@ struct JourneyNarrativeView: View {
     private var newJourneySheet: some View {
         NavigationStack {
             Form {
-                Section("旅程信息") {
-                    TextField("旅程名称", text: $journeyName)
-                    TextField("旅程描述", text: $journeyDescription)
+                Section(L10n.string("旅程信息")) {
+                    TextField(L10n.string("旅程名称"), text: $journeyName)
+                    TextField(L10n.string("旅程描述"), text: $journeyDescription)
                 }
                 
                 Section {
-                    Button("开始旅程") {
+                    Button(L10n.string("开始旅程")) {
                         service.startJourney(
-                            name: journeyName.isEmpty ? "故宫之旅" : journeyName,
-                            description: journeyDescription.isEmpty ? "探索紫禁城的历史与文化" : journeyDescription
+                            name: journeyName.isEmpty ? L10n.string("journey.default.name") : journeyName,
+                            description: journeyDescription.isEmpty ? L10n.string("journey.default.description") : journeyDescription
                         )
                         showNewJourney = false
                     }
                     .disabled(journeyName.isEmpty)
                 }
             }
-            .navigationTitle("新建旅程")
+            .navigationTitle(L10n.string("新建旅程"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { showNewJourney = false }
+                    Button(L10n.string("取消")) { showNewJourney = false }
                 }
             }
         }

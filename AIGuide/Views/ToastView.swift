@@ -185,7 +185,7 @@ struct ErrorView: View {
                 .foregroundStyle(.orange)
             
             VStack(spacing: 8) {
-                Text("出错了")
+                Text(L10n.string("出错了"))
                     .font(.headline)
                 
                 Text(error.localizedDescription)
@@ -196,7 +196,7 @@ struct ErrorView: View {
             
             if let retry = retryAction {
                 Button(action: retry) {
-                    Label("重试", systemImage: "arrow.clockwise")
+                    Label(L10n.string("重试"), systemImage: "arrow.clockwise")
                         .fontWeight(.medium)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

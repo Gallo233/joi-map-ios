@@ -21,7 +21,7 @@ class ShareService: ObservableObject {
     /// Share POI
     func sharePOI(_ poi: POI) {
         let content = ShareContent(
-            title: "我在参观\(poi.name)",
+            title: L10n.format("share.poi.title.format", poi.name),
             description: poi.description,
             image: nil,
             url: URL(string: "https://aiguide.app/poi/\(poi.id)")
@@ -33,8 +33,8 @@ class ShareService: ObservableObject {
     /// Share tour
     func shareTour(_ tour: TourService.Tour) {
         let content = ShareContent(
-            title: "推荐路线：\(tour.name)",
-            description: "\(tour.description) - 共\(tour.stopCount)个景点，约\(tour.formattedDuration)",
+            title: L10n.format("share.tour.title.format", tour.name),
+            description: L10n.format("share.tour.description.format", tour.description, tour.stopCount, tour.formattedDuration),
             image: nil,
             url: URL(string: "https://aiguide.app/tour/\(tour.id)")
         )
@@ -45,8 +45,8 @@ class ShareService: ObservableObject {
     /// Share visit record
     func shareVisit(_ record: HistoryService.VisitRecord) {
         let content = ShareContent(
-            title: "我参观了\(record.poiName)",
-            description: "在故宫度过了美好的\(record.formattedDuration)",
+            title: L10n.format("share.visit.title.format", record.poiName),
+            description: L10n.format("share.visit.description.format", record.formattedDuration),
             image: nil,
             url: URL(string: "https://aiguide.app/visit/\(record.id)")
         )
@@ -57,8 +57,8 @@ class ShareService: ObservableObject {
     /// Share app
     func shareApp() {
         let content = ShareContent(
-            title: "随身讲解 - AI 实时景区导览",
-            description: "智能定位讲解，多种语音风格，AR实景导览",
+            title: L10n.string("share.app.title"),
+            description: L10n.string("share.app.description"),
             image: nil,
             url: URL(string: "https://apps.apple.com/app/aiguide")
         )

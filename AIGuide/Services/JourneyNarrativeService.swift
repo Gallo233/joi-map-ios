@@ -117,7 +117,7 @@ class JourneyNarrativeService: ObservableObject {
             id: UUID().uuidString,
             poiId: poi.id,
             poiName: poi.name,
-            title: "第\(chapters.count + 1)章：\(poi.name)",
+            title: L10n.format("journey.chapter.title.format", chapters.count + 1, poi.name),
             content: generateChapterContent(poi: poi),
             visitTime: Date(),
             duration: duration,
@@ -271,4 +271,3 @@ class JourneyNarrativeService: ObservableObject {
         )
     }
 }
-

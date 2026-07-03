@@ -54,11 +54,11 @@ struct SplashScreenView: View {
                 
                 // App name
                 VStack(spacing: 8) {
-                    Text("随身讲解")
+                    Text("Joi Map")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                     
-                    Text("AI 实时景区导览")
+                    Text(L10n.string("AI 实时景区导览"))
                         .font(.system(size: 18, weight: .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -66,9 +66,9 @@ struct SplashScreenView: View {
                 
                 // Features
                 VStack(spacing: 16) {
-                    featureRow(icon: "location.fill", text: "智能定位讲解")
-                    featureRow(icon: "speaker.wave.2.fill", text: "多种语音风格")
-                    featureRow(icon: "arkit", text: "AR 实景导览")
+                    featureRow(icon: "location.fill", text: L10n.string("splash.feature.location"))
+                    featureRow(icon: "speaker.wave.2.fill", text: L10n.string("splash.feature.voice"))
+                    featureRow(icon: "arkit", text: L10n.string("splash.feature.ar"))
                 }
                 .padding(.top, 40)
                 .opacity(subtitleOpacity)
@@ -81,7 +81,7 @@ struct SplashScreenView: View {
                         .tint(.white)
                         .scaleEffect(1.2)
                     
-                    Text("正在加载...")
+                    Text(L10n.string("正在加载..."))
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.6))
                 }

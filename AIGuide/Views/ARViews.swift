@@ -389,13 +389,13 @@ struct ARPOIDetailView: View {
                     }
                     
                     HStack(spacing: 12) {
-                        InfoCard(title: "距离", value: formatDistance(poi.distance), icon: "location")
-                        InfoCard(title: "方向", value: "\(Int(poi.bearing))°", icon: "arrow.up.circle")
-                        InfoCard(title: "方位", value: getCompassDirection(poi.bearing), icon: "compass")
+                        InfoCard(title: L10n.string("ar.detail.distance"), value: formatDistance(poi.distance), icon: "location")
+                        InfoCard(title: L10n.string("ar.detail.bearing"), value: "\(Int(poi.bearing))°", icon: "arrow.up.circle")
+                        InfoCard(title: L10n.string("ar.detail.direction"), value: getCompassDirection(poi.bearing), icon: "compass")
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("简介")
+                        Text(L10n.string("简介"))
                             .font(.headline)
                         
                         Text(poi.description)
@@ -405,7 +405,7 @@ struct ARPOIDetailView: View {
                     
                     HStack(spacing: 12) {
                         Button(action: {}) {
-                            Label("查看讲解", systemImage: "book.fill")
+                            Label(L10n.string("查看讲解"), systemImage: "book.fill")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(.blue)
@@ -414,7 +414,7 @@ struct ARPOIDetailView: View {
                         }
                         
                         Button(action: {}) {
-                            Label("导航", systemImage: "arrow.triangle.turn.up.right.diamond")
+                            Label(L10n.string("导航"), systemImage: "arrow.triangle.turn.up.right.diamond")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(.green)
@@ -425,11 +425,11 @@ struct ARPOIDetailView: View {
                 }
                 .padding()
             }
-            .navigationTitle("景点详情")
+            .navigationTitle(L10n.string("景点详情"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("关闭") { dismiss() }
+                    Button(L10n.string("关闭")) { dismiss() }
                 }
             }
         }
@@ -446,24 +446,24 @@ struct ARPOIDetailView: View {
     
     private func formatDistance(_ distance: Double) -> String {
         if distance < 100 {
-            return "\(Int(distance))米"
+            return L10n.format("distance.meters.format", Int(distance))
         } else if distance < 1000 {
-            return "\(Int(distance / 10) * 10)米"
+            return L10n.format("distance.meters.format", Int(distance / 10) * 10)
         } else {
-            return String(format: "%.1f公里", distance / 1000)
+            return L10n.format("distance.kilometers.format", distance / 1000)
         }
     }
     
     private func getCompassDirection(_ bearing: Double) -> String {
         switch bearing {
-        case 0..<22.5, 337.5..<360: return "北"
-        case 22.5..<67.5: return "东北"
-        case 67.5..<112.5: return "东"
-        case 112.5..<157.5: return "东南"
-        case 157.5..<202.5: return "南"
-        case 202.5..<247.5: return "西南"
-        case 247.5..<292.5: return "西"
-        case 292.5..<337.5: return "西北"
+        case 0..<22.5, 337.5..<360: return L10n.string("direction.north")
+        case 22.5..<67.5: return L10n.string("direction.northeast")
+        case 67.5..<112.5: return L10n.string("direction.east")
+        case 112.5..<157.5: return L10n.string("direction.southeast")
+        case 157.5..<202.5: return L10n.string("direction.south")
+        case 202.5..<247.5: return L10n.string("direction.southwest")
+        case 247.5..<292.5: return L10n.string("direction.west")
+        case 292.5..<337.5: return L10n.string("direction.northwest")
         default: return ""
         }
     }

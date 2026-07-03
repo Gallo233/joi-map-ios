@@ -246,23 +246,23 @@ struct ErrorAlertModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(
-                "出错了",
+                L10n.string("出错了"),
                 isPresented: $errorHandler.showError,
                 presenting: errorHandler.currentError
             ) { error in
-                Button("确定") {
+                Button(L10n.string("确定")) {
                     errorHandler.clearError()
                 }
                 
                 if error.recoverySuggestion != nil {
-                    Button("重试") {
+                    Button(L10n.string("重试")) {
                         // Retry logic can be added here
                         errorHandler.clearError()
                     }
                 }
             } message: { error in
                 VStack {
-                    Text(error.errorDescription ?? "未知错误")
+                    Text(error.errorDescription ?? L10n.string("error.unknown"))
                     
                     if let recovery = error.recoverySuggestion {
                         Text(recovery)
@@ -294,7 +294,7 @@ struct ErrorBannerView: View {
             
             // Content
             VStack(alignment: .leading, spacing: 4) {
-                Text(error.errorDescription ?? "出错了")
+                Text(error.errorDescription ?? L10n.string("出错了"))
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
@@ -309,7 +309,7 @@ struct ErrorBannerView: View {
             
             // Actions
             if let onRetry = onRetry {
-                Button("重试") {
+                Button(L10n.string("重试")) {
                     onRetry()
                 }
                 .font(.caption)
@@ -374,7 +374,7 @@ struct ErrorStateView: View {
             // Retry button
             if let onRetry = onRetry {
                 Button(action: onRetry) {
-                    Label("重试", systemImage: "arrow.clockwise")
+                    Label(L10n.string("重试"), systemImage: "arrow.clockwise")
                         .fontWeight(.medium)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

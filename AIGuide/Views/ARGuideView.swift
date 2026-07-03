@@ -27,12 +27,12 @@ struct ARGuideView: View {
                     compassView
                 }
             }
-            .navigationTitle("AR 导览")
+            .navigationTitle(L10n.string("AR 导览"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { showAR.toggle() }) {
-                        Label(showAR ? "指南针" : "AR", systemImage: showAR ? "compass" : "arkit")
+                        Label(showAR ? L10n.string("指南针") : "AR", systemImage: showAR ? "compass" : "arkit")
                     }
                 }
             }
@@ -89,7 +89,7 @@ struct ARGuideView: View {
             
             // POI list
             VStack(alignment: .leading, spacing: 12) {
-                Text("附近景点")
+                Text(L10n.string("附近景点"))
                     .font(.headline)
                     .padding(.horizontal)
                 

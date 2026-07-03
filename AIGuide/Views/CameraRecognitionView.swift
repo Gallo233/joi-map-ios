@@ -33,7 +33,7 @@ struct CameraRecognitionView: View {
                 }
                 .padding()
             }
-            .navigationTitle("拍照识别")
+            .navigationTitle(L10n.string("拍照识别"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -55,8 +55,8 @@ struct CameraRecognitionView: View {
                     }
                 }
             }
-            .alert("识别错误", isPresented: $showError) {
-                Button("确定", role: .cancel) {}
+            .alert(L10n.string("识别错误"), isPresented: $showError) {
+                Button(L10n.string("确定"), role: .cancel) {}
             } message: {
                 Text(errorMessage)
             }
@@ -81,11 +81,11 @@ struct CameraRecognitionView: View {
                         .font(.system(size: 60))
                         .foregroundStyle(.secondary)
                     
-                    Text("拍摄或选择照片")
+                    Text(L10n.string("拍摄或选择照片"))
                         .font(.headline)
                         .foregroundStyle(.secondary)
                     
-                    Text("支持识别建筑、景点、展品")
+                    Text(L10n.string("支持识别建筑、景点、展品"))
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
@@ -110,7 +110,7 @@ struct CameraRecognitionView: View {
         HStack(spacing: 16) {
             // Camera button
             Button(action: { showCamera = true }) {
-                Label("拍照", systemImage: "camera.fill")
+                Label(L10n.string("拍照"), systemImage: "camera.fill")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -121,7 +121,7 @@ struct CameraRecognitionView: View {
             
             // Photo library button
             PhotosPicker(selection: $selectedItem, matching: .images) {
-                Label("相册", systemImage: "photo.on.rectangle")
+                Label(L10n.string("相册"), systemImage: "photo.on.rectangle")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -141,12 +141,12 @@ struct CameraRecognitionView: View {
                     .font(.title2)
                     .foregroundStyle(.green)
                 
-                Text("识别结果")
+                Text(L10n.string("识别结果"))
                     .font(.headline)
                 
                 Spacer()
                 
-                Text("置信度 \(Int(result.confidence * 100))%")
+                Text(L10n.format("camera.confidence.percent.format", Int(result.confidence * 100)))
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -163,7 +163,7 @@ struct CameraRecognitionView: View {
                             .font(.title)
                             .fontWeight(.bold)
                         
-                        Text(result.category)
+                        Text(localizedCategory(result.category))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -184,7 +184,7 @@ struct CameraRecognitionView: View {
                 
                 // Confidence bar
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("识别置信度")
+                    Text(L10n.string("识别置信度"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     
@@ -212,7 +212,7 @@ struct CameraRecognitionView: View {
                 Button(action: {
                     // Navigate to guide for this POI
                 }) {
-                    Label("查看讲解", systemImage: "book.fill")
+                    Label(L10n.string("查看讲解"), systemImage: "book.fill")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -224,7 +224,7 @@ struct CameraRecognitionView: View {
                 Button(action: {
                     // Share result
                 }) {
-                    Label("分享", systemImage: "square.and.arrow.up")
+                    Label(L10n.string("分享"), systemImage: "square.and.arrow.up")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -236,7 +236,7 @@ struct CameraRecognitionView: View {
                 Button(action: {
                     // Report error
                 }) {
-                    Label("纠错", systemImage: "exclamationmark.triangle")
+                    Label(L10n.string("纠错"), systemImage: "exclamationmark.triangle")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -254,14 +254,14 @@ struct CameraRecognitionView: View {
     // MARK: - Tips Section
     private var tipsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("拍照技巧")
+            Text(L10n.string("拍照技巧"))
                 .font(.headline)
             
             VStack(alignment: .leading, spacing: 8) {
-                TipRow(icon: "sun.max.fill", text: "确保光线充足，避免逆光")
-                TipRow(icon: "viewfinder", text: "将建筑或展品置于画面中央")
-                TipRow(icon: "hand.raised.fill", text: "保持手机稳定，避免模糊")
-                TipRow(icon: "textformat.size", text: "如有文字标识，可一并拍入")
+                TipRow(icon: "sun.max.fill", text: L10n.string("camera.tip.light"))
+                TipRow(icon: "viewfinder", text: L10n.string("camera.tip.center"))
+                TipRow(icon: "hand.raised.fill", text: L10n.string("camera.tip.steady"))
+                TipRow(icon: "textformat.size", text: L10n.string("camera.tip.text"))
             }
         }
         .padding()
@@ -277,8 +277,21 @@ struct CameraRecognitionView: View {
         if let result = await visionService.recognizeImage(image) {
             recognitionResult = result
         } else {
-            errorMessage = "无法识别图片内容，请尝试调整角度或光线"
+            errorMessage = L10n.string("camera.error.unrecognized")
             showError = true
+        }
+    }
+
+    private func localizedCategory(_ category: String) -> String {
+        switch category {
+        case "宫殿": return L10n.string("guide.category.palace")
+        case "寺庙": return L10n.string("guide.category.temple")
+        case "博物馆": return L10n.string("guide.category.museum")
+        case "建筑": return L10n.string("guide.category.building")
+        case "园林": return L10n.string("guide.category.garden")
+        case "城门": return L10n.string("guide.category.building")
+        case "其他": return L10n.string("common.other")
+        default: return category
         }
     }
     

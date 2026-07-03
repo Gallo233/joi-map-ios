@@ -29,16 +29,16 @@ struct IndoorLocationView: View {
                 // Zone list
                 zoneList
             }
-            .navigationTitle("室内定位")
+            .navigationTitle(L10n.string("室内定位"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("关闭") { dismiss() }
+                    Button(L10n.string("关闭")) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { indoorService.simulateIndoorPositioning() }) {
-                        Label("模拟定位", systemImage: "location.fill")
+                        Label(L10n.string("模拟定位"), systemImage: "location.fill")
                     }
                 }
             }
@@ -157,7 +157,7 @@ struct IndoorLocationView: View {
     // MARK: - Zone List
     private var zoneList: some View {
         List {
-            Section("当前楼层区域") {
+            Section(L10n.string("当前楼层区域")) {
                 ForEach(viewModel.zones) { zone in
                     ZoneRow(
                         zone: zone,
@@ -168,7 +168,7 @@ struct IndoorLocationView: View {
             }
             
             if !viewModel.highlightedPOIs.isEmpty {
-                Section("区域内景点") {
+                Section(L10n.string("区域内景点")) {
                     ForEach(viewModel.highlightedPOIs, id: \.self) { poiId in
                         if let poi = POI.seedList.first(where: { $0.id == poiId }) {
                             HStack {
@@ -182,7 +182,7 @@ struct IndoorLocationView: View {
                 }
             }
             
-            Section("附近信标") {
+            Section(L10n.string("附近信标")) {
                 ForEach(indoorService.nearbyBeacons) { beacon in
                     BeaconRow(beacon: beacon)
                 }
@@ -219,8 +219,11 @@ struct ZoneCard: View {
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(isSelected ? .white : .primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
                 
-                Text("\(zone.pois.count)个景点")
+                Text(L10n.format("indoor.poiCount.format", zone.pois.count))
                     .font(.caption2)
                     .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
             }
@@ -249,7 +252,7 @@ struct ZoneRow: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    Text("\(zone.pois.count)个景点")
+                    Text(L10n.format("indoor.poiCount.format", zone.pois.count))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
