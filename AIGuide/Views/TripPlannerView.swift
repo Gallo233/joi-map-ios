@@ -812,12 +812,12 @@ struct TripPlannerView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 destinationSearchField
-                tripPreferenceControls
+                tripPlanSetupCard
 
                 if service.isSearching {
                     VStack(spacing: 10) {
                         ProgressView()
-                        Text(generatingDestinationID == nil ? LocalizedStringKey("trip.search.loading.map") : LocalizedStringKey("trip.search.loading.plan"))
+                        Text(L10n.string(generatingDestinationID == nil ? "trip.search.loading.map" : "trip.search.loading.plan"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -827,13 +827,13 @@ struct TripPlannerView: View {
                         ContentUnavailableView(
                             error,
                             systemImage: "mappin.slash",
-                            description: Text("trip.search.fallback.description")
+                            description: Text(L10n.string("trip.search.fallback.description"))
                         )
 
                         Button {
                             generateTripFromKeyword()
                         } label: {
-                            Label("trip.search.generateDirect", systemImage: "sparkles")
+                            Label(L10n.string("trip.search.generateDirect"), systemImage: "sparkles")
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -867,11 +867,11 @@ struct TripPlannerView: View {
                 }
             }
             .padding()
-            .navigationTitle("trip.search.place")
+            .navigationTitle(L10n.string("trip.search.place"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("common.close") { showDestinationSearch = false }
+                    Button(L10n.string("common.close")) { showDestinationSearch = false }
                 }
             }
         }
@@ -883,7 +883,7 @@ struct TripPlannerView: View {
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary.opacity(0.72))
 
-            TextField("trip.search.placeholder", text: $destinationQuery)
+            TextField(L10n.string("trip.search.placeholder"), text: $destinationQuery)
                 .textInputAutocapitalization(.never)
                 .submitLabel(.search)
                 .onSubmit {
@@ -922,13 +922,96 @@ struct TripPlannerView: View {
         )
     }
 
+    private var tripPlanSetupCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Label(L10n.string("trip.preference.title"), systemImage: "wand.and.stars")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.84)
+
+                Spacer(minLength: 8)
+
+                Text(L10n.format("trip.preference.maxStops.format", tripPlanPreferences.maxStops))
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(forestColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(forestColor.opacity(0.10), in: Capsule())
+            }
+
+            Text(tripPreferenceSummaryText)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+
+            tripPreferenceControls
+
+            if canGenerateFromKeyword {
+                Divider()
+                    .overlay(Color.black.opacity(0.04))
+
+                Button {
+                    generateTripFromKeyword()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "sparkles")
+                            .font(.subheadline.weight(.bold))
+                            .frame(width: 30, height: 30)
+                            .background(primaryColor.opacity(0.12), in: Circle())
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(L10n.format("trip.search.generateKeyword.format", trimmedDestinationQuery))
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.78)
+
+                            Text(L10n.string("trip.search.directHint"))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.78)
+                        }
+
+                        Spacer(minLength: 8)
+
+                        Image(systemName: "arrow.right.circle.fill")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(primaryColor)
+                    }
+                    .padding(10)
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .disabled(service.isSearching)
+            }
+        }
+        .padding(14)
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(.black.opacity(0.06), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
+    }
+
     private var tripPreferenceControls: some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 9) {
+            Text(L10n.string("trip.preference.durationPace"))
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach([2, 4, 6], id: \.self) { hours in
                         TripPreferenceChip(
-                            title: "\(hours)h",
+                            title: L10n.format("trip.preference.duration.short.format", hours),
                             icon: "clock",
                             isSelected: tripPlanPreferences.durationHours == hours,
                             primaryColor: primaryColor
@@ -950,6 +1033,12 @@ struct TripPlannerView: View {
                 }
                 .padding(.horizontal, 1)
             }
+
+            Text(L10n.string("trip.preference.focusAudience"))
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .padding(.top, 2)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -978,6 +1067,20 @@ struct TripPlannerView: View {
                 .padding(.horizontal, 1)
             }
         }
+    }
+
+    private var tripPreferenceSummaryText: String {
+        L10n.format(
+            "trip.preference.summary.format",
+            L10n.format("trip.preference.duration.long.format", tripPlanPreferences.durationHours),
+            tripPlanPreferences.pace.displayTitle,
+            tripPlanPreferences.interest.displayTitle,
+            tripPlanPreferences.audience.displayTitle
+        )
+    }
+
+    private var trimmedDestinationQuery: String {
+        destinationQuery.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private var destinationRecommendationContent: some View {
