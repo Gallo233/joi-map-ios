@@ -6,15 +6,28 @@ import Foundation
 struct APIConfig {
     static let apiVersionPath = "/api/v1"
     private static let defaultServerURL = "http://127.0.0.1:8000"
+    private static let serverURLOverrideKey = "com.aiguide.api.serverURL"
 
     /// Override with `AIGUIDE_API_BASE_URL` for a full API root, or
     /// `AIGUIDE_SERVER_URL` for a server root that should receive `/api/v1`.
     static var baseURL: String {
-        if let value = configuredValue(environmentKey: "AIGUIDE_API_BASE_URL", plistKey: "AIGuideAPIBaseURL") {
+        if let value = environmentValue(forKey: "AIGUIDE_API_BASE_URL") {
             return normalizedURLString(value)
         }
 
-        if let value = configuredValue(environmentKey: "AIGUIDE_SERVER_URL", plistKey: "AIGuideServerURL") {
+        if let value = environmentValue(forKey: "AIGUIDE_SERVER_URL") {
+            return normalizedURLString(value, appendingAPIVersion: true)
+        }
+
+        if let value = serverURLOverride {
+            return normalizedURLString(value, appendingAPIVersion: true)
+        }
+
+        if let value = plistValue(forKey: "AIGuideAPIBaseURL") {
+            return normalizedURLString(value)
+        }
+
+        if let value = plistValue(forKey: "AIGuideServerURL") {
             return normalizedURLString(value, appendingAPIVersion: true)
         }
 
@@ -29,6 +42,25 @@ struct APIConfig {
 
     static var healthURL: URL? {
         URL(string: "\(serverURL)/health")
+    }
+
+    static var serverURLOverride: String? {
+        let value = UserDefaults.standard.string(forKey: serverURLOverrideKey) ?? ""
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : normalizedURLString(trimmed)
+    }
+
+    static func setServerURLOverride(_ value: String?) {
+        let trimmed = (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            clearServerURLOverride()
+        } else {
+            UserDefaults.standard.set(normalizedURLString(trimmed), forKey: serverURLOverrideKey)
+        }
+    }
+
+    static func clearServerURLOverride() {
+        UserDefaults.standard.removeObject(forKey: serverURLOverrideKey)
     }
 
     static func url(for endpoint: String) -> URL? {
@@ -53,13 +85,17 @@ struct APIConfig {
         static let routes = "/routes"
     }
 
-    private static func configuredValue(environmentKey: String, plistKey: String) -> String? {
-        if let value = ProcessInfo.processInfo.environment[environmentKey],
+    private static func environmentValue(forKey key: String) -> String? {
+        if let value = ProcessInfo.processInfo.environment[key],
            !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return value
         }
 
-        if let value = Bundle.main.object(forInfoDictionaryKey: plistKey) as? String,
+        return nil
+    }
+
+    private static func plistValue(forKey key: String) -> String? {
+        if let value = Bundle.main.object(forInfoDictionaryKey: key) as? String,
            !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return value
         }

@@ -220,15 +220,77 @@ struct GuideTabView: View {
 }
 
 // MARK: - Settings View
+private enum BackendConnectionStatus {
+    case idle
+    case saved
+    case checking
+    case connected
+    case disconnected
+    case reset
+
+    var icon: String {
+        switch self {
+        case .idle:
+            return "server.rack"
+        case .saved:
+            return "checkmark.circle"
+        case .checking:
+            return "arrow.triangle.2.circlepath"
+        case .connected:
+            return "checkmark.seal.fill"
+        case .disconnected:
+            return "exclamationmark.triangle.fill"
+        case .reset:
+            return "arrow.counterclockwise.circle"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .idle:
+            return .secondary
+        case .saved, .connected:
+            return .green
+        case .checking:
+            return .blue
+        case .disconnected:
+            return .orange
+        case .reset:
+            return .secondary
+        }
+    }
+
+    var localizedMessage: String {
+        switch self {
+        case .idle:
+            return L10n.string("settings.backend.status.idle")
+        case .saved:
+            return L10n.string("settings.backend.status.saved")
+        case .checking:
+            return L10n.string("settings.backend.status.checking")
+        case .connected:
+            return L10n.string("settings.backend.status.connected")
+        case .disconnected:
+            return L10n.string("settings.backend.status.disconnected")
+        case .reset:
+            return L10n.string("settings.backend.status.reset")
+        }
+    }
+}
+
 struct SettingsView: View {
     @StateObject private var settingsService = SettingsService.shared
     @StateObject private var historyService = HistoryService.shared
     @StateObject private var notificationService = NotificationService.shared
+    @StateObject private var backendClient = APIClient()
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var showShareSheet = false
     @State private var showClearCacheAlert = false
     @State private var showResetAlert = false
     @State private var cacheSize = ""
+    @State private var backendServerURLDraft = APIConfig.serverURLOverride ?? ""
+    @State private var backendStatus: BackendConnectionStatus = .idle
+    @State private var backendStatusMessage = BackendConnectionStatus.idle.localizedMessage
 
     private let bottomNavigationClearance: CGFloat = 128
     private let resetSectionID = "settings-reset-section"
@@ -270,6 +332,73 @@ struct SettingsView: View {
                             }
                         }
                         .padding(.vertical, 8)
+                    }
+
+                    // Backend settings
+                    Section(L10n.string("settings.backend")) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label(L10n.string("settings.backend.currentAPI"), systemImage: "network")
+                                .font(.subheadline)
+                            Text(APIConfig.baseURL)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .textSelection(.enabled)
+                                .lineLimit(2)
+                        }
+                        .padding(.vertical, 2)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label(L10n.string("settings.backend.serverURL"), systemImage: "link")
+                                .font(.subheadline)
+                            TextField(
+                                L10n.string("settings.backend.server.placeholder"),
+                                text: $backendServerURLDraft
+                            )
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.URL)
+                            .autocorrectionDisabled()
+                        }
+                        .padding(.vertical, 2)
+
+                        HStack(spacing: 12) {
+                            Button(L10n.string("settings.backend.save")) {
+                                saveBackendServerURL()
+                            }
+                            .buttonStyle(.borderedProminent)
+
+                            Button {
+                                Task {
+                                    await checkBackendHealth()
+                                }
+                            } label: {
+                                if backendStatus == .checking {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                } else {
+                                    Text(L10n.string("settings.backend.check"))
+                                }
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(backendStatus == .checking)
+
+                            Button(L10n.string("settings.backend.reset")) {
+                                resetBackendServerURL()
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .font(.subheadline.weight(.semibold))
+
+                        HStack(spacing: 10) {
+                            Image(systemName: backendStatus.icon)
+                                .foregroundStyle(backendStatus.color)
+                            Text(backendStatusMessage)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(L10n.string("settings.backend.help"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
 
                     // Stats section
@@ -479,6 +608,8 @@ struct SettingsView: View {
                 .navigationTitle(L10n.string("settings.title"))
                 .onAppear {
                     cacheSize = settingsService.getCacheSize()
+                    backendServerURLDraft = APIConfig.serverURLOverride ?? ""
+                    backendStatusMessage = backendStatus.localizedMessage
                     scrollToBottomIfNeeded(using: scrollProxy)
                 }
                 .alert(L10n.string("settings.clearCache"), isPresented: $showClearCacheAlert) {
@@ -517,6 +648,34 @@ struct SettingsView: View {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             proxy.scrollTo(bottomSpacerID, anchor: .bottom)
+        }
+    }
+
+    private func saveBackendServerURL() {
+        APIConfig.setServerURLOverride(backendServerURLDraft)
+        backendServerURLDraft = APIConfig.serverURLOverride ?? ""
+        backendStatus = .saved
+        backendStatusMessage = backendStatus.localizedMessage
+    }
+
+    private func resetBackendServerURL() {
+        APIConfig.clearServerURLOverride()
+        backendServerURLDraft = ""
+        backendStatus = .reset
+        backendStatusMessage = backendStatus.localizedMessage
+    }
+
+    private func checkBackendHealth() async {
+        saveBackendServerURL()
+        backendStatus = .checking
+        backendStatusMessage = backendStatus.localizedMessage
+
+        if await backendClient.checkHealth() {
+            backendStatus = .connected
+            backendStatusMessage = backendStatus.localizedMessage
+        } else {
+            backendStatus = .disconnected
+            backendStatusMessage = backendClient.lastError?.localizedDescription ?? backendStatus.localizedMessage
         }
     }
 }
