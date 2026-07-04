@@ -212,7 +212,7 @@ struct CameraRecognitionView: View {
                 Button(action: {
                     // Navigate to guide for this POI
                 }) {
-                    Label(L10n.string("查看讲解"), systemImage: "book.fill")
+                    Label(L10n.string("common.viewNarration"), systemImage: "book.fill")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -224,7 +224,7 @@ struct CameraRecognitionView: View {
                 Button(action: {
                     // Share result
                 }) {
-                    Label(L10n.string("分享"), systemImage: "square.and.arrow.up")
+                    Label(L10n.string("common.share"), systemImage: "square.and.arrow.up")
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding()

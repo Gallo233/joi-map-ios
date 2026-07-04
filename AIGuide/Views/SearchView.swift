@@ -52,11 +52,11 @@ struct SearchView: View {
                     }
                 }
             }
-            .navigationTitle(L10n.string("搜索"))
+            .navigationTitle(L10n.string("search.nav.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(L10n.string("取消")) { dismiss() }
+                    Button(L10n.string("common.cancel")) { dismiss() }
                 }
             }
         }
@@ -70,7 +70,7 @@ struct SearchView: View {
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(forest)
 
-                TextField(L10n.string("搜索景点、展览、设施..."), text: $searchService.searchText)
+                TextField(L10n.string("search.placeholder"), text: $searchService.searchText)
                     .focused($isSearchFocused)
                     .submitLabel(.search)
                     .onChange(of: searchService.searchText) { _, newValue in
@@ -121,12 +121,12 @@ struct SearchView: View {
     private var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(L10n.string("最近搜索"))
+                Text(L10n.string("search.recent.title"))
                     .font(.headline)
 
                 Spacer()
 
-                Button(L10n.string("清空")) {
+                Button(L10n.string("search.recent.clear")) {
                     searchService.clearRecentSearches()
                 }
                 .font(.subheadline)
@@ -161,7 +161,7 @@ struct SearchView: View {
     // MARK: - Quick Categories
     private var quickCategoriesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(L10n.string("快速查找"))
+            Text(L10n.string("search.quick.title"))
                 .font(.title3.weight(.bold))
 
             LazyVGrid(columns: [
@@ -215,7 +215,7 @@ struct SearchView: View {
     // MARK: - Popular Searches
     private var popularSearchesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(L10n.string("热门搜索"))
+            Text(L10n.string("search.popular.title"))
                 .font(.title3.weight(.bold))
 
             FlowLayout(spacing: 8) {
@@ -255,7 +255,7 @@ struct SearchView: View {
             Spacer()
             ProgressView()
                 .tint(forest)
-            Text(L10n.string("搜索中..."))
+            Text(L10n.string("search.loading"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -269,9 +269,9 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 50))
                 .foregroundStyle(forest.opacity(0.45))
-            Text(L10n.string("未找到相关内容"))
+            Text(L10n.string("search.empty.title"))
                 .font(.headline)
-            Text(L10n.string("试试其他关键词"))
+            Text(L10n.string("search.empty.subtitle"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer()

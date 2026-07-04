@@ -97,8 +97,8 @@ extension View {
 struct LoadingView: View {
     let message: String
     
-    init(_ message: String = "加载中...") {
-        self.message = message
+    init(_ message: String? = nil) {
+        self.message = message ?? L10n.string("common.loading")
     }
     
     var body: some View {
@@ -185,7 +185,7 @@ struct ErrorView: View {
                 .foregroundStyle(.orange)
             
             VStack(spacing: 8) {
-                Text(L10n.string("出错了"))
+                Text(L10n.string("common.error.generic"))
                     .font(.headline)
                 
                 Text(error.localizedDescription)
@@ -196,7 +196,7 @@ struct ErrorView: View {
             
             if let retry = retryAction {
                 Button(action: retry) {
-                    Label(L10n.string("重试"), systemImage: "arrow.clockwise")
+                    Label(L10n.string("common.retry"), systemImage: "arrow.clockwise")
                         .fontWeight(.medium)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

@@ -251,7 +251,7 @@ struct NumberInputView: View {
                 
                 Spacer()
                 
-                Button(L10n.string("清空")) {
+                Button(L10n.string("common.clear")) {
                     numberService.clearRecentLookups()
                 }
                 .font(.subheadline)

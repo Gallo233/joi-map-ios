@@ -29,16 +29,16 @@ struct IndoorLocationView: View {
                 // Zone list
                 zoneList
             }
-            .navigationTitle(L10n.string("室内定位"))
+            .navigationTitle(L10n.string("indoor.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(L10n.string("关闭")) { dismiss() }
+                    Button(L10n.string("common.close")) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { indoorService.simulateIndoorPositioning() }) {
-                        Label(L10n.string("模拟定位"), systemImage: "location.fill")
+                        Label(L10n.string("indoor.simulate"), systemImage: "location.fill")
                     }
                 }
             }
@@ -157,7 +157,7 @@ struct IndoorLocationView: View {
     // MARK: - Zone List
     private var zoneList: some View {
         List {
-            Section(L10n.string("当前楼层区域")) {
+            Section(L10n.string("indoor.section.currentFloorZones")) {
                 ForEach(viewModel.zones) { zone in
                     ZoneRow(
                         zone: zone,
@@ -168,7 +168,7 @@ struct IndoorLocationView: View {
             }
             
             if !viewModel.highlightedPOIs.isEmpty {
-                Section(L10n.string("区域内景点")) {
+                Section(L10n.string("indoor.section.zonePOIs")) {
                     ForEach(viewModel.highlightedPOIs, id: \.self) { poiId in
                         if let poi = POI.seedList.first(where: { $0.id == poiId }) {
                             HStack {
@@ -182,7 +182,7 @@ struct IndoorLocationView: View {
                 }
             }
             
-            Section(L10n.string("附近信标")) {
+            Section(L10n.string("indoor.section.nearbyBeacons")) {
                 ForEach(indoorService.nearbyBeacons) { beacon in
                     BeaconRow(beacon: beacon)
                 }

@@ -18,11 +18,11 @@ struct JourneyNarrativeView: View {
                     journeyListView
                 }
             }
-            .navigationTitle(L10n.string("行程"))
+            .navigationTitle(L10n.string("trip.nav.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(L10n.string("关闭")) { dismiss() }
+                    Button(L10n.string("common.close")) { dismiss() }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -188,7 +188,7 @@ struct JourneyNarrativeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.string("取消")) { showNewJourney = false }
+                    Button(L10n.string("common.cancel")) { showNewJourney = false }
                 }
             }
         }
