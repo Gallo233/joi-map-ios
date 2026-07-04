@@ -56,7 +56,7 @@ struct CameraRecognitionView: View {
                 }
             }
             .alert(L10n.string("识别错误"), isPresented: $showError) {
-                Button(L10n.string("确定"), role: .cancel) {}
+                Button(L10n.string("common.ok"), role: .cancel) {}
             } message: {
                 Text(errorMessage)
             }

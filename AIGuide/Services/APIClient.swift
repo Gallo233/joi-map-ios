@@ -347,23 +347,35 @@ enum APIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "无效的 URL"
+            return L10n.string("api.error.invalidURL")
         case .invalidResponse:
-            return "无效的响应"
+            return L10n.string("api.error.invalidResponse")
         case .httpError(let code, let message):
             if code == 429 {
-                return "请求过于频繁，请稍后再试。\(message.map { " \($0)" } ?? "")"
+                return Self.messageWithBackendDetail("api.error.rateLimited", detail: message)
             }
             if code == 408 {
-                return "请求超时，请稍后重试。\(message.map { " \($0)" } ?? "")"
+                return Self.messageWithBackendDetail("api.error.timeout", detail: message)
             }
-            return "HTTP 错误 \(code): \(message ?? "未知错误")"
+            if let message, !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return L10n.format("api.error.httpWithMessage.format", code, message)
+            }
+            return L10n.format("api.error.http.format", code)
         case .encodingError(let error):
-            return "请求编码错误: \(error.localizedDescription)"
+            return L10n.format("api.error.encoding.format", error.localizedDescription)
         case .decodingError(let error):
-            return "解码错误: \(error.localizedDescription)"
+            return L10n.format("api.error.decoding.format", error.localizedDescription)
         case .networkError(let error):
-            return "网络错误: \(error.localizedDescription)"
+            return L10n.format("api.error.network.format", error.localizedDescription)
         }
+    }
+
+    private static func messageWithBackendDetail(_ key: String, detail: String?) -> String {
+        let base = L10n.string(key)
+        guard let detail = detail?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !detail.isEmpty else {
+            return base
+        }
+        return "\(base) \(detail)"
     }
 }

@@ -369,10 +369,10 @@ enum TTSError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .networkError: return "网络错误"
-        case .invalidResponse: return "服务器响应无效"
-        case .invalidURL: return "URL 无效"
-        case .audioPlaybackError: return "音频播放错误"
+        case .networkError: return L10n.string("error.network.noConnection")
+        case .invalidResponse: return L10n.string("error.network.invalidResponse")
+        case .invalidURL: return L10n.string("api.error.invalidURL")
+        case .audioPlaybackError: return L10n.string("error.audio.playbackFailed")
         }
     }
 }

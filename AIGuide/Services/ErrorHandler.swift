@@ -55,13 +55,13 @@ enum AppError: LocalizedError, Identifiable {
     
     var recoverySuggestion: String? {
         switch self {
-        case .network: return "请检查网络连接后重试"
-        case .location: return "请在设置中开启定位权限"
-        case .audio: return "请检查音量设置"
-        case .vision: return "请确保拍摄清晰的照片"
-        case .data: return "请稍后重试"
-        case .permission: return "请在设置中授予相关权限"
-        case .unknown: return "请稍后重试"
+        case .network: return L10n.string("error.recovery.network")
+        case .location: return L10n.string("error.recovery.location")
+        case .audio: return L10n.string("error.recovery.audio")
+        case .vision: return L10n.string("error.recovery.vision")
+        case .data: return L10n.string("error.recovery.data")
+        case .permission: return L10n.string("error.recovery.permission")
+        case .unknown: return L10n.string("error.recovery.unknown")
         }
     }
 }
@@ -76,11 +76,11 @@ enum NetworkError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .noConnection: return "网络连接失败"
-        case .timeout: return "请求超时"
-        case .serverError(let code): return "服务器错误 (\(code))"
-        case .invalidResponse: return "服务器响应无效"
-        case .decodingError: return "数据解析失败"
+        case .noConnection: return L10n.string("error.network.noConnection")
+        case .timeout: return L10n.string("error.network.timeout")
+        case .serverError(let code): return L10n.format("error.network.server.format", code)
+        case .invalidResponse: return L10n.string("error.network.invalidResponse")
+        case .decodingError: return L10n.string("error.network.decoding")
         }
     }
 }
@@ -94,10 +94,10 @@ enum LocationError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .denied: return "定位权限被拒绝"
-        case .restricted: return "定位服务受限"
-        case .unavailable: return "定位服务不可用"
-        case .timeout: return "定位超时"
+        case .denied: return L10n.string("error.location.denied")
+        case .restricted: return L10n.string("error.location.restricted")
+        case .unavailable: return L10n.string("error.location.unavailable")
+        case .timeout: return L10n.string("error.location.timeout")
         }
     }
 }
@@ -111,10 +111,10 @@ enum AudioError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .playbackFailed: return "播放失败"
-        case .recordingFailed: return "录音失败"
-        case .fileNotFound: return "音频文件不存在"
-        case .formatError: return "音频格式不支持"
+        case .playbackFailed: return L10n.string("error.audio.playbackFailed")
+        case .recordingFailed: return L10n.string("error.audio.recordingFailed")
+        case .fileNotFound: return L10n.string("error.audio.fileNotFound")
+        case .formatError: return L10n.string("error.audio.formatError")
         }
     }
 }
@@ -128,10 +128,10 @@ enum DataError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .loadFailed: return "数据加载失败"
-        case .saveFailed: return "数据保存失败"
-        case .corrupted: return "数据已损坏"
-        case .notFound: return "数据不存在"
+        case .loadFailed: return L10n.string("error.data.loadFailed")
+        case .saveFailed: return L10n.string("error.data.saveFailed")
+        case .corrupted: return L10n.string("error.data.corrupted")
+        case .notFound: return L10n.string("error.data.notFound")
         }
     }
 }
@@ -145,10 +145,10 @@ enum PermissionError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .location: return "需要定位权限"
-        case .camera: return "需要相机权限"
-        case .microphone: return "需要麦克风权限"
-        case .photoLibrary: return "需要相册权限"
+        case .location: return L10n.string("error.permission.location")
+        case .camera: return L10n.string("error.permission.camera")
+        case .microphone: return L10n.string("error.permission.microphone")
+        case .photoLibrary: return L10n.string("error.permission.photoLibrary")
         }
     }
 }
@@ -246,16 +246,16 @@ struct ErrorAlertModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(
-                L10n.string("出错了"),
+                L10n.string("common.error.generic"),
                 isPresented: $errorHandler.showError,
                 presenting: errorHandler.currentError
             ) { error in
-                Button(L10n.string("确定")) {
+                Button(L10n.string("common.ok")) {
                     errorHandler.clearError()
                 }
                 
                 if error.recoverySuggestion != nil {
-                    Button(L10n.string("重试")) {
+                    Button(L10n.string("common.retry")) {
                         // Retry logic can be added here
                         errorHandler.clearError()
                     }
@@ -294,7 +294,7 @@ struct ErrorBannerView: View {
             
             // Content
             VStack(alignment: .leading, spacing: 4) {
-                Text(error.errorDescription ?? L10n.string("出错了"))
+                Text(error.errorDescription ?? L10n.string("common.error.generic"))
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
@@ -309,7 +309,7 @@ struct ErrorBannerView: View {
             
             // Actions
             if let onRetry = onRetry {
-                Button(L10n.string("重试")) {
+                Button(L10n.string("common.retry")) {
                     onRetry()
                 }
                 .font(.caption)
@@ -360,7 +360,7 @@ struct ErrorStateView: View {
             
             // Message
             VStack(spacing: 8) {
-                Text(error.errorDescription ?? "出错了")
+                Text(error.errorDescription ?? L10n.string("common.error.generic"))
                     .font(.headline)
                 
                 if let recovery = error.recoverySuggestion {
@@ -374,7 +374,7 @@ struct ErrorStateView: View {
             // Retry button
             if let onRetry = onRetry {
                 Button(action: onRetry) {
-                    Label(L10n.string("重试"), systemImage: "arrow.clockwise")
+                    Label(L10n.string("common.retry"), systemImage: "arrow.clockwise")
                         .fontWeight(.medium)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

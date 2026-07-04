@@ -9257,6 +9257,339 @@
         }
       }
     },
+    "api.error.invalidURL" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid URL" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "URL が無効です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "잘못된 URL입니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无效的 URL" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無效的 URL" } }
+      }
+    },
+    "api.error.invalidResponse" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid server response" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サーバー応答が無効です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 응답이 올바르지 않습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无效的响应" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無效的回應" } }
+      }
+    },
+    "api.error.rateLimited" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Too many requests. Try again later." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リクエストが多すぎます。しばらくしてからもう一度お試しください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "요청이 너무 많습니다. 잠시 후 다시 시도하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请求过于频繁，请稍后再试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請求過於頻繁，請稍後再試。" } }
+      }
+    },
+    "api.error.timeout" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Request timed out. Try again later." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リクエストがタイムアウトしました。しばらくしてからもう一度お試しください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "요청 시간이 초과되었습니다. 잠시 후 다시 시도하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请求超时，请稍后重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請求逾時，請稍後重試。" } }
+      }
+    },
+    "api.error.http.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "HTTP error %d" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "HTTP エラー %d" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 오류 %d" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 错误 %d" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 錯誤 %d" } }
+      }
+    },
+    "api.error.httpWithMessage.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "HTTP error %d: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "HTTP エラー %d：%@" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 오류 %d: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 错误 %d：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "HTTP 錯誤 %d：%@" } }
+      }
+    },
+    "api.error.encoding.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Request encoding failed: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リクエストのエンコードに失敗しました：%@" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "요청 인코딩에 실패했습니다: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请求编码错误：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請求編碼錯誤：%@" } }
+      }
+    },
+    "api.error.decoding.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Response decoding failed: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "応答のデコードに失敗しました：%@" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "응답 디코딩에 실패했습니다: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "解码错误：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "解碼錯誤：%@" } }
+      }
+    },
+    "api.error.network.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Network error: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ネットワークエラー：%@" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "네트워크 오류: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "网络错误：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "網路錯誤：%@" } }
+      }
+    },
+    "error.recovery.network" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check your network connection and try again." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ネットワーク接続を確認して、もう一度お試しください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "네트워크 연결을 확인한 후 다시 시도하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请检查网络连接后重试" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請檢查網路連線後重試" } }
+      }
+    },
+    "error.recovery.location" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable location access in Settings." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定で位置情報のアクセスを有効にしてください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정에서 위치 접근 권한을 켜 주세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请在设置中开启定位权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請在設定中開啟定位權限" } }
+      }
+    },
+    "error.recovery.audio" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check your volume and audio settings." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "音量とオーディオ設定を確認してください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "볼륨과 오디오 설정을 확인하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请检查音量设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請檢查音量設定" } }
+      }
+    },
+    "error.recovery.vision" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Make sure the photo is clear and well lit." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "写真が鮮明で明るいことを確認してください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "사진이 선명하고 조명이 충분한지 확인하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请确保拍摄清晰的照片" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請確保拍攝清晰的照片" } }
+      }
+    },
+    "error.recovery.data" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Try again later." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "しばらくしてからもう一度お試しください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "잠시 후 다시 시도하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请稍后重试" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請稍後重試" } }
+      }
+    },
+    "error.recovery.permission" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Grant the required permission in Settings." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定で必要な権限を許可してください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정에서 필요한 권한을 허용해 주세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请在设置中授予相关权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請在設定中授予相關權限" } }
+      }
+    },
+    "error.recovery.unknown" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Try again later." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "しばらくしてからもう一度お試しください。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "잠시 후 다시 시도하세요." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请稍后重试" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請稍後重試" } }
+      }
+    },
+    "error.network.noConnection" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Network connection failed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ネットワーク接続に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "네트워크 연결에 실패했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "网络连接失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "網路連線失敗" } }
+      }
+    },
+    "error.network.timeout" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Request timed out" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リクエストがタイムアウトしました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "요청 시간이 초과되었습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请求超时" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請求逾時" } }
+      }
+    },
+    "error.network.server.format" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Server error (%d)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サーバーエラー（%d）" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 오류(%d)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "服务器错误（%d）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "伺服器錯誤（%d）" } }
+      }
+    },
+    "error.network.invalidResponse" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid server response" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サーバー応答が無効です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 응답이 올바르지 않습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "服务器响应无效" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "伺服器回應無效" } }
+      }
+    },
+    "error.network.decoding" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data parsing failed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データの解析に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터 파싱에 실패했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据解析失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料解析失敗" } }
+      }
+    },
+    "error.location.denied" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location permission was denied" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "位置情報の権限が拒否されました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치 권한이 거부되었습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "定位权限被拒绝" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "定位權限被拒絕" } }
+      }
+    },
+    "error.location.restricted" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location services are restricted" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "位置情報サービスが制限されています" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치 서비스가 제한되어 있습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "定位服务受限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "定位服務受限" } }
+      }
+    },
+    "error.location.unavailable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location services are unavailable" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "位置情報サービスを利用できません" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치 서비스를 사용할 수 없습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "定位服务不可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "定位服務不可用" } }
+      }
+    },
+    "error.location.timeout" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location timed out" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "位置情報の取得がタイムアウトしました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치 확인 시간이 초과되었습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "定位超时" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "定位逾時" } }
+      }
+    },
+    "error.audio.playbackFailed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Playback failed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再生に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "재생에 실패했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "播放失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "播放失敗" } }
+      }
+    },
+    "error.audio.recordingFailed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recording failed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "録音に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "녹음에 실패했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "录音失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "錄音失敗" } }
+      }
+    },
+    "error.audio.fileNotFound" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Audio file not found" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "音声ファイルが見つかりません" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오디오 파일을 찾을 수 없습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "音频文件不存在" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "音訊檔案不存在" } }
+      }
+    },
+    "error.audio.formatError" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unsupported audio format" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "対応していない音声形式です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "지원하지 않는 오디오 형식입니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "音频格式不支持" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "不支援此音訊格式" } }
+      }
+    },
+    "error.data.loadFailed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Failed to load data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データの読み込みに失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터를 불러오지 못했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据加载失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料載入失敗" } }
+      }
+    },
+    "error.data.saveFailed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Failed to save data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データの保存に失敗しました" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터를 저장하지 못했습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据保存失败" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料儲存失敗" } }
+      }
+    },
+    "error.data.corrupted" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data is corrupted" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データが破損しています" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터가 손상되었습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据已损坏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料已損毀" } }
+      }
+    },
+    "error.data.notFound" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data not found" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データが見つかりません" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터를 찾을 수 없습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据不存在" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料不存在" } }
+      }
+    },
+    "error.permission.location" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location permission is required" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "位置情報の権限が必要です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "위치 권한이 필요합니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要定位权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要定位權限" } }
+      }
+    },
+    "error.permission.camera" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Camera permission is required" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "カメラの権限が必要です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "카메라 권한이 필요합니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要相机权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要相機權限" } }
+      }
+    },
+    "error.permission.microphone" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Microphone permission is required" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "マイクの権限が必要です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "마이크 권한이 필요합니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要麦克风权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要麥克風權限" } }
+      }
+    },
+    "error.permission.photoLibrary" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Photo library permission is required" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "写真ライブラリの権限が必要です" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "사진 보관함 권한이 필요합니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要相册权限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要相簿權限" } }
+      }
+    },
     "error.unknown" : {
       "localizations" : {
         "en" : {
