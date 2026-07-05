@@ -72,7 +72,7 @@ docs/
 
 - `AIGUIDE_API_BASE_URL` / `AIGuideAPIBaseURL`：完整 API 根路径，例如 `https://example.com/api/v1`。
 - `AIGUIDE_SERVER_URL` / `AIGuideServerURL`：服务根路径，客户端会自动追加 `/api/v1`，健康检查使用 `/health`。
-- App 内“设置 > 后端”可保存服务根路径，适合测试服、真机和现场调试；保存后业务接口使用 `/api/v1`，健康检查使用 `/health`。
+- App 内“设置 > 后端”可保存服务根路径，适合测试服、真机和现场调试；支持省略局域网地址的 `http://`，保存后业务接口使用 `/api/v1`，健康检查使用 `/health`。
 
 主要接入点：
 

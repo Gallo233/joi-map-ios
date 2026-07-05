@@ -15008,31 +15008,31 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Set the server root. Business APIs use /api/v1; health check uses /health."
+            "value" : "Set the server root. Local IPs can omit http://. Business APIs use /api/v1; health check uses /health."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サーバーのルートを設定します。業務APIは /api/v1、ヘルスチェックは /health を使います。"
+            "value" : "サーバーのルートを設定します。ローカルIPは http:// を省略できます。業務APIは /api/v1、ヘルスチェックは /health を使います。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서버 루트를 설정합니다. 업무 API는 /api/v1, 상태 확인은 /health를 사용합니다."
+            "value" : "서버 루트를 설정합니다. 로컬 IP는 http://를 생략할 수 있습니다. 업무 API는 /api/v1, 상태 확인은 /health를 사용합니다."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置服务根地址。业务接口使用 /api/v1，健康检查使用 /health。"
+            "value" : "设置服务根地址。局域网 IP 可省略 http://。业务接口使用 /api/v1，健康检查使用 /health。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定服務根位址。業務介面使用 /api/v1，健康檢查使用 /health。"
+            "value" : "設定服務根位址。區域網路 IP 可省略 http://。業務介面使用 /api/v1，健康檢查使用 /health。"
           }
         }
       }
@@ -15305,6 +15305,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "尚未檢查"
+          }
+        }
+      }
+    },
+    "settings.backend.status.invalidURL" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid http or https server URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効な http または https のサーバーURLを入力してください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유효한 http 또는 https 서버 URL을 입력하세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请输入有效的 http 或 https 服务地址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請輸入有效的 http 或 https 服務位址"
           }
         }
       }

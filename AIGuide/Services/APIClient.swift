@@ -47,20 +47,56 @@ struct APIConfig {
     static var serverURLOverride: String? {
         let value = UserDefaults.standard.string(forKey: serverURLOverrideKey) ?? ""
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? nil : normalizedURLString(trimmed)
+        return trimmed.isEmpty ? nil : validatedServerURLOverride(trimmed)
     }
 
-    static func setServerURLOverride(_ value: String?) {
+    @discardableResult
+    static func setServerURLOverride(_ value: String?) -> Bool {
         let trimmed = (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             clearServerURLOverride()
-        } else {
-            UserDefaults.standard.set(normalizedURLString(trimmed), forKey: serverURLOverrideKey)
+            return true
         }
+
+        guard let normalized = validatedServerURLOverride(trimmed) else {
+            return false
+        }
+
+        UserDefaults.standard.set(normalized, forKey: serverURLOverrideKey)
+        return true
     }
 
     static func clearServerURLOverride() {
         UserDefaults.standard.removeObject(forKey: serverURLOverrideKey)
+    }
+
+    static func normalizedServerURLInput(_ value: String) -> String {
+        var normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        while normalized.hasSuffix("/") {
+            normalized.removeLast()
+        }
+
+        guard !normalized.isEmpty else { return "" }
+
+        if !normalized.contains("://") {
+            normalized = "\(defaultScheme(forHostLikeInput: normalized))://\(normalized)"
+        }
+
+        return normalizedURLString(normalized)
+    }
+
+    static func validatedServerURLOverride(_ value: String?) -> String? {
+        let normalized = normalizedServerURLInput(value ?? "")
+        guard !normalized.isEmpty,
+              let components = URLComponents(string: normalized),
+              let scheme = components.scheme?.lowercased(),
+              ["http", "https"].contains(scheme),
+              let host = components.host,
+              !host.isEmpty else {
+            return nil
+        }
+
+        return normalized
     }
 
     static func url(for endpoint: String) -> URL? {
@@ -121,6 +157,37 @@ struct APIConfig {
         }
 
         return normalized
+    }
+
+    private static func defaultScheme(forHostLikeInput value: String) -> String {
+        let hostPart = value
+            .split(separator: "/", maxSplits: 1, omittingEmptySubsequences: true)
+            .first
+            .map(String.init) ?? value
+        let host = hostPart
+            .split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true)
+            .first
+            .map(String.init)?
+            .trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+            .lowercased() ?? ""
+
+        if host == "localhost" || host == "::1" || host == "0.0.0.0" || host.hasPrefix("127.") {
+            return "http"
+        }
+
+        if host.hasPrefix("10.") || host.hasPrefix("192.168.") {
+            return "http"
+        }
+
+        let octets = host.split(separator: ".")
+        if octets.count >= 2,
+           octets[0] == "172",
+           let secondOctet = Int(octets[1]),
+           (16...31).contains(secondOctet) {
+            return "http"
+        }
+
+        return "https"
     }
 }
 

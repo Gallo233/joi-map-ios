@@ -226,6 +226,7 @@ private enum BackendConnectionStatus {
     case checking
     case connected
     case disconnected
+    case invalid
     case reset
 
     var icon: String {
@@ -240,6 +241,8 @@ private enum BackendConnectionStatus {
             return "checkmark.seal.fill"
         case .disconnected:
             return "exclamationmark.triangle.fill"
+        case .invalid:
+            return "xmark.octagon.fill"
         case .reset:
             return "arrow.counterclockwise.circle"
         }
@@ -255,6 +258,8 @@ private enum BackendConnectionStatus {
             return .blue
         case .disconnected:
             return .orange
+        case .invalid:
+            return .red
         case .reset:
             return .secondary
         }
@@ -272,6 +277,8 @@ private enum BackendConnectionStatus {
             return L10n.string("settings.backend.status.connected")
         case .disconnected:
             return L10n.string("settings.backend.status.disconnected")
+        case .invalid:
+            return L10n.string("settings.backend.status.invalidURL")
         case .reset:
             return L10n.string("settings.backend.status.reset")
         }
@@ -651,11 +658,18 @@ struct SettingsView: View {
         }
     }
 
-    private func saveBackendServerURL() {
-        APIConfig.setServerURLOverride(backendServerURLDraft)
+    @discardableResult
+    private func saveBackendServerURL() -> Bool {
+        guard APIConfig.setServerURLOverride(backendServerURLDraft) else {
+            backendStatus = .invalid
+            backendStatusMessage = backendStatus.localizedMessage
+            return false
+        }
+
         backendServerURLDraft = APIConfig.serverURLOverride ?? ""
-        backendStatus = .saved
+        backendStatus = backendServerURLDraft.isEmpty ? .reset : .saved
         backendStatusMessage = backendStatus.localizedMessage
+        return true
     }
 
     private func resetBackendServerURL() {
@@ -666,7 +680,7 @@ struct SettingsView: View {
     }
 
     private func checkBackendHealth() async {
-        saveBackendServerURL()
+        guard saveBackendServerURL() else { return }
         backendStatus = .checking
         backendStatusMessage = backendStatus.localizedMessage
 
