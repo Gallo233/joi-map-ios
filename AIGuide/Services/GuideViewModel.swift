@@ -62,6 +62,9 @@ class GuideViewModel: ObservableObject {
     private var lastMapSearchAt: Date?
     private var isSearchingMapPlaces = false
     private var prefetchedGuides: [String: AudioGuide] = [:]
+    private var prefersOfflineMode: Bool {
+        SettingsService.shared.offlineMode
+    }
 
     private struct FusedCandidate {
         let poi: POI
@@ -219,6 +222,15 @@ class GuideViewModel: ObservableObject {
 
     /// Check backend connection
     func checkBackendConnection() async {
+        if prefersOfflineMode {
+            isConnectedToBackend = false
+            if currentPOI == nil {
+                contextPhase = .offline
+                positioningSummary = L10n.string("guide.backendOffline.localMode")
+            }
+            return
+        }
+
         isConnectedToBackend = await apiClient.checkHealth()
         if !isConnectedToBackend, currentPOI == nil {
             contextPhase = .offline
@@ -325,6 +337,21 @@ class GuideViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
 
+        if prefersOfflineMode {
+            isConnectedToBackend = false
+            if let cachedPOIs = loadCachedPOIs(), !cachedPOIs.isEmpty {
+                allPOIs = mergePOIs(POI.seedList, with: cachedPOIs)
+            } else {
+                allPOIs = POI.seedList
+            }
+            if currentPOI == nil {
+                contextPhase = .offline
+                positioningSummary = L10n.string("guide.offlineReady")
+                nearbyPOIs = []
+            }
+            return
+        }
+
         do {
             let pois: [POI] = try await apiClient.get(endpoint: APIConfig.Endpoints.pois)
             let cachedUserPOIs = loadCachedPOIs()?.filter { poi in
@@ -365,6 +392,16 @@ class GuideViewModel: ObservableObject {
         if let cachedGuide = historyService.getCachedGuide(for: cacheKey) {
             prefetchedGuides[cacheKey] = cachedGuide
             currentGuide = cachedGuide
+            return
+        }
+
+        if prefersOfflineMode {
+            updateGuide(for: selectedStyle)
+            if let currentGuide {
+                prefetchedGuides[cacheKey] = currentGuide
+                historyService.cacheGuide(currentGuide, for: cacheKey)
+            }
+            isConnectedToBackend = false
             return
         }
 
@@ -412,6 +449,12 @@ class GuideViewModel: ObservableObject {
         guard let poi = currentPOI else { return }
 
         self.question = question
+        if prefersOfflineMode {
+            isConnectedToBackend = false
+            currentAnswer = L10n.format("guide.answerFallback", poi.name)
+            return
+        }
+
         isLoading = true
         defer { isLoading = false }
 
@@ -618,6 +661,7 @@ class GuideViewModel: ObservableObject {
     }
 
     private func shouldResolveRemoteContext() -> Bool {
+        guard !prefersOfflineMode else { return false }
         guard let lastContextResolveAt else { return true }
         return Date().timeIntervalSince(lastContextResolveAt) >= remoteResolveInterval
     }
@@ -1458,6 +1502,11 @@ class GuideViewModel: ObservableObject {
             return
         }
 
+        if prefersOfflineMode {
+            cacheLocalGuideForPrefetch(poiId: nextPoiId, style: style, duration: duration, cacheKey: cacheKey)
+            return
+        }
+
         Task {
             do {
                 let body: [String: Any] = [
@@ -1503,6 +1552,27 @@ class GuideViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    private func cacheLocalGuideForPrefetch(
+        poiId: String,
+        style: GuideStyle,
+        duration: GuideDuration,
+        cacheKey: String
+    ) {
+        guard let poi = allPOIs.first(where: { $0.id == poiId }) else { return }
+
+        let guide = AudioGuide(
+            id: "\(poi.id)-\(style.rawValue)-\(duration.rawValue)",
+            poiId: poi.id,
+            style: style,
+            duration: duration,
+            transcript: localNarrationTranscript(for: poi, style: style),
+            audioURL: nil,
+            source: poi.source
+        )
+        prefetchedGuides[cacheKey] = guide
+        historyService.cacheGuide(guide, for: cacheKey)
     }
 
     private func localNarrationTranscript(for poi: POI, style: GuideStyle) -> String {

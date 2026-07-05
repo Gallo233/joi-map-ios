@@ -64,7 +64,7 @@ class AppState: ObservableObject {
         defer { isInitializing = false }
 
         // Check backend connection
-        isBackendConnected = await apiClient.checkHealth()
+        isBackendConnected = SettingsService.shared.offlineMode ? false : await apiClient.checkHealth()
 
         // Check permissions
         await checkPermissions()
@@ -75,7 +75,7 @@ class AppState: ObservableObject {
     }
 
     func reconnectBackend() async {
-        isBackendConnected = await apiClient.checkHealth()
+        isBackendConnected = SettingsService.shared.offlineMode ? false : await apiClient.checkHealth()
     }
 
     func confirmPOIFromPhoto(_ poi: POI, confidence: Double, source: String = L10n.string("see.source.photoRecognition")) {

@@ -104,6 +104,7 @@ struct ContentView: View {
 
     private static var opensSettingsForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SETTINGS")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
     }
 
     private static var opensTripsForQA: Bool {
@@ -294,6 +295,7 @@ struct SettingsView: View {
     @State private var showShareSheet = false
     @State private var showClearCacheAlert = false
     @State private var showResetAlert = false
+    @State private var showOfflineContent = false
     @State private var cacheSize = ""
     @State private var backendServerURLDraft = APIConfig.serverURLOverride ?? ""
     @State private var backendStatus: BackendConnectionStatus = .idle
@@ -488,7 +490,7 @@ struct SettingsView: View {
                         }
 
                         NavigationLink {
-                            Text(L10n.string("settings.offlineContent.placeholder"))
+                            OfflineContentView()
                         } label: {
                             Label(L10n.string("settings.offlineContent"), systemImage: "arrow.down.circle")
                         }
@@ -642,8 +644,24 @@ struct SettingsView: View {
                         URL(string: "https://apps.apple.com/app/aiguide")!
                     ])
                 }
+                .sheet(isPresented: $showOfflineContent) {
+                    NavigationStack {
+                        OfflineContentView()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button(L10n.string("common.done")) {
+                                        showOfflineContent = false
+                                    }
+                                }
+                            }
+                    }
+                }
             }
         }
+    }
+
+    private static var opensOfflineContentForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
     }
 
     private static var scrollsToBottomForQA: Bool {
@@ -651,6 +669,12 @@ struct SettingsView: View {
     }
 
     private func scrollToBottomIfNeeded(using proxy: ScrollViewProxy) {
+        if Self.opensOfflineContentForQA {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                showOfflineContent = true
+            }
+        }
+
         guard Self.scrollsToBottomForQA else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
@@ -691,6 +715,171 @@ struct SettingsView: View {
             backendStatus = .disconnected
             backendStatusMessage = backendClient.lastError?.localizedDescription ?? backendStatus.localizedMessage
         }
+    }
+}
+
+private struct OfflineContentView: View {
+    @StateObject private var settingsService = SettingsService.shared
+    @State private var cacheSize = ""
+    @State private var lastUpdated = Date()
+    @State private var showClearCacheAlert = false
+
+    var body: some View {
+        List {
+            Section(L10n.string("offline.content.status")) {
+                OfflineStatusRow(
+                    icon: "map.fill",
+                    titleKey: "offline.content.localGuide.title",
+                    subtitleKey: "offline.content.localGuide.subtitle",
+                    badgeKey: "offline.content.ready",
+                    tint: Color(red: 0.12, green: 0.40, blue: 0.24)
+                )
+
+                OfflineStatusRow(
+                    icon: "internaldrive.fill",
+                    titleKey: "offline.content.cache.title",
+                    subtitleKey: "offline.content.cache.subtitle",
+                    badgeText: cacheSize,
+                    tint: .blue
+                )
+            }
+
+            Section(L10n.string("offline.content.settings")) {
+                Toggle(isOn: $settingsService.wifiOnlyDownload) {
+                    Label(L10n.string("settings.wifiOnly"), systemImage: "wifi")
+                }
+                .onChange(of: settingsService.wifiOnlyDownload) { _, _ in
+                    settingsService.saveSettings()
+                }
+
+                Toggle(isOn: $settingsService.offlineMode) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Label(L10n.string("offline.content.preferOffline"), systemImage: "wifi.slash")
+                        Text(L10n.string("offline.content.preferOffline.subtitle"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .onChange(of: settingsService.offlineMode) { _, _ in
+                    settingsService.saveSettings()
+                }
+            }
+
+            Section(L10n.string("offline.content.storage")) {
+                HStack {
+                    Label(L10n.string("settings.cacheSize"), systemImage: "externaldrive")
+                    Spacer()
+                    Text(cacheSize)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Label(L10n.string("offline.content.lastUpdated"), systemImage: "clock")
+                    Spacer()
+                    Text(Self.timeString(from: lastUpdated))
+                        .foregroundStyle(.secondary)
+                }
+
+                Button {
+                    refreshCacheSize()
+                } label: {
+                    Label(L10n.string("offline.content.refresh"), systemImage: "arrow.clockwise")
+                }
+
+                Button(role: .destructive) {
+                    showClearCacheAlert = true
+                } label: {
+                    Label(L10n.string("settings.clearCache"), systemImage: "trash")
+                        .foregroundStyle(.red)
+                }
+            }
+        }
+        .navigationTitle(L10n.string("settings.offlineContent"))
+        .onAppear(perform: refreshCacheSize)
+        .alert(L10n.string("settings.clearCache"), isPresented: $showClearCacheAlert) {
+            Button(L10n.string("common.cancel"), role: .cancel) {}
+            Button(L10n.string("settings.clear"), role: .destructive) {
+                settingsService.clearCache()
+                refreshCacheSize()
+            }
+        } message: {
+            Text(L10n.string("settings.alert.clearCache.message"))
+        }
+    }
+
+    private func refreshCacheSize() {
+        cacheSize = settingsService.getCacheSize()
+        lastUpdated = Date()
+    }
+
+    private static func timeString(from date: Date) -> String {
+        DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
+    }
+}
+
+private struct OfflineStatusRow: View {
+    let icon: String
+    let titleKey: String
+    let subtitleKey: String
+    let badgeKey: String?
+    let badgeText: String?
+    let tint: Color
+
+    init(
+        icon: String,
+        titleKey: String,
+        subtitleKey: String,
+        badgeKey: String? = nil,
+        badgeText: String? = nil,
+        tint: Color
+    ) {
+        self.icon = icon
+        self.titleKey = titleKey
+        self.subtitleKey = subtitleKey
+        self.badgeKey = badgeKey
+        self.badgeText = badgeText
+        self.tint = tint
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.headline)
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(L10n.string(titleKey))
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    if let badge {
+                        Text(badge)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(tint)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                }
+
+                Text(L10n.string(subtitleKey))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 3)
+    }
+
+    private var badge: String? {
+        if let badgeText {
+            return badgeText
+        }
+        if let badgeKey {
+            return L10n.string(badgeKey)
+        }
+        return nil
     }
 }
 

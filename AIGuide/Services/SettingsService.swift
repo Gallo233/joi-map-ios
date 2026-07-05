@@ -121,23 +121,24 @@ class SettingsService: ObservableObject {
     func clearCache() {
         // Clear image cache
         URLCache.shared.removeAllCachedResponses()
-        
-        // Clear offline data
+
         let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        try? FileManager.default.removeItem(at: cacheDirectory.appendingPathComponent("AIGuideCache"))
         try? FileManager.default.removeItem(at: cacheDirectory.appendingPathComponent("OfflineData"))
     }
     
     /// Get cache size
     func getCacheSize() -> String {
         let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let appCache = cacheDirectory.appendingPathComponent("AIGuideCache")
         let offlineCache = cacheDirectory.appendingPathComponent("OfflineData")
-        
-        guard let size = try? FileManager.default.attributesOfItem(atPath: offlineCache.path)[.size] as? Int else {
+
+        let bytes = directorySize(at: appCache) + directorySize(at: offlineCache)
+        guard bytes > 0 else {
             return "0 MB"
         }
-        
-        let mb = Double(size) / 1024 / 1024
-        return String(format: "%.1f MB", mb)
+
+        return ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
     }
     
     // MARK: - Private Methods
@@ -173,6 +174,27 @@ class SettingsService: ObservableObject {
 
     private func boolValue(forKey key: String, defaultValue: Bool) -> Bool {
         defaults.object(forKey: key) == nil ? defaultValue : defaults.bool(forKey: key)
+    }
+
+    private func directorySize(at url: URL) -> Int64 {
+        guard let enumerator = FileManager.default.enumerator(
+            at: url,
+            includingPropertiesForKeys: [.fileSizeKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return 0
+        }
+
+        var totalSize: Int64 = 0
+        for case let fileURL as URL in enumerator {
+            guard let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey]),
+                  let fileSize = values.fileSize else {
+                continue
+            }
+            totalSize += Int64(fileSize)
+        }
+
+        return totalSize
     }
 
     private static var qaLanguageOverride: AppLanguage? {
