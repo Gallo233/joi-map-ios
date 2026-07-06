@@ -10548,6 +10548,856 @@
         }
       }
     },
+    "legal.privacy.ai.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you ask a question, identify a place, or generate narration, Joi Map may send the content you provide, the selected app language, and nearby place context to the configured backend so it can answer in the right language."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "質問、場所の認識、解説生成を行うと、Joi Map は入力内容、選択中のアプリ言語、周辺スポット情報を設定済みバックエンドへ送信し、適切な言語で回答できるようにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "질문하거나 장소를 인식하거나 해설을 생성할 때 Joi Map은 사용자가 제공한 내용, 선택한 앱 언어, 주변 장소 맥락을 설정된 백엔드로 보내 알맞은 언어로 답변합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当你提问、识别地点或生成讲解时，Joi Map 可能会把你提交的内容、当前 App 语言和附近地点上下文发送到已配置的后端，用于生成对应语言的回答。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當你提問、辨識地點或生成講解時，Joi Map 可能會把你提交的內容、目前 App 語言和附近地點脈絡傳送到已設定的後端，用於產生對應語言的回答。"
+          }
+        }
+      }
+    },
+    "legal.privacy.ai.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI Requests"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI リクエスト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 요청"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 请求"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 請求"
+          }
+        }
+      }
+    },
+    "legal.privacy.controls.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can switch app language, prefer offline mode, change backend server settings, and clear cached content from Settings at any time."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定からいつでもアプリ言語、オフライン優先、バックエンドサーバー、キャッシュ削除を変更できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정에서 언제든지 앱 언어, 오프라인 우선 모드, 백엔드 서버 설정, 캐시 삭제를 변경할 수 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以随时在设置中切换 App 语言、开启离线优先模式、修改后端服务器设置并清除缓存内容。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以隨時在設定中切換 App 語言、開啟離線優先模式、修改後端伺服器設定並清除快取內容。"
+          }
+        }
+      }
+    },
+    "legal.privacy.controls.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Controls"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー設定"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 제어"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的控制项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的控制項"
+          }
+        }
+      }
+    },
+    "legal.privacy.local.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferences, visit history, offline mode, and cached guide content are stored on your device. Clearing cache removes downloaded and temporary guide files managed by the app."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定、訪問履歴、オフラインモード、キャッシュ済み解説コンテンツは端末内に保存されます。キャッシュ削除を行うと、アプリが管理するダウンロード済みファイルと一時ファイルが削除されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "환경설정, 방문 기록, 오프라인 모드, 캐시된 가이드 콘텐츠는 기기에 저장됩니다. 캐시를 지우면 앱이 관리하는 다운로드 파일과 임시 가이드 파일이 삭제됩니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏好设置、游览历史、离线模式和缓存导览内容会存储在你的设备上。清除缓存会移除 App 管理的下载文件和临时导览文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏好設定、遊覽歷史、離線模式和快取導覽內容會儲存在你的裝置上。清除快取會移除 App 管理的下載檔案和臨時導覽檔案。"
+          }
+        }
+      }
+    },
+    "legal.privacy.local.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On-Device Storage"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末内の保存"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기 내 저장"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本机存储"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本機儲存"
+          }
+        }
+      }
+    },
+    "legal.privacy.location.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location is used to find nearby places, build routes, and match narration. If location is off, you can still use search, number input, and offline content where available."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報は近くのスポット検索、ルート作成、解説内容の照合に使用されます。位置情報をオフにしても、検索、番号入力、利用可能なオフラインコンテンツは使えます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치 정보는 주변 장소 찾기, 경로 생성, 해설 매칭에 사용됩니다. 위치를 끄더라도 검색, 번호 입력, 사용 가능한 오프라인 콘텐츠는 계속 이용할 수 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定位用于寻找附近地点、生成路线和匹配讲解内容。关闭定位后，你仍可使用搜索、编号输入和可用的离线内容。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定位用於尋找附近地點、產生路線和匹配講解內容。關閉定位後，你仍可使用搜尋、編號輸入和可用的離線內容。"
+          }
+        }
+      }
+    },
+    "legal.privacy.location.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location and Context"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報と文脈"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치와 맥락"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定位与场景"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定位與情境"
+          }
+        }
+      }
+    },
+    "legal.privacy.media.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos and voice input are only used when you choose features such as See and Ask or voice narration. They help identify what you are viewing and turn guide text into speech."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真と音声入力は、「見て質問」や音声解説などを選んだときだけ使われます。見ている対象の認識や、解説文の読み上げに役立ちます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진과 음성 입력은 보기와 질문, 음성 해설 같은 기능을 선택했을 때만 사용됩니다. 보고 있는 대상을 인식하고 가이드 문장을 음성으로 바꾸는 데 도움이 됩니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图片和语音输入只会在你主动使用识景问答、语音讲解等功能时启用，用于识别你正在看的内容并把导览文字转成语音。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圖片和語音輸入只會在你主動使用識景問答、語音講解等功能時啟用，用於辨識你正在看的內容並把導覽文字轉成語音。"
+          }
+        }
+      }
+    },
+    "legal.privacy.media.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos and Voice"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真と音声"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진과 음성"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图片与语音"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圖片與語音"
+          }
+        }
+      }
+    },
+    "legal.privacy.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How Joi Map uses location, photos, voice, and offline data to power your guide."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map が位置情報、写真、音声、オフラインデータを使ってガイド体験を提供する方法です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map이 위치, 사진, 음성, 오프라인 데이터를 사용해 가이드 경험을 제공하는 방식입니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "说明 Joi Map 如何使用定位、图片、语音和离线数据来提供导览体验。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "說明 Joi Map 如何使用定位、圖片、語音和離線資料來提供導覽體驗。"
+          }
+        }
+      }
+    },
+    "legal.privacy.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーポリシー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 처리방침"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱私權政策"
+          }
+        }
+      }
+    },
+    "legal.terms.accuracy.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI, map, and venue information may be incomplete or outdated. Treat Joi Map as a helpful companion, not as emergency, legal, medical, or safety advice."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI、地図、施設情報は不完全または古い場合があります。Joi Map は便利な同行ガイドとして利用し、緊急、法律、医療、安全上の助言として扱わないでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI, 지도, 장소 정보는 불완전하거나 오래되었을 수 있습니다. Joi Map은 유용한 동반 가이드로 활용하되 긴급, 법률, 의료, 안전 조언으로 의존하지 마세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI、地图和场馆信息可能不完整或过期。请把 Joi Map 作为辅助导览工具，不要把它作为紧急、法律、医疗或安全建议。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI、地圖和場館資訊可能不完整或過期。請把 Joi Map 作為輔助導覽工具，不要把它作為緊急、法律、醫療或安全建議。"
+          }
+        }
+      }
+    },
+    "legal.terms.accuracy.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy Limits"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "精度の限界"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정확도 한계"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准确性限制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準確性限制"
+          }
+        }
+      }
+    },
+    "legal.terms.changes.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Features, backend availability, and supported places may change as Joi Map improves. We will update this notice when the product behavior changes materially."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map の改善に伴い、機能、バックエンドの利用可否、対応スポットは変更される場合があります。製品の動作が大きく変わる場合は、この案内を更新します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map이 개선되면서 기능, 백엔드 사용 가능 여부, 지원 장소가 변경될 수 있습니다. 제품 동작이 크게 바뀌면 이 안내를 업데이트합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随着 Joi Map 持续迭代，功能、后端可用性和支持地点可能发生变化。当产品行为有明显变化时，我们会更新这份说明。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隨著 Joi Map 持續迭代，功能、後端可用性和支援地點可能發生變化。當產品行為有明顯變化時，我們會更新這份說明。"
+          }
+        }
+      }
+    },
+    "legal.terms.changes.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Product Changes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "製品の変更"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제품 변경"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "产品变化"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "產品變化"
+          }
+        }
+      }
+    },
+    "legal.terms.feedback.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you notice incorrect content or a broken guide flow, contact support@aiguide.app and include the place, language, and what happened."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "誤った内容や動作しない導線に気づいた場合は、場所、言語、発生した内容を添えて support@aiguide.app までご連絡ください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 콘텐츠나 작동하지 않는 가이드 흐름을 발견하면 장소, 언어, 발생 상황을 포함해 support@aiguide.app으로 알려 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你发现内容不准确或导览流程异常，请通过 support@aiguide.app 告诉我们地点、语言和具体情况。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你發現內容不準確或導覽流程異常，請透過 support@aiguide.app 告訴我們地點、語言和具體情況。"
+          }
+        }
+      }
+    },
+    "legal.terms.feedback.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report Problems"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "問題の報告"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문제 신고"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反馈问题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回報問題"
+          }
+        }
+      }
+    },
+    "legal.terms.guide.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Joi Map to explore museums, landmarks, exhibitions, and trips. You are responsible for following venue rules, signs, staff instructions, and local laws."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map は美術館、名所、展示、旅程の探索に利用できます。施設の規則、案内表示、スタッフの指示、現地の法律に従う責任は利用者にあります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joi Map은 박물관, 랜드마크, 전시, 여행 일정을 탐색하는 데 사용할 수 있습니다. 장소 규칙, 표지판, 직원 안내, 현지 법규를 따르는 책임은 사용자에게 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以使用 Joi Map 探索博物馆、地标、展览和行程。请自行遵守场馆规则、现场标识、工作人员指引和当地法律。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以使用 Joi Map 探索博物館、地標、展覽和行程。請自行遵守場館規則、現場標示、工作人員指引和當地法律。"
+          }
+        }
+      }
+    },
+    "legal.terms.guide.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guide Use"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ガイドの利用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가이드 사용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导览使用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "導覽使用"
+          }
+        }
+      }
+    },
+    "legal.terms.safety.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay aware of your surroundings while walking, listening, or taking photos. Do not use interactive features where phones, audio, or photography are restricted."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歩行中、音声を聴くとき、写真を撮るときは周囲に注意してください。スマートフォン、音声、撮影が制限されている場所ではインタラクティブ機能を使用しないでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "걷거나 해설을 듣거나 사진을 찍는 동안 주변을 주의하세요. 휴대폰, 오디오, 촬영이 제한된 곳에서는 상호작용 기능을 사용하지 마세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "步行、听讲解或拍照时请留意周围环境。若场馆限制手机、外放音频或拍照，请不要使用对应互动功能。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "步行、聽講解或拍照時請留意周圍環境。若場館限制手機、外放音訊或拍照，請不要使用對應互動功能。"
+          }
+        }
+      }
+    },
+    "legal.terms.safety.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety and Venue Rules"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全と施設ルール"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "안전과 장소 규칙"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全与场馆规则"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全與場館規則"
+          }
+        }
+      }
+    },
+    "legal.terms.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The rules for using Joi Map during cultural, museum, and travel experiences."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文化施設、美術館、旅行体験で Joi Map を利用するためのルールです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문화 공간, 박물관, 여행 경험에서 Joi Map을 사용할 때의 규칙입니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "说明你在文化场馆、博物馆和旅行体验中使用 Joi Map 的基本规则。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "說明你在文化場館、博物館和旅行體驗中使用 Joi Map 的基本規則。"
+          }
+        }
+      }
+    },
+    "legal.terms.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이용 약관"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户协议"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用者協議"
+          }
+        }
+      }
+    },
+    "legal.updated" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated: July 2026"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新日: 2026年7月"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "업데이트: 2026년 7월"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新日期：2026 年 7 月"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新日期：2026 年 7 月"
+          }
+        }
+      }
+    },
     "legacy.place.arcCarrousel.name" : {
       "extractionState" : "stale",
       "localizations" : {

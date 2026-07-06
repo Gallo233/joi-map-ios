@@ -105,6 +105,8 @@ struct ContentView: View {
     private static var opensSettingsForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SETTINGS")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TERMS")
     }
 
     private static var opensTripsForQA: Bool {
@@ -296,6 +298,8 @@ struct SettingsView: View {
     @State private var showClearCacheAlert = false
     @State private var showResetAlert = false
     @State private var showOfflineContent = false
+    @State private var showPrivacyPolicy = false
+    @State private var showTermsOfUse = false
     @State private var cacheSize = ""
     @State private var backendServerURLDraft = APIConfig.serverURLOverride ?? ""
     @State private var backendStatus: BackendConnectionStatus = .idle
@@ -567,13 +571,13 @@ struct SettingsView: View {
                         }
 
                         NavigationLink {
-                            Text(L10n.string("settings.privacy.placeholder"))
+                            SettingsLegalDocumentView(document: .privacy)
                         } label: {
                             Label(L10n.string("settings.privacyPolicy"), systemImage: "hand.raised")
                         }
 
                         NavigationLink {
-                            Text(L10n.string("settings.terms.placeholder"))
+                            SettingsLegalDocumentView(document: .terms)
                         } label: {
                             Label(L10n.string("settings.terms"), systemImage: "doc.text")
                         }
@@ -656,12 +660,44 @@ struct SettingsView: View {
                             }
                     }
                 }
+                .sheet(isPresented: $showPrivacyPolicy) {
+                    NavigationStack {
+                        SettingsLegalDocumentView(document: .privacy)
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button(L10n.string("common.done")) {
+                                        showPrivacyPolicy = false
+                                    }
+                                }
+                            }
+                    }
+                }
+                .sheet(isPresented: $showTermsOfUse) {
+                    NavigationStack {
+                        SettingsLegalDocumentView(document: .terms)
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button(L10n.string("common.done")) {
+                                        showTermsOfUse = false
+                                    }
+                                }
+                            }
+                    }
+                }
             }
         }
     }
 
     private static var opensOfflineContentForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
+    }
+
+    private static var opensPrivacyPolicyForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
+    }
+
+    private static var opensTermsOfUseForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TERMS")
     }
 
     private static var scrollsToBottomForQA: Bool {
@@ -672,6 +708,18 @@ struct SettingsView: View {
         if Self.opensOfflineContentForQA {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                 showOfflineContent = true
+            }
+        }
+
+        if Self.opensPrivacyPolicyForQA {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                showPrivacyPolicy = true
+            }
+        }
+
+        if Self.opensTermsOfUseForQA {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                showTermsOfUse = true
             }
         }
 
@@ -716,6 +764,149 @@ struct SettingsView: View {
             backendStatusMessage = backendClient.lastError?.localizedDescription ?? backendStatus.localizedMessage
         }
     }
+}
+
+private struct SettingsLegalDocumentView: View {
+    let document: SettingsLegalDocument
+
+    var body: some View {
+        List {
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    Image(systemName: document.icon)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(document.tint)
+                        .frame(width: 44, height: 44)
+                        .background(document.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                    Text(L10n.string(document.titleKey))
+                        .font(.title2.weight(.bold))
+
+                    Text(L10n.string(document.subtitleKey))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(L10n.string(document.updatedKey))
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 6)
+            }
+
+            ForEach(document.sections) { section in
+                Section {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: section.icon)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(document.tint)
+                            .frame(width: 32, height: 32)
+                            .background(document.tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(L10n.string(section.titleKey))
+                                .font(.subheadline.weight(.semibold))
+
+                            Text(L10n.string(section.bodyKey))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+        }
+        .navigationTitle(L10n.string(document.titleKey))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct SettingsLegalDocument {
+    let titleKey: String
+    let subtitleKey: String
+    let updatedKey: String
+    let icon: String
+    let tint: Color
+    let sections: [SettingsLegalDocumentSection]
+
+    static let privacy = SettingsLegalDocument(
+        titleKey: "legal.privacy.title",
+        subtitleKey: "legal.privacy.subtitle",
+        updatedKey: "legal.updated",
+        icon: "hand.raised.fill",
+        tint: Color(red: 0.12, green: 0.40, blue: 0.24),
+        sections: [
+            SettingsLegalDocumentSection(
+                icon: "location.fill",
+                titleKey: "legal.privacy.location.title",
+                bodyKey: "legal.privacy.location.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "sparkles",
+                titleKey: "legal.privacy.ai.title",
+                bodyKey: "legal.privacy.ai.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "photo.on.rectangle",
+                titleKey: "legal.privacy.media.title",
+                bodyKey: "legal.privacy.media.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "internaldrive",
+                titleKey: "legal.privacy.local.title",
+                bodyKey: "legal.privacy.local.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "slider.horizontal.3",
+                titleKey: "legal.privacy.controls.title",
+                bodyKey: "legal.privacy.controls.body"
+            )
+        ]
+    )
+
+    static let terms = SettingsLegalDocument(
+        titleKey: "legal.terms.title",
+        subtitleKey: "legal.terms.subtitle",
+        updatedKey: "legal.updated",
+        icon: "doc.text.fill",
+        tint: Color(red: 0.88, green: 0.30, blue: 0.13),
+        sections: [
+            SettingsLegalDocumentSection(
+                icon: "map.fill",
+                titleKey: "legal.terms.guide.title",
+                bodyKey: "legal.terms.guide.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "exclamationmark.triangle",
+                titleKey: "legal.terms.accuracy.title",
+                bodyKey: "legal.terms.accuracy.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "shield.lefthalf.filled",
+                titleKey: "legal.terms.safety.title",
+                bodyKey: "legal.terms.safety.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "arrow.clockwise",
+                titleKey: "legal.terms.changes.title",
+                bodyKey: "legal.terms.changes.body"
+            ),
+            SettingsLegalDocumentSection(
+                icon: "envelope",
+                titleKey: "legal.terms.feedback.title",
+                bodyKey: "legal.terms.feedback.body"
+            )
+        ]
+    )
+}
+
+private struct SettingsLegalDocumentSection: Identifiable {
+    let icon: String
+    let titleKey: String
+    let bodyKey: String
+
+    var id: String { titleKey }
 }
 
 private struct OfflineContentView: View {
