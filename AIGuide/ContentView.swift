@@ -105,6 +105,7 @@ struct ContentView: View {
     private static var opensSettingsForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SETTINGS")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_DATA_CONTROLS")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TERMS")
     }
@@ -298,6 +299,7 @@ struct SettingsView: View {
     @State private var showClearCacheAlert = false
     @State private var showResetAlert = false
     @State private var showOfflineContent = false
+    @State private var showDataControls = false
     @State private var showPrivacyPolicy = false
     @State private var showTermsOfUse = false
     @State private var cacheSize = ""
@@ -549,6 +551,12 @@ struct SettingsView: View {
 
                     // Cache section
                     Section(L10n.string("settings.storage")) {
+                        NavigationLink {
+                            DataManagementView()
+                        } label: {
+                            Label(L10n.string("settings.dataManagement"), systemImage: "lock.doc")
+                        }
+
                         HStack {
                             Label(L10n.string("settings.cacheSize"), systemImage: "internaldrive")
                             Spacer()
@@ -660,6 +668,18 @@ struct SettingsView: View {
                             }
                     }
                 }
+                .sheet(isPresented: $showDataControls) {
+                    NavigationStack {
+                        DataManagementView()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button(L10n.string("common.done")) {
+                                        showDataControls = false
+                                    }
+                                }
+                            }
+                    }
+                }
                 .sheet(isPresented: $showPrivacyPolicy) {
                     NavigationStack {
                         SettingsLegalDocumentView(document: .privacy)
@@ -692,6 +712,10 @@ struct SettingsView: View {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
     }
 
+    private static var opensDataControlsForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_DATA_CONTROLS")
+    }
+
     private static var opensPrivacyPolicyForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
     }
@@ -708,6 +732,12 @@ struct SettingsView: View {
         if Self.opensOfflineContentForQA {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                 showOfflineContent = true
+            }
+        }
+
+        if Self.opensDataControlsForQA {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                showDataControls = true
             }
         }
 
@@ -763,6 +793,232 @@ struct SettingsView: View {
             backendStatus = .disconnected
             backendStatusMessage = backendClient.lastError?.localizedDescription ?? backendStatus.localizedMessage
         }
+    }
+}
+
+private struct DataManagementView: View {
+    @StateObject private var settingsService = SettingsService.shared
+    @StateObject private var historyService = HistoryService.shared
+    @State private var cacheSize = ""
+    @State private var showClearHistoryAlert = false
+    @State private var showClearFavoritesAlert = false
+    @State private var showResetPreferencesAlert = false
+    @State private var showClearAllAlert = false
+
+    var body: some View {
+        List {
+            headerSection
+            summarySection
+            actionsSection
+            noteSection
+        }
+        .navigationTitle(L10n.string("settings.dataManagement"))
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: refreshCacheSize)
+        .alert(L10n.string("data.controls.clearHistory"), isPresented: $showClearHistoryAlert) {
+            Button(L10n.string("common.cancel"), role: .cancel) {}
+            Button(L10n.string("settings.clear"), role: .destructive) {
+                historyService.clearRecords()
+            }
+        } message: {
+            Text(L10n.string("data.controls.clearHistory.message"))
+        }
+        .alert(L10n.string("data.controls.clearFavorites"), isPresented: $showClearFavoritesAlert) {
+            Button(L10n.string("common.cancel"), role: .cancel) {}
+            Button(L10n.string("settings.clear"), role: .destructive) {
+                historyService.clearFavorites()
+            }
+        } message: {
+            Text(L10n.string("data.controls.clearFavorites.message"))
+        }
+        .alert(L10n.string("data.controls.resetPreferences"), isPresented: $showResetPreferencesAlert) {
+            Button(L10n.string("common.cancel"), role: .cancel) {}
+            Button(L10n.string("settings.reset"), role: .destructive) {
+                settingsService.resetSettings()
+                APIConfig.clearServerURLOverride()
+            }
+        } message: {
+            Text(L10n.string("data.controls.resetPreferences.message"))
+        }
+        .alert(L10n.string("data.controls.clearAll"), isPresented: $showClearAllAlert) {
+            Button(L10n.string("common.cancel"), role: .cancel) {}
+            Button(L10n.string("settings.clear"), role: .destructive) {
+                historyService.clearAllLocalData()
+                settingsService.clearCache()
+                settingsService.resetSettings()
+                APIConfig.clearServerURLOverride()
+                refreshCacheSize()
+            }
+        } message: {
+            Text(L10n.string("data.controls.clearAll.message"))
+        }
+    }
+
+    private func refreshCacheSize() {
+        cacheSize = settingsService.getCacheSize()
+    }
+
+    private var hasVisitRecords: Bool {
+        !historyService.visitRecords.isEmpty
+    }
+
+    private var hasFavorites: Bool {
+        !historyService.favoritePOIs.isEmpty
+    }
+
+    private var backendModeText: String {
+        APIConfig.serverURLOverride == nil
+            ? L10n.string("data.controls.backend.default")
+            : L10n.string("data.controls.backend.custom")
+    }
+
+    private var headerSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: "lock.doc.fill")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(Color(red: 0.12, green: 0.40, blue: 0.24))
+                    .frame(width: 44, height: 44)
+                    .background(
+                        Color(red: 0.12, green: 0.40, blue: 0.24).opacity(0.12),
+                        in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    )
+
+                Text(L10n.string("data.controls.title"))
+                    .font(.title2.weight(.bold))
+
+                Text(L10n.string("data.controls.subtitle"))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 6)
+        }
+    }
+
+    private var summarySection: some View {
+        Section(L10n.string("data.controls.summary")) {
+            DataManagementRow(
+                icon: "clock.arrow.circlepath",
+                titleKey: "data.controls.history",
+                value: String(historyService.totalVisits),
+                subtitleKey: "data.controls.history.subtitle",
+                tint: .blue
+            )
+
+            DataManagementRow(
+                icon: "heart.fill",
+                titleKey: "data.controls.favorites",
+                value: String(historyService.favoritePOIs.count),
+                subtitleKey: "data.controls.favorites.subtitle",
+                tint: .pink
+            )
+
+            DataManagementRow(
+                icon: "internaldrive.fill",
+                titleKey: "data.controls.cache",
+                value: cacheSize,
+                subtitleKey: "data.controls.cache.subtitle",
+                tint: .orange
+            )
+
+            DataManagementRow(
+                icon: "server.rack",
+                titleKey: "data.controls.backend",
+                value: backendModeText,
+                subtitleKey: "data.controls.backend.subtitle",
+                tint: .purple
+            )
+        }
+    }
+
+    private var actionsSection: some View {
+        Section(L10n.string("data.controls.actions")) {
+            Button(role: .destructive) {
+                showClearHistoryAlert = true
+            } label: {
+                Label(L10n.string("data.controls.clearHistory"), systemImage: "clock.badge.xmark")
+                    .foregroundStyle(hasVisitRecords ? .red : .secondary)
+            }
+            .disabled(!hasVisitRecords)
+
+            Button(role: .destructive) {
+                showClearFavoritesAlert = true
+            } label: {
+                Label(L10n.string("data.controls.clearFavorites"), systemImage: "heart.slash")
+                    .foregroundStyle(hasFavorites ? .red : .secondary)
+            }
+            .disabled(!hasFavorites)
+
+            Button(role: .destructive) {
+                settingsService.clearCache()
+                historyService.clearCachedData()
+                refreshCacheSize()
+            } label: {
+                Label(L10n.string("settings.clearCache"), systemImage: "trash")
+                    .foregroundStyle(.red)
+            }
+
+            Button(role: .destructive) {
+                showResetPreferencesAlert = true
+            } label: {
+                Label(L10n.string("data.controls.resetPreferences"), systemImage: "slider.horizontal.3")
+                    .foregroundStyle(.red)
+            }
+
+            Button(role: .destructive) {
+                showClearAllAlert = true
+            } label: {
+                Label(L10n.string("data.controls.clearAll"), systemImage: "xmark.bin.fill")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+
+    private var noteSection: some View {
+        Section {
+            Text(L10n.string("data.controls.localOnly"))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+private struct DataManagementRow: View {
+    let icon: String
+    let titleKey: String
+    let value: String
+    let subtitleKey: String
+    let tint: Color
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(L10n.string(titleKey))
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Text(value)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(tint)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+                }
+
+                Text(L10n.string(subtitleKey))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 3)
     }
 }
 

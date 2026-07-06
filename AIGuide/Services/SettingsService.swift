@@ -122,14 +122,20 @@ class SettingsService: ObservableObject {
         // Clear image cache
         URLCache.shared.removeAllCachedResponses()
 
-        let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        guard let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            return
+        }
+
         try? FileManager.default.removeItem(at: cacheDirectory.appendingPathComponent("AIGuideCache"))
         try? FileManager.default.removeItem(at: cacheDirectory.appendingPathComponent("OfflineData"))
     }
     
     /// Get cache size
     func getCacheSize() -> String {
-        let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        guard let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            return "0 MB"
+        }
+
         let appCache = cacheDirectory.appendingPathComponent("AIGuideCache")
         let offlineCache = cacheDirectory.appendingPathComponent("OfflineData")
 

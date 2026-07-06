@@ -40,7 +40,8 @@ class CacheManager: ObservableObject {
     
     // MARK: - Initialization
     init() {
-        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
         diskCacheURL = cacheDir.appendingPathComponent("AIGuideCache", isDirectory: true)
         
         // Create cache directory

@@ -9257,6 +9257,213 @@
         }
       }
     },
+    "data.controls.actions" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cleanup Actions" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "削除操作" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "정리 작업" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "清理操作" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "清理操作" } }
+      }
+    },
+    "data.controls.backend" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Backend Server" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バックエンドサーバー" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "백엔드 서버" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "后端地址" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "後端位址" } }
+      }
+    },
+    "data.controls.backend.custom" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "カスタム" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "사용자 지정" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自定义" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自訂" } }
+      }
+    },
+    "data.controls.backend.default" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Default" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "既定" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "기본값" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "默认" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "預設" } }
+      }
+    },
+    "data.controls.backend.subtitle" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Whether Settings is using a custom API server." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定でカスタム API サーバーを使用しているかどうかです。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정에서 사용자 지정 API 서버를 사용 중인지 표시합니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当前设置中是否使用了自定义 API 服务地址。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "目前設定中是否使用了自訂 API 服務位址。" } }
+      }
+    },
+    "data.controls.cache" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cache" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャッシュ" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "캐시" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "缓存" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快取" } }
+      }
+    },
+    "data.controls.cache.subtitle" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline content, images, and temporary guide files." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフラインコンテンツ、画像、一時的なガイドファイルです。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오프라인 콘텐츠, 이미지, 임시 가이드 파일입니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "离线内容、图片和临时导览文件。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "離線內容、圖片和臨時導覽檔案。" } }
+      }
+    },
+    "data.controls.clearAll" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear Local Data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ローカルデータを消去" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "로컬 데이터 지우기" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "清空本机数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "清空本機資料" } }
+      }
+    },
+    "data.controls.clearAll.message" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This clears cache, visits, favorites, temporary guide data, preferences, and the custom backend server. This cannot be undone." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャッシュ、訪問履歴、お気に入り、一時ガイドデータ、設定、カスタムバックエンドサーバーを消去します。この操作は元に戻せません。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "캐시, 방문 기록, 즐겨찾기, 임시 가이드 데이터, 환경설정, 사용자 지정 백엔드 서버를 지웁니다. 이 작업은 되돌릴 수 없습니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将清除缓存、游览记录、收藏、临时导览数据、偏好设置和自定义后端地址。此操作无法撤销。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將清除快取、遊覽記錄、收藏、臨時導覽資料、偏好設定和自訂後端位址。此操作無法復原。" } }
+      }
+    },
+    "data.controls.clearFavorites" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear Favorites" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "お気に入りを消去" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기 지우기" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "清除收藏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "清除收藏" } }
+      }
+    },
+    "data.controls.clearFavorites.message" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This deletes all favorite places stored on this device. Visit history is kept." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "この端末に保存されたすべてのお気に入りスポットを削除します。訪問履歴は残ります。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 기기에 저장된 모든 즐겨찾기 장소를 삭제합니다. 방문 기록은 유지됩니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将删除保存在这台设备上的所有收藏景点，游览记录会保留。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將刪除儲存在這台裝置上的所有收藏景點，遊覽記錄會保留。" } }
+      }
+    },
+    "data.controls.clearHistory" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear Visit History" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "訪問履歴を消去" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "방문 기록 지우기" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "清除游览记录" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "清除遊覽記錄" } }
+      }
+    },
+    "data.controls.clearHistory.message" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This deletes all visit history and local statistics. Favorites are kept." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "すべての訪問履歴とローカル統計を削除します。お気に入りは残ります。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "모든 방문 기록과 로컬 통계를 삭제합니다. 즐겨찾기는 유지됩니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将删除所有本机游览记录和统计，收藏会保留。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將刪除所有本機遊覽記錄和統計，收藏會保留。" } }
+      }
+    },
+    "data.controls.favorites" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Favorites" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "お気に入り" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "收藏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "收藏" } }
+      }
+    },
+    "data.controls.favorites.subtitle" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Places you saved for quick return." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "すぐ戻れるよう保存したスポットです。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "나중에 빠르게 돌아가기 위해 저장한 장소입니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你保存过、方便之后快速回看的景点。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "你儲存過、方便之後快速回看的景點。" } }
+      }
+    },
+    "data.controls.history" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Visit History" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "訪問履歴" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "방문 기록" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "游览记录" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "遊覽記錄" } }
+      }
+    },
+    "data.controls.history.subtitle" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Saved guide sessions and visit statistics." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "保存されたガイド履歴と訪問統計です。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "저장된 가이드 세션과 방문 통계입니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已保存的讲解历史和访问统计。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已儲存的講解歷史和訪問統計。" } }
+      }
+    },
+    "data.controls.localOnly" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "These actions only affect Joi Map data stored on this device. They do not change system permissions or delete future account cloud data." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "これらの操作は、この端末に保存された Joi Map のデータだけに影響します。システム権限や将来のアカウントのクラウドデータは変更されません。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "이 작업은 이 기기에 저장된 Joi Map 데이터에만 영향을 줍니다. 시스템 권한이나 향후 계정의 클라우드 데이터는 변경하지 않습니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些操作只影响保存在这台设备上的 Joi Map 数据，不会修改系统权限，也不会删除未来账号云端数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "這些操作只影響儲存在這台裝置上的 Joi Map 資料，不會修改系統權限，也不會刪除未來帳號雲端資料。" } }
+      }
+    },
+    "data.controls.resetPreferences" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset Preferences" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定をリセット" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "환경설정 초기화" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置偏好设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重置偏好設定" } }
+      }
+    },
+    "data.controls.resetPreferences.message" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This restores default language, appearance, guide, and backend settings. Visits and favorites are kept." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "言語、外観、ガイド、バックエンド設定を既定値に戻します。訪問履歴とお気に入りは残ります。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "언어, 화면 표시, 가이드, 백엔드 설정을 기본값으로 되돌립니다. 방문 기록과 즐겨찾기는 유지됩니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将恢复默认语言、外观、讲解和后端设置。游览记录和收藏会保留。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將恢復預設語言、外觀、講解和後端設定。遊覽記錄和收藏會保留。" } }
+      }
+    },
+    "data.controls.subtitle" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review and delete the data Joi Map keeps on this device." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Joi Map がこの端末に保存しているデータを確認し、削除できます。" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Joi Map이 이 기기에 보관하는 데이터를 확인하고 삭제할 수 있습니다." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看并删除 Joi Map 保存在这台设备上的数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "查看並刪除 Joi Map 儲存在這台裝置上的資料。" } }
+      }
+    },
+    "data.controls.summary" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data Summary" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データ概要" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "데이터 요약" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据概览" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料概覽" } }
+      }
+    },
+    "data.controls.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Local Data Management" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ローカルデータ管理" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "로컬 데이터 관리" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "本机数据管理" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "本機資料管理" } }
+      }
+    },
     "api.error.invalidURL" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid URL" } },
@@ -9516,6 +9723,15 @@
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "지원하지 않는 오디오 형식입니다" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "音频格式不支持" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "不支援此音訊格式" } }
+      }
+    },
+    "error.audio.ttsUnavailable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Text-to-speech is unavailable" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "テキスト読み上げを利用できません" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "텍스트 음성 변환을 사용할 수 없습니다" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "文本转语音暂不可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "文字轉語音暫不可用" } }
       }
     },
     "error.data.loadFailed" : {
@@ -16397,6 +16613,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "清除快取"
+          }
+        }
+      }
+    },
+    "settings.dataManagement" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data Management"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データ管理"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 관리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据管理"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料管理"
           }
         }
       }

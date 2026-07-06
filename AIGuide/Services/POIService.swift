@@ -3,6 +3,20 @@
 import Foundation
 import CoreLocation
 
+private enum POIServiceError: LocalizedError {
+    case apiUnavailable
+    case notFound
+
+    var errorDescription: String? {
+        switch self {
+        case .apiUnavailable:
+            return L10n.string("error.data.loadFailed")
+        case .notFound:
+            return L10n.string("error.data.notFound")
+        }
+    }
+}
+
 @MainActor
 class POIService: ObservableObject {
     // MARK: - Published Properties
@@ -74,17 +88,15 @@ class POIService: ObservableObject {
 extension POIService {
     /// Future: Fetch POIs from backend
     private func fetchPOIsFromAPI() async throws -> [POI] {
-        // TODO: Implement API call
-        // GET /api/v1/pois
-        // Headers: Authorization: Bearer <token>
-        // Response: [POI]
-        fatalError("Not implemented")
+        throw POIServiceError.apiUnavailable
     }
     
     /// Future: Fetch POI details
     private func fetchPOIDetails(id: String) async throws -> POI {
-        // TODO: Implement API call
-        // GET /api/v1/pois/{id}
-        fatalError("Not implemented")
+        guard let poi = findPOI(byId: id) else {
+            throw POIServiceError.notFound
+        }
+
+        return poi
     }
 }

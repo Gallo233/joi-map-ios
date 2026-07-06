@@ -111,6 +111,12 @@ class HistoryService: ObservableObject {
         favoritePOIs.contains(poiId)
     }
 
+    /// Clear all favorites
+    func clearFavorites() {
+        favoritePOIs.removeAll()
+        saveFavorites()
+    }
+
     // MARK: - Cache
 
     /// Save POIs to cache
@@ -144,6 +150,18 @@ class HistoryService: ObservableObject {
     /// Load cached guide
     func getCachedGuide(for key: String) -> AudioGuide? {
         loadCache()?.guides[key]
+    }
+
+    /// Clear cached POIs and guides kept in UserDefaults.
+    func clearCachedData() {
+        defaults.removeObject(forKey: cacheKey)
+    }
+
+    /// Clear all local history data owned by HistoryService.
+    func clearAllLocalData() {
+        clearRecords()
+        clearFavorites()
+        clearCachedData()
     }
 
     // MARK: - Statistics

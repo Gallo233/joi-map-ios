@@ -108,6 +108,7 @@ enum AudioError: LocalizedError {
     case recordingFailed
     case fileNotFound
     case formatError
+    case ttsUnavailable
     
     var errorDescription: String? {
         switch self {
@@ -115,6 +116,7 @@ enum AudioError: LocalizedError {
         case .recordingFailed: return L10n.string("error.audio.recordingFailed")
         case .fileNotFound: return L10n.string("error.audio.fileNotFound")
         case .formatError: return L10n.string("error.audio.formatError")
+        case .ttsUnavailable: return L10n.string("error.audio.ttsUnavailable")
         }
     }
 }

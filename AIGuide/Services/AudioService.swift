@@ -4,6 +4,17 @@ import Foundation
 import AVFoundation
 import Combine
 
+private enum AudioServiceError: LocalizedError {
+    case ttsUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .ttsUnavailable:
+            return L10n.string("error.audio.ttsUnavailable")
+        }
+    }
+}
+
 @MainActor
 class AudioService: ObservableObject {
     // MARK: - Published Properties
@@ -186,10 +197,6 @@ class AudioService: ObservableObject {
 extension AudioService {
     /// Future: Generate TTS audio from text
     func generateTTS(text: String, style: GuideStyle) async throws -> URL {
-        // TODO: Implement TTS
-        // POST /api/v1/tts/generate
-        // Body: { text, style, voice }
-        // Returns: audio URL
-        fatalError("Not implemented")
+        throw AudioServiceError.ttsUnavailable
     }
 }
