@@ -160,6 +160,10 @@ class GuideViewModel: ObservableObject {
 
     // MARK: - Initialization
     init() {
+        let settings = SettingsService.shared
+        selectedStyle = settings.guideStyle
+        selectedVoice = settings.preferredVoice
+        ttsService.selectedVoice = settings.preferredVoice
         setupBindings()
         setupMockData()
     }
@@ -531,6 +535,8 @@ class GuideViewModel: ObservableObject {
     func changeVoice(_ voice: EdgeVoice) {
         selectedVoice = voice
         ttsService.selectedVoice = voice
+        SettingsService.shared.preferredVoice = voice
+        SettingsService.shared.saveSettings()
     }
 
     /// Seek (restart for TTS)

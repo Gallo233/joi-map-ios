@@ -104,7 +104,9 @@ struct GuideView: View {
                     }
                 )
             case .voice:
-                VoicePickerView(selectedVoice: $guideVM.selectedVoice)
+                VoicePickerView(selectedVoice: $guideVM.selectedVoice) {
+                    guideVM.changeVoice(guideVM.selectedVoice)
+                }
             }
         }
         .sheet(isPresented: $showMapModeSheet) {

@@ -40,8 +40,11 @@ class TTSService: NSObject, ObservableObject {
     func speak(_ text: String, rate: Float = 0.5, pitch: Float = 1.0) {
         // Stop any current speech
         stop()
-        
-        let utterance = AVSpeechUtterance(string: text)
+
+        let speechText = SpeechTextFormatter.condensedNarration(text)
+        guard !speechText.isEmpty else { return }
+
+        let utterance = AVSpeechUtterance(string: speechText)
         
         // Match the system TTS fallback to the app language setting.
         if let voice = AVSpeechSynthesisVoice(language: fallbackLanguage) {
@@ -52,9 +55,9 @@ class TTSService: NSObject, ObservableObject {
         utterance.pitchMultiplier = pitch // 0.5 to 2.0
         utterance.volume = 1.0
         
-        totalCharacters = text.count
+        totalCharacters = speechText.count
         spokenCharacters = 0
-        currentText = text
+        currentText = speechText
         isSpeaking = true
         
         synthesizer.speak(utterance)
@@ -133,6 +136,14 @@ extension TTSService: AVSpeechSynthesizerDelegate {
         Task { @MainActor in
             self.isSpeaking = false
             self.progress = 1.0
+            self.currentText = nil
+        }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            self.isSpeaking = false
+            self.currentText = nil
         }
     }
     

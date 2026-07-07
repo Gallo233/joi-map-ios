@@ -20,8 +20,7 @@ private final class VoicePreviewPlayer: NSObject, ObservableObject, AVSpeechSynt
         stop()
 
         let utterance = AVSpeechUtterance(string: sampleText(for: voice.locale))
-        utterance.voice = AVSpeechSynthesisVoice(identifier: voice.id)
-            ?? AVSpeechSynthesisVoice(language: speechLanguage(for: voice.locale))
+        utterance.voice = SpeechVoiceResolver.systemVoice(for: voice)
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.92
         utterance.pitchMultiplier = voice.gender == "Female" ? 1.04 : 0.98
         utterance.volume = 0.9
@@ -49,17 +48,6 @@ private final class VoicePreviewPlayer: NSObject, ObservableObject, AVSpeechSynt
         }
     }
 
-    private func speechLanguage(for locale: String) -> String {
-        switch locale {
-        case "zh-HK":
-            return "zh-HK"
-        case "zh-TW":
-            return "zh-TW"
-        default:
-            return "zh-CN"
-        }
-    }
-
     private func sampleText(for locale: String) -> String {
         switch locale {
         case "zh-HK":
@@ -80,9 +68,6 @@ struct VoicePickerView: View {
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var previewPlayer = VoicePreviewPlayer()
-    @State private var searchText = ""
-    @State private var selectedGender = "All"
-    @State private var selectedLocale = "All"
 
     init(
         selectedVoice: Binding<EdgeVoice>,
@@ -91,83 +76,50 @@ struct VoicePickerView: View {
         self._selectedVoice = selectedVoice
         self.onVoiceSelected = onVoiceSelected
     }
-    
-    let genders = ["All", "Female", "Male"]
-    let locales = ["All", "zh-CN", "zh-HK", "zh-TW", "zh-CN-SC"]
-    
-    var filteredVoices: [EdgeVoice] {
-        EdgeVoice.chineseVoices.filter { voice in
-            let matchesGender = selectedGender == "All" || voice.gender == selectedGender
-            let matchesLocale = selectedLocale == "All" || voice.locale == selectedLocale
-            let matchesSearch = searchText.isEmpty || 
-                voice.displayName.localizedCaseInsensitiveContains(searchText) ||
-                voice.localizedDescription.localizedCaseInsensitiveContains(searchText) ||
-                voice.name.localizedCaseInsensitiveContains(searchText)
-            return matchesGender && matchesLocale && matchesSearch
+
+    private var displayVoices: [EdgeVoice] {
+        var voices = EdgeVoice.recommendedGuideVoices
+        if !voices.contains(where: { $0.id == selectedVoice.id }) {
+            voices.insert(selectedVoice, at: 0)
         }
+        return voices
+    }
+
+    private var voiceGroups: [(title: String, voices: [EdgeVoice])] {
+        [
+            (L10n.string("voice.locale.mandarin"), displayVoices.filter { $0.locale == "zh-CN" }),
+            (L10n.string("voice.locale.cantonese"), displayVoices.filter { $0.locale == "zh-HK" }),
+            (L10n.string("voice.locale.taiwan"), displayVoices.filter { $0.locale == "zh-TW" }),
+            (L10n.string("voice.locale.sichuan"), displayVoices.filter { $0.locale == "zh-CN-SC" })
+        ].filter { !$0.voices.isEmpty }
     }
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Filters
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        // Gender filter
-                        ForEach(genders, id: \.self) { gender in
-                            Button(action: { selectedGender = gender }) {
-                                Text(genderDisplayName(gender))
-                                    .font(.subheadline)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(selectedGender == gender ? .blue : .gray.opacity(0.15))
-                                    .foregroundStyle(selectedGender == gender ? .white : .primary)
-                                    .clipShape(Capsule())
-                            }
-                        }
-                        
-                        Divider()
-                            .frame(height: 20)
-                        
-                        // Locale filter
-                        ForEach(locales, id: \.self) { locale in
-                            Button(action: { selectedLocale = locale }) {
-                                Text(localeDisplayName(locale))
-                                    .font(.subheadline)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(selectedLocale == locale ? .blue : .gray.opacity(0.15))
-                                    .foregroundStyle(selectedLocale == locale ? .white : .primary)
-                                    .clipShape(Capsule())
+            List {
+                ForEach(voiceGroups, id: \.title) { group in
+                    Section(group.title) {
+                        ForEach(group.voices) { voice in
+                            VoiceRow(
+                                voice: voice,
+                                isSelected: voice.id == selectedVoice.id,
+                                isPreviewing: previewPlayer.playingVoiceID == voice.id,
+                                onPreview: {
+                                    previewPlayer.preview(voice)
+                                }
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                previewPlayer.stop()
+                                selectedVoice = voice
+                                onVoiceSelected()
+                                dismiss()
                             }
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
                 }
-                .background(.ultraThinMaterial)
-                
-                // Voice list
-                List(filteredVoices) { voice in
-                    VoiceRow(
-                        voice: voice,
-                        isSelected: voice.id == selectedVoice.id,
-                        isPreviewing: previewPlayer.playingVoiceID == voice.id,
-                        onPreview: {
-                            previewPlayer.preview(voice)
-                        }
-                    )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            previewPlayer.stop()
-                            selectedVoice = voice
-                            onVoiceSelected()
-                            dismiss()
-                        }
-                }
-                .listStyle(.plain)
-                .searchable(text: $searchText, prompt: Text(L10n.string("voice.search.placeholder")))
             }
+            .listStyle(.insetGrouped)
             .navigationTitle(L10n.string("voice.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -183,24 +135,6 @@ struct VoicePickerView: View {
             }
         }
     }
-
-    private func genderDisplayName(_ gender: String) -> String {
-        switch gender {
-        case "Female": return L10n.string("voice.gender.female")
-        case "Male": return L10n.string("voice.gender.male")
-        default: return L10n.string("voice.gender.all")
-        }
-    }
-    
-    private func localeDisplayName(_ locale: String) -> String {
-        switch locale {
-        case "zh-CN": return L10n.string("voice.locale.mandarin")
-        case "zh-HK": return L10n.string("voice.locale.cantonese")
-        case "zh-TW": return L10n.string("voice.locale.taiwan")
-        case "zh-CN-SC": return L10n.string("voice.locale.sichuan")
-        default: return L10n.string("voice.gender.all")
-        }
-    }
 }
 
 struct VoiceRow: View {
@@ -211,10 +145,9 @@ struct VoiceRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Gender icon
-            Image(systemName: voice.gender == "Female" ? "person.fill" : "person")
+            Image(systemName: "waveform.circle.fill")
                 .font(.title2)
-                .foregroundStyle(voice.gender == "Female" ? .pink : .blue)
+                .foregroundStyle(rowTint)
                 .frame(width: 36)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -226,12 +159,13 @@ struct VoiceRow: View {
                         .font(.caption2)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(.gray.opacity(0.2))
+                        .background(rowTint.opacity(0.12))
+                        .foregroundStyle(rowTint)
                         .clipShape(Capsule())
                     
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(.green)
                     }
                 }
                 
@@ -242,15 +176,28 @@ struct VoiceRow: View {
             
             Spacer()
             
-            // Play sample button
             Button(action: onPreview) {
                 Image(systemName: isPreviewing ? "stop.circle.fill" : "play.circle")
                     .font(.title2)
-                    .foregroundStyle(isPreviewing ? .orange : .blue)
+                    .foregroundStyle(isPreviewing ? .orange : rowTint)
             }
             .buttonStyle(.borderless)
+            .accessibilityLabel(L10n.string(isPreviewing ? "trip.player.pause" : "trip.player.play"))
         }
         .padding(.vertical, 4)
+    }
+
+    private var rowTint: Color {
+        switch voice.locale {
+        case "zh-HK":
+            return .purple
+        case "zh-TW":
+            return .teal
+        case "zh-CN-SC":
+            return .orange
+        default:
+            return voice.gender == "Female" ? .pink : .blue
+        }
     }
 }
 
