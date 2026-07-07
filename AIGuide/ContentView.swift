@@ -106,6 +106,7 @@ struct ContentView: View {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_SETTINGS")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_OFFLINE_CONTENT")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_DATA_CONTROLS")
+            || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_VOICE_SETTINGS")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
             || ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_TERMS")
     }
@@ -300,6 +301,7 @@ struct SettingsView: View {
     @State private var showResetAlert = false
     @State private var showOfflineContent = false
     @State private var showDataControls = false
+    @State private var showVoicePicker = false
     @State private var showPrivacyPolicy = false
     @State private var showTermsOfUse = false
     @State private var cacheSize = ""
@@ -436,7 +438,9 @@ struct SettingsView: View {
                         }
 
                         NavigationLink {
-                            VoicePickerView(selectedVoice: $settingsService.preferredVoice)
+                            VoicePickerView(selectedVoice: $settingsService.preferredVoice) {
+                                settingsService.saveSettings()
+                            }
                         } label: {
                             HStack {
                                 Label(L10n.string("settings.voiceSettings"), systemImage: "person.wave.2")
@@ -680,6 +684,11 @@ struct SettingsView: View {
                             }
                     }
                 }
+                .sheet(isPresented: $showVoicePicker) {
+                    VoicePickerView(selectedVoice: $settingsService.preferredVoice) {
+                        settingsService.saveSettings()
+                    }
+                }
                 .sheet(isPresented: $showPrivacyPolicy) {
                     NavigationStack {
                         SettingsLegalDocumentView(document: .privacy)
@@ -716,6 +725,10 @@ struct SettingsView: View {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_DATA_CONTROLS")
     }
 
+    private static var opensVoicePickerForQA: Bool {
+        ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_VOICE_SETTINGS")
+    }
+
     private static var opensPrivacyPolicyForQA: Bool {
         ProcessInfo.processInfo.arguments.contains("AIGUIDE_OPEN_PRIVACY")
     }
@@ -738,6 +751,12 @@ struct SettingsView: View {
         if Self.opensDataControlsForQA {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                 showDataControls = true
+            }
+        }
+
+        if Self.opensVoicePickerForQA {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                showVoicePicker = true
             }
         }
 

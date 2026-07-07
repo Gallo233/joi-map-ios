@@ -1,13 +1,96 @@
-// Voice Picker View - Select TTS Voice
-
 import SwiftUI
+import AVFoundation
+
+private final class VoicePreviewPlayer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    @Published var playingVoiceID: String?
+
+    private let synthesizer = AVSpeechSynthesizer()
+
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+
+    func preview(_ voice: EdgeVoice) {
+        if playingVoiceID == voice.id, synthesizer.isSpeaking {
+            stop()
+            return
+        }
+
+        stop()
+
+        let utterance = AVSpeechUtterance(string: sampleText(for: voice.locale))
+        utterance.voice = AVSpeechSynthesisVoice(identifier: voice.id)
+            ?? AVSpeechSynthesisVoice(language: speechLanguage(for: voice.locale))
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.92
+        utterance.pitchMultiplier = voice.gender == "Female" ? 1.04 : 0.98
+        utterance.volume = 0.9
+
+        playingVoiceID = voice.id
+        synthesizer.speak(utterance)
+    }
+
+    func stop() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+        playingVoiceID = nil
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            self.playingVoiceID = nil
+        }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            self.playingVoiceID = nil
+        }
+    }
+
+    private func speechLanguage(for locale: String) -> String {
+        switch locale {
+        case "zh-HK":
+            return "zh-HK"
+        case "zh-TW":
+            return "zh-TW"
+        default:
+            return "zh-CN"
+        }
+    }
+
+    private func sampleText(for locale: String) -> String {
+        switch locale {
+        case "zh-HK":
+            return "你好，我係 Joi Map，正為你講解附近嘅故事。"
+        case "zh-TW":
+            return "你好，我是 Joi Map，正在為你講解附近的故事。"
+        case "zh-CN-SC":
+            return "你好，我是 Joi Map，正在给你讲附近的故事。"
+        default:
+            return "你好，我是 Joi Map，正在为你讲解附近的故事。"
+        }
+    }
+}
 
 struct VoicePickerView: View {
     @Binding var selectedVoice: EdgeVoice
+    let onVoiceSelected: () -> Void
+
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var previewPlayer = VoicePreviewPlayer()
     @State private var searchText = ""
     @State private var selectedGender = "All"
     @State private var selectedLocale = "All"
+
+    init(
+        selectedVoice: Binding<EdgeVoice>,
+        onVoiceSelected: @escaping () -> Void = {}
+    ) {
+        self._selectedVoice = selectedVoice
+        self.onVoiceSelected = onVoiceSelected
+    }
     
     let genders = ["All", "Female", "Male"]
     let locales = ["All", "zh-CN", "zh-HK", "zh-TW", "zh-CN-SC"]
@@ -66,22 +149,37 @@ struct VoicePickerView: View {
                 
                 // Voice list
                 List(filteredVoices) { voice in
-                    VoiceRow(voice: voice, isSelected: voice.id == selectedVoice.id)
+                    VoiceRow(
+                        voice: voice,
+                        isSelected: voice.id == selectedVoice.id,
+                        isPreviewing: previewPlayer.playingVoiceID == voice.id,
+                        onPreview: {
+                            previewPlayer.preview(voice)
+                        }
+                    )
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            previewPlayer.stop()
                             selectedVoice = voice
+                            onVoiceSelected()
                             dismiss()
                         }
                 }
                 .listStyle(.plain)
-                .searchable(text: $searchText, prompt: Text("voice.search.placeholder"))
+                .searchable(text: $searchText, prompt: Text(L10n.string("voice.search.placeholder")))
             }
-            .navigationTitle("voice.title")
+            .navigationTitle(L10n.string("voice.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("common.done") { dismiss() }
+                    Button(L10n.string("common.done")) {
+                        previewPlayer.stop()
+                        dismiss()
+                    }
                 }
+            }
+            .onDisappear {
+                previewPlayer.stop()
             }
         }
     }
@@ -108,6 +206,8 @@ struct VoicePickerView: View {
 struct VoiceRow: View {
     let voice: EdgeVoice
     let isSelected: Bool
+    let isPreviewing: Bool
+    let onPreview: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
@@ -143,13 +243,12 @@ struct VoiceRow: View {
             Spacer()
             
             // Play sample button
-            Button(action: {
-                // TODO: Play sample audio
-            }) {
-                Image(systemName: "play.circle")
+            Button(action: onPreview) {
+                Image(systemName: isPreviewing ? "stop.circle.fill" : "play.circle")
                     .font(.title2)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(isPreviewing ? .orange : .blue)
             }
+            .buttonStyle(.borderless)
         }
         .padding(.vertical, 4)
     }

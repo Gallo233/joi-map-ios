@@ -96,6 +96,7 @@ class SettingsService: ObservableObject {
         AIGuideLocalization.setSelectedLanguage(language)
         defaults.set(autoPlayGuide, forKey: autoPlayKey)
         defaults.set(wifiOnlyDownload, forKey: wifiOnlyKey)
+        defaults.set(preferredVoice.id, forKey: voiceKey)
         defaults.set(guideStyle.rawValue, forKey: styleKey)
         defaults.set(language.rawValue, forKey: languageKey)
         defaults.set(mapStyle.rawValue, forKey: mapStyleKey)
@@ -108,6 +109,7 @@ class SettingsService: ObservableObject {
     func resetSettings() {
         autoPlayGuide = true
         wifiOnlyDownload = false
+        preferredVoice = .default
         guideStyle = .history
         language = .system
         mapStyle = .standard
@@ -159,6 +161,11 @@ class SettingsService: ObservableObject {
         if let styleRaw = defaults.string(forKey: styleKey),
            let style = GuideStyle(rawValue: styleRaw) {
             guideStyle = style
+        }
+
+        if let voiceID = defaults.string(forKey: voiceKey),
+           let voice = EdgeVoice.chineseVoices.first(where: { $0.id == voiceID }) {
+            preferredVoice = voice
         }
 
         if let qaLanguage = Self.qaLanguageOverride {
