@@ -2,7 +2,7 @@
 
 ## 仓库定位
 
-这是 AIGuide 的 iOS SwiftUI 独立仓库。继续工作时优先围绕这个仓库，不再从旧 monorepo 的 Android、Expo/RN、backend 分支扩散。
+这是 Joi Map 的 iOS SwiftUI 独立仓库。继续工作时优先围绕这个仓库，不再从旧 monorepo 的 Android、Expo/RN、backend 分支扩散。
 
 ## 当前最重要的代码入口
 
@@ -15,14 +15,17 @@
 - `AIGuide/Services/TripPlannerService.swift`：搜索目的地、生成行程、缓存行程。
 - `AIGuide/Services/LocalizationService.swift`：语言上下文和 L10n。
 - `AIGuide/Localizable.xcstrings`：五语言文案。
+- `AIGuide/Character/`：Joi 角色状态和 SwiftUI/Live2D 桥接。
+- `Vendor/Live2D/`：Cubism XCFramework、Objective-C++ 运行时源码、许可证和接入说明。
+- `scripts/build_live2d_runtime.sh`：使用官方 Cubism SDK 重建运行时。
 
 ## 当前建议的下一步
 
-1. 接真实后端做端到端联调：客户端已统一 API base URL、语言上下文、错误解析和重试；下一步需要确认部署地址、接口 schema、限流错误和 UI 提示。
-2. 收敛旧实验页：确认哪些 View 仍有入口，没入口的删除或归档。
-3. 做真机 QA：定位、相机、语音、慢网、深色模式。
-4. 提升行程生成质量：增加兴趣/时长/人群输入，避免泛泛介绍。
-5. 建立景点知识库 schema：名称、别名、城市、国家、坐标、类型、可信来源、官方链接。
+1. 完善 Joi 角色包：补齐 Motion、Expression、Physics、Pose，再将导览状态映射到原生动作组；当前程序化动作仅作为 fallback。
+2. 接真实后端做端到端联调：客户端已统一 API base URL、语言上下文、错误解析和重试；下一步需要确认部署地址、接口 schema、限流错误和 UI 提示。
+3. 做真机 QA：定位、相机、语音、Live2D 性能、慢网、深色模式。
+4. 收敛旧实验页：确认哪些 View 仍有入口，没入口的删除或归档。
+5. 提升行程生成质量，并建立带可信来源的景点知识库 schema。
 
 ## 构建命令
 

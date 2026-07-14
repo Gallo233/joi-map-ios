@@ -1385,4 +1385,5 @@ struct StatItem: View {
     ContentView()
         .environmentObject(AppState())
         .environmentObject(ThemeManager.shared)
+        .environmentObject(JoiCharacterSession.shared)
 }

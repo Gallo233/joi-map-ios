@@ -5,6 +5,7 @@ struct AIGuideApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var themeManager = ThemeManager.shared
     @StateObject private var settingsService = SettingsService.shared
+    @StateObject private var joiSession = JoiCharacterSession.shared
     @State private var showSplash = true
 
     var body: some Scene {
@@ -20,6 +21,7 @@ struct AIGuideApp: App {
             .environmentObject(appState)
             .environmentObject(themeManager)
             .environmentObject(settingsService)
+            .environmentObject(joiSession)
             .environment(\.locale, settingsService.language.locale)
             .preferredColorScheme(themeManager.colorScheme)
             .task {

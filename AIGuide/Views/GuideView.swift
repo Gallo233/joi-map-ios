@@ -8,6 +8,7 @@ import Speech
 
 struct GuideView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var joiSession: JoiCharacterSession
     @StateObject private var guideVM = GuideViewModel()
     @State private var sheetType: SheetType?
     @State private var sheetPosition: SheetPosition = .collapsed
@@ -131,6 +132,7 @@ struct GuideView: View {
         .onAppear {
             guideVM.startLocationUpdates()
             updateBottomNavigationVisibility(for: sheetPosition)
+            syncJoiSession()
         }
         .task {
             await guideVM.loadPOIs()
@@ -146,6 +148,18 @@ struct GuideView: View {
         .onChange(of: appState.visualConfirmation?.id) { _, _ in
             guard let confirmation = appState.visualConfirmation else { return }
             guideVM.applyVisualConfirmation(confirmation)
+        }
+        .onChange(of: guideVM.contextPhase) { _, _ in
+            syncJoiSession()
+        }
+        .onChange(of: guideVM.isLoading) { _, _ in
+            syncJoiSession()
+        }
+        .onChange(of: guideVM.isPlaying) { _, _ in
+            syncJoiSession()
+        }
+        .onChange(of: guideVM.currentPOI?.id) { _, _ in
+            syncJoiSession()
         }
     }
 
@@ -521,11 +535,16 @@ struct GuideView: View {
                 ZStack {
                     Circle()
                         .fill(primaryColor.opacity(0.12))
-                    Image(systemName: guideVM.isPlaying ? "waveform" : "map.fill")
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(primaryColor)
+                    JoiCharacterView(session: joiSession, framing: .avatar)
+                        .allowsHitTesting(false)
                 }
-                .frame(width: 48, height: 48)
+                .frame(width: 52, height: 52)
+                .clipShape(Circle())
+                .overlay {
+                    Circle()
+                        .stroke(primaryColor.opacity(0.16), lineWidth: 1)
+                }
+                .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 6) {
@@ -640,6 +659,7 @@ struct GuideView: View {
     private var detailDrawerContent: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 12) {
+                joiGuideCompanionRow
                 currentPOISection
                 drawerActionRow
                 confidenceSection
@@ -654,6 +674,57 @@ struct GuideView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 28)
         }
+    }
+
+    private var joiGuideCompanionRow: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(primaryColor.opacity(0.08))
+
+                JoiCharacterView(session: joiSession, framing: .bust)
+                    .allowsHitTesting(false)
+            }
+            .frame(width: 78, height: 82)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 7) {
+                    Text("Joi")
+                        .font(.headline.weight(.bold))
+
+                    Text(L10n.string("joi.guide.companion"))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(primaryColor)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(primaryColor.opacity(0.09), in: Capsule())
+
+                    Spacer(minLength: 0)
+
+                    if joiSession.isSpeaking {
+                        Image(systemName: "waveform")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(primaryColor)
+                            .symbolEffect(.variableColor.iterative, isActive: true)
+                    }
+                }
+
+                Text(L10n.string(joiSession.messageKey))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(2)
+            }
+        }
+        .padding(10)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(primaryColor.opacity(0.08), lineWidth: 1)
+        }
+        .accessibilityElement(children: .combine)
     }
 
     private var isMiniDrawer: Bool {
@@ -759,6 +830,15 @@ struct GuideView: View {
         withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.86)) {
             sheetPosition = next
         }
+    }
+
+    private func syncJoiSession() {
+        joiSession.syncGuide(
+            phase: guideVM.contextPhase,
+            isLoading: guideVM.isLoading,
+            isSpeaking: guideVM.isPlaying,
+            hasPOI: guideVM.currentPOI != nil
+        )
     }
 
     private func updateBottomNavigationVisibility(for position: SheetPosition) {
@@ -2259,4 +2339,5 @@ struct MapViewContainer: UIViewRepresentable {
 #Preview {
     GuideView()
         .environmentObject(AppState())
+        .environmentObject(JoiCharacterSession.shared)
 }

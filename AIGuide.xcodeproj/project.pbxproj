@@ -59,6 +59,11 @@
 		A123456789000200 /* SeeAndAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000201 /* SeeAndAskView.swift */; };
 		A123456789000210 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A123456789000211 /* ImagePicker.swift */; };
 		B240624000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A123456789000016 /* Assets.xcassets */; };
+		C260714000000001 /* JoiCharacterSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260714000000002 /* JoiCharacterSession.swift */; };
+		C260714000000003 /* JoiCharacterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260714000000004 /* JoiCharacterView.swift */; };
+		C260714000000007 /* JoiCharacter in Resources */ = {isa = PBXBuildFile; fileRef = C260714000000008 /* JoiCharacter */; };
+		C260714000000009 /* JoiCubismRuntime.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C260714000000010 /* JoiCubismRuntime.xcframework */; };
+		C260714000000014 /* Live2DShaders in Resources */ = {isa = PBXBuildFile; fileRef = C260714000000013 /* Live2DShaders */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -116,6 +121,11 @@
 		A123456789000193 /* JourneyNarrativeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyNarrativeView.swift; sourceTree = "<group>"; };
 		A123456789000201 /* SeeAndAskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeeAndAskView.swift; sourceTree = "<group>"; };
 		A123456789000211 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		C260714000000002 /* JoiCharacterSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoiCharacterSession.swift; sourceTree = "<group>"; };
+		C260714000000004 /* JoiCharacterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoiCharacterView.swift; sourceTree = "<group>"; };
+		C260714000000008 /* JoiCharacter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/JoiCharacter; sourceTree = "<group>"; };
+		C260714000000010 /* JoiCubismRuntime.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = JoiCubismRuntime.xcframework; sourceTree = "<group>"; };
+		C260714000000013 /* Live2DShaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/Live2DShaders; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +133,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C260714000000009 /* JoiCubismRuntime.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				A123456789000021 /* AIGuide */,
+				C260714000000023 /* Vendor */,
 				A123456789000022 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -142,11 +154,14 @@
 			children = (
 				A123456789000002 /* AIGuideApp.swift */,
 				A123456789000004 /* ContentView.swift */,
+				C260714000000020 /* Character */,
 				A123456789000023 /* Views */,
 				A123456789000024 /* Models */,
 				A123456789000025 /* Services */,
 				A123456789000014 /* Info.plist */,
 				A123456789000016 /* Assets.xcassets */,
+				C260714000000008 /* JoiCharacter */,
+				C260714000000013 /* Live2DShaders */,
 				B210621000000006 /* Localizable.xcstrings */,
 				B210621000000008 /* InfoPlist.xcstrings */,
 			);
@@ -229,6 +244,31 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		C260714000000020 /* Character */ = {
+			isa = PBXGroup;
+			children = (
+				C260714000000002 /* JoiCharacterSession.swift */,
+				C260714000000004 /* JoiCharacterView.swift */,
+			);
+			path = Character;
+			sourceTree = "<group>";
+		};
+		C260714000000023 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				C260714000000024 /* Live2D */,
+			);
+			path = Vendor;
+			sourceTree = "<group>";
+		};
+		C260714000000024 /* Live2D */ = {
+			isa = PBXGroup;
+			children = (
+				C260714000000010 /* JoiCubismRuntime.xcframework */,
+			);
+			path = Live2D;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -293,6 +333,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B240624000000001 /* Assets.xcassets in Resources */,
+				C260714000000007 /* JoiCharacter in Resources */,
+				C260714000000014 /* Live2DShaders in Resources */,
 				B210621000000005 /* Localizable.xcstrings in Resources */,
 				B210621000000007 /* InfoPlist.xcstrings in Resources */,
 			);
@@ -306,6 +348,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A123456789000001 /* AIGuideApp.swift in Sources */,
+				C260714000000001 /* JoiCharacterSession.swift in Sources */,
+				C260714000000003 /* JoiCharacterView.swift in Sources */,
 				A123456789000003 /* ContentView.swift in Sources */,
 				A123456789000005 /* GuideView.swift in Sources */,
 				A123456789000007 /* SheetViews.swift in Sources */,
